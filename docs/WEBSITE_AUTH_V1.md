@@ -10,11 +10,15 @@ Minimal, extensible auth baseline for website mode `private_prelaunch` with owne
 
 - Login (owner account)
 - Logout
-- Session handling with TTL and storage guard pairing
-- Password hashing/verification (PBKDF2 SHA-256)
-- Auth identity is provided via provider interface (`AuthIdentityProvider`) instead of hardcoded in `AuthService`
+- Additional prelaunch access gate before owner login
+- Temporary prelaunch server auth via `/api/auth/login`, `/api/auth/me`, `/api/auth/logout`
+- Session handling via signed HttpOnly cookie
+- Password hashing/verification (PBKDF2 SHA-256) on the server side
+- In-memory rate limiting for `POST /api/prelaunch-gate/login` and `POST /api/auth/login`
+- Minimal server-side security logging for login success/failure and rate-limit events
 - Protected route handling with configurable access mode
-- Fail-closed owner auth behavior when mandatory runtime config is missing
+- Build-time fail-closed behavior if sensitive client-side owner auth env vars are present
+- Generic auth errors for invalid username/password combinations
 - Prepared mode variants:
   - `private_prelaunch` (active default)
   - `invite_only` (prepared)
@@ -26,15 +30,24 @@ Minimal, extensible auth baseline for website mode `private_prelaunch` with owne
 - `website/src/modules/auth/types.ts`
 - `website/src/modules/auth/passwordHashing.ts`
 - `website/src/modules/auth/ownerAuthProvider.ts`
+- `website/api/_auth.ts`
+- `website/api/auth/login.ts`
+- `website/api/auth/me.ts`
+- `website/api/auth/logout.ts`
+- `website/api/_prelaunchGate.ts`
+- `website/api/prelaunch-gate/login.ts`
+- `website/api/prelaunch-gate/me.ts`
 - `website/src/modules/auth/sessionStore.ts`
 - `website/src/modules/auth/authService.ts`
 - `website/src/modules/access-control/types.ts`
 - `website/src/modules/access-control/policy.ts`
 - `website/src/app/providers/AuthProvider.tsx`
+- `website/src/app/providers/PrelaunchGateProvider.tsx`
 - `website/src/app/routing/routeManifest.ts`
 - `website/src/app/routing/accessGuard.ts`
 - `website/src/app/routing/AppRouter.tsx`
 - `website/src/pages/LoginPage.tsx`
+- `website/src/pages/AccessPage.tsx`
 - `website/src/pages/InternalPage.tsx`
 - `website/src/pages/ForbiddenPage.tsx`
 - `website/src/pages/WebsiteLandingPage.tsx`
@@ -48,13 +61,16 @@ Minimal, extensible auth baseline for website mode `private_prelaunch` with owne
 Environment variables:
 
 - `VITE_ACCESS_MODE` (`private_prelaunch|invite_only|public_product`)
-- `VITE_OWNER_USER_ID`
-- `VITE_OWNER_EMAIL`
-- `VITE_OWNER_USERNAME`
-- `VITE_OWNER_PASSWORD_HASH` (base64 PBKDF2 output)
-- `VITE_OWNER_PASSWORD_SALT` (base64 salt)
-- `VITE_OWNER_PASSWORD_ITERATIONS`
 - `VITE_SESSION_TTL_MS`
+- `OWNER_USER_ID`
+- `OWNER_EMAIL`
+- `OWNER_LOGIN_USERNAME`
+- `OWNER_LOGIN_PASSWORD_HASH` (base64 PBKDF2 output)
+- `OWNER_LOGIN_PASSWORD_SALT` (base64 salt)
+- `OWNER_LOGIN_PASSWORD_ITERATIONS`
+- `PRELAUNCH_SESSION_SECRET`
+- `PRELAUNCH_ACCESS_KEY`
+- `PRELAUNCH_GATE_TTL_MS`
 
 ## Validation
 
@@ -64,16 +80,23 @@ Environment variables:
 ## Constraints in v1
 
 - No public registration flow implemented yet
-- No backend-issued HttpOnly cookie session yet
+- Temporary prelaunch server auth is intentionally minimal and owner-only
 - Owner-only account model (single identity path)
-- Client-side auth hardening is limited; final trust boundary still requires server-side session/auth
+- Rate limit state is in-memory per serverless instance (no cross-instance/global guarantees)
+- Security logs are emitted via runtime logging only (no centralized audit backend in v1)
+- Final production trust boundary still requires a fuller backend auth/session implementation
 
 ## Auth Architecture
 
-- `AuthService` owns session lifecycle only.
-- `AuthIdentityProvider` owns credential verification and identity issuance.
-- `OwnerAuthProvider` is the current adapter using ENV-backed owner credentials.
-- Future backend auth integration should add a new provider adapter without changing `AuthService`.
+- Temporary prelaunch path:
+- Shared prelaunch access key is verified first on the server.
+- Successful gate authorization issues a signed HttpOnly gate cookie.
+- Owner credentials are read only on the server.
+- Login issues a signed HttpOnly cookie.
+- `/api/auth/*` requires an active prelaunch gate cookie before owner auth is evaluated.
+- Client hydrates auth state from `GET /api/auth/me`.
+- Future production path:
+- Replace the temporary cookie-signing approach with the planned backend auth/session boundary.
 
 ## Related
 
