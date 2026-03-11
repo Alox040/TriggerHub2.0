@@ -1,0 +1,32 @@
+# Tech Stack
+
+Frontend
+
+- React
+- Vite
+- TypeScript
+
+UI
+
+- TailwindCSS
+- component-basierte UI
+
+Backend (optional später)
+
+- Node.js
+- lokale APIs
+
+Integrationen
+
+- OBS WebSocket
+- Spotify API
+
+Entwicklungstools
+
+- VS Code
+- GitHub
+- Vercel (für Web-Version)
+
+Architektur:
+
+UI → Services → Core Logic → Integrationen

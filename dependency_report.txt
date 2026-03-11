@@ -1,0 +1,103 @@
+TriggerHub 2.0 – Dependency Report
+Generiert: 2026-03-10
+============================================================
+
+NODE VERSION
+------------
+Ziel-Engine: Node.js (kompatibel mit Electron 36)
+TypeScript Target: ES2022
+
+PACKAGE MANAGER
+---------------
+npm (package-lock.json vorhanden)
+
+============================================================
+DEPENDENCIES (Production)
+============================================================
+
+react                    18.3.1
+react-dom               ^18.3.1
+
+============================================================
+DEVDEPENDENCIES (Entwicklung)
+============================================================
+
+@types/node             22.13.10
+@types/react            18.3.18
+@types/react-dom       ^18.3.6
+@vitejs/plugin-react   ^5.1.4
+electron               ^36.0.0
+electron-builder       ^26.0.12
+typescript              5.8.2
+vite                   ^6.4.1
+vitest                  3.0.8
+
+============================================================
+WICHTIGSTE FRAMEWORKS & TOOLS
+============================================================
+
+FRONTEND
+  React 18.3          – UI-Framework (Hooks, Concurrent Mode)
+  TypeScript 5.8      – Typensystem
+
+BUILD & DEV
+  Vite 6.4            – Bundler & Dev-Server (ESM-native)
+  @vitejs/plugin-react – React Fast Refresh
+
+DESKTOP
+  Electron 36         – Cross-Platform Desktop Shell
+  electron-builder    – Installer-Erstellung (NSIS für Windows)
+
+TESTING
+  Vitest 3.0          – Unit & Integration Tests (Vite-native)
+
+TYPE SUPPORT
+  @types/node         – Node.js API Types
+  @types/react        – React Type Definitions
+  @types/react-dom    – React DOM Type Definitions
+
+============================================================
+BUILD SCRIPTS
+============================================================
+
+dev                   vite
+build                 vite build
+preview               vite preview
+typecheck             tsc --noEmit
+test                  vitest run
+test:watch            vitest
+desktop:build         npm run build && electron-builder --win nsis --x64 --publish never
+desktop:artifacts     node scripts/collect-desktop-artifacts.mjs
+desktop:release       npm run desktop:build && npm run desktop:artifacts
+exe-builder:start     npm --prefix tools/exe-builder run start
+exe-builder:smoke     powershell -ExecutionPolicy Bypass -File tools/exe-builder/scripts/smoke-test.ps1
+
+============================================================
+ELECTRON BUILD KONFIGURATION
+============================================================
+
+appId           com.triggerhub.desktop
+productName     TriggerHub 2.0
+output dir      release/
+target          win / nsis / x64
+artifact        TriggerHubSetup.exe
+executable      App.exe
+
+============================================================
+DESIGN SYSTEM (separates Projekt unter /design/)
+============================================================
+
+react                  ^18.3.1
+react-dom              ^18.3.1
+vite                   (eigene Konfiguration)
+postcss                (eigene Konfiguration)
+Tailwind CSS           (via postcss.config.mjs)
+
+============================================================
+TOOLS/EXE-BUILDER (separates Projekt unter /tools/exe-builder/)
+============================================================
+
+Eigenständiges Node.js-Tool (kein npm-Workspace)
+Packages: eigene package.json
+Zweck: Custom EXE-Packaging-Workflow
+============================================================

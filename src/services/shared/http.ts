@@ -1,0 +1,72 @@
+export class HttpRequestError extends Error {
+  public constructor(
+    public readonly method: string,
+    public readonly url: string,
+    public readonly status: number,
+    public readonly responseBody: string,
+  ) {
+    super(`HTTP ${method} ${url} failed with status ${status}`)
+  }
+}
+
+export class ResponseValidationError extends Error {
+  public constructor(
+    public readonly method: string,
+    public readonly url: string,
+    public readonly reason: string,
+    public readonly payload: unknown,
+  ) {
+    super(`Response validation failed for ${method} ${url}: ${reason}`)
+  }
+}
+
+export interface HttpClientOptions {
+  baseUrl: string
+  fetchImpl?: typeof fetch
+}
+
+export class HttpClient {
+  private readonly fetchImpl: typeof fetch
+
+  public constructor(private readonly options: HttpClientOptions) {
+    this.fetchImpl = options.fetchImpl ?? fetch
+  }
+
+  public async post<TResponse>(
+    path: string,
+    body?: unknown,
+    validate?: (value: unknown) => value is TResponse,
+  ): Promise<TResponse> {
+    const url = `${this.options.baseUrl}${path}`
+
+    const response = await this.fetchImpl(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    })
+
+    if (!response.ok) {
+      const responseBody = await response.text()
+      throw new HttpRequestError('POST', url, response.status, responseBody)
+    }
+
+    if (response.status === 204) {
+      return undefined as TResponse
+    }
+
+    const text = await response.text()
+    if (!text) {
+      return undefined as TResponse
+    }
+
+    const parsed = JSON.parse(text) as unknown
+
+    if (validate && !validate(parsed)) {
+      throw new ResponseValidationError('POST', url, 'payload does not match expected schema', parsed)
+    }
+
+    return parsed as TResponse
+  }
+}

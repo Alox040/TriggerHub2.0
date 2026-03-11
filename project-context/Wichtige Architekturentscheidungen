@@ -1,0 +1,35 @@
+# Architekturentscheidungen
+
+Das Projekt ist modular aufgebaut.
+
+Ordnerstruktur:
+
+src/
+  core/
+  services/
+  plugins/
+  ui/
+  agents/
+
+core
+enthält:
+
+- Trigger Engine
+- Macro System
+- App Control
+
+services
+enthält Integrationen wie:
+
+- OBS Service
+- Spotify Service
+- Clip Service
+
+plugins
+enthält Erweiterungen des Systems.
+
+ui
+enthält Interface-Komponenten.
+
+agents
+enthält Agent-Definitionen für KI-Unterstützung.

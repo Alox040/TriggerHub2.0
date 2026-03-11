@@ -1,0 +1,25 @@
+{
+  "name": "TriggerHub 2.0",
+  "version": "0.1.0",
+  "channel": "stable",
+  "releaseCommand": "run release",
+  "desktop": {
+    "artifactDirectory": "dist",
+    "releaseDirectory": "release",
+    "primaryInstaller": "dist/Setup.exe",
+    "portableBinary": "dist/App.exe",
+    "uninstaller": "dist/Uninstall.exe",
+    "updateManifest": "dist/latest.yml"
+  },
+  "website": {
+    "buildCommand": "npm --prefix website run build",
+    "deploymentProvider": "vercel",
+    "deployTriggerSecret": "VERCEL_DEPLOY_HOOK_URL"
+  },
+  "agents": {
+    "release": "agent/agents/40-release-agent.md",
+    "contentSync": "agent/agents/20-content-sync-agent.md",
+    "snapshot": "agent/agents/optional/10-snapshot.md",
+    "securityAudit": "agent/agents/core/40-security-audit-agent.md"
+  }
+}

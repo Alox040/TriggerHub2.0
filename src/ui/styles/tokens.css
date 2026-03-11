@@ -1,0 +1,25 @@
+:root {
+  --th-bg-shell: #0e0e11;
+  --th-bg-main: #121214;
+  --th-bg-panel: #18181b;
+  --th-border-subtle: rgba(255, 255, 255, 0.04);
+  --th-border-weak: rgba(255, 255, 255, 0.1);
+  --th-text-primary: #f4f4f5;
+  --th-text-secondary: #a1a1aa;
+  --th-text-muted: #71717a;
+  --th-accent: #2dd4bf;
+  --th-danger: #fb7185;
+  --th-radius-md: 10px;
+  --th-radius-lg: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.th-ui-root {
+  min-height: 100vh;
+  background: var(--th-bg-shell);
+  color: var(--th-text-primary);
+  font-family: Inter, Segoe UI, sans-serif;
+}

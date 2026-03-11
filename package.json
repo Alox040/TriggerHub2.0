@@ -1,0 +1,81 @@
+{
+    "name": "triggerhub2",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "electron/main.cjs",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "website:sync": "tsx scripts/generate-website-content.ts",
+        "watch:features": "tsx scripts/feature-change-watcher.ts",
+        "release": "tsx scripts/run-release.ts",
+        "release:validate": "tsx scripts/release-orchestrator.ts",
+        "desktop:build": "npm run build && electron-builder --win nsis --x64 --publish never",
+        "desktop:publish": "npm run build && electron-builder --win nsis --x64 --publish always",
+        "desktop:artifacts": "node scripts/collect-desktop-artifacts.mjs",
+        "desktop:release": "npm run desktop:build && npm run desktop:artifacts",
+        "exe-builder:start": "npm --prefix tools/exe-builder run start",
+        "exe-builder:smoke": "powershell -ExecutionPolicy Bypass -File tools/exe-builder/scripts/smoke-test.ps1"
+    },
+    "dependencies": {
+        "chokidar": "^5.0.0",
+        "react": "18.3.1",
+        "react-dom": "^18.3.1"
+    },
+    "devDependencies": {
+        "@types/node": "^22.13.10",
+        "@types/react": "18.3.18",
+        "@types/react-dom": "^18.3.6",
+        "@vitejs/plugin-react": "^5.1.4",
+        "chokidar": "^5.0.0",
+        "electron": "^36.0.0",
+        "electron-builder": "^26.0.12",
+        "tsx": "^4.21.0",
+        "typescript": "5.8.2",
+        "vite": "^6.4.1",
+        "vitest": "3.0.8"
+    },
+    "build": {
+        "appId": "com.triggerhub.desktop",
+        "productName": "TriggerHub 2.0",
+        "directories": {
+            "output": "release"
+        },
+        "files": [
+            "dist/**/*",
+            "electron/**/*",
+            "package.json"
+        ],
+        "win": {
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ],
+            "artifactName": "TriggerHubSetup.exe",
+            "executableName": "App"
+        },
+        "nsis": {
+            "oneClick": false,
+            "perMachine": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "TriggerHub 2.0",
+            "uninstallDisplayName": "TriggerHub 2.0"
+        },
+        "publish": {
+            "provider": "github",
+            "owner": "Alox040",
+            "repo": "Triggerhub"
+        }
+    }
+}

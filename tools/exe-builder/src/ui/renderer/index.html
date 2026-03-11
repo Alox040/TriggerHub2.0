@@ -1,0 +1,68 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EXE Builder</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="panel">
+        <h1>EXE Builder</h1>
+        <p class="subtitle">Build and package projects into Windows executables.</p>
+
+        <div class="field-row">
+          <label for="projectPath">Project Folder</label>
+          <div class="path-picker">
+            <input id="projectPath" type="text" readonly placeholder="Select project folder" />
+            <button id="pickProject">Browse</button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label for="outputPath">Output Folder</label>
+          <div class="path-picker">
+            <input id="outputPath" type="text" readonly placeholder="Select output folder" />
+            <button id="pickOutput">Browse</button>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="field-row">
+            <label for="packager">Packager</label>
+            <select id="packager">
+              <option value="auto">Auto detect</option>
+              <option value="electron-builder">Electron Builder</option>
+              <option value="pyinstaller">PyInstaller</option>
+              <option value="pkg">pkg</option>
+              <option value="tauri">Tauri bundler</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label for="installer">Installer</label>
+            <select id="installer">
+              <option value="none">None</option>
+              <option value="nsis">NSIS</option>
+              <option value="inno-setup">Inno Setup</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button id="startBuild" class="primary">Start Build</button>
+        </div>
+
+        <div id="result" class="result hidden"></div>
+      </section>
+
+      <section class="panel log-panel">
+        <h2>Build Progress</h2>
+        <pre id="logs"></pre>
+      </section>
+    </main>
+
+    <script type="module" src="./renderer.js"></script>
+  </body>
+</html>

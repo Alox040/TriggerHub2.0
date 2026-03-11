@@ -1,0 +1,9 @@
+node_modules/
+design/node_modules/
+website/node_modules/
+dist/
+release/
+releases/*.zip
+*.log
+*.zip
+.DS_Store

@@ -1,0 +1,10 @@
+{
+  "releaseWorkflow": "github-actions",
+  "releaseCommand": "run release",
+  "desktopBuild": "configured",
+  "githubReleasePublish": "configured",
+  "websiteDeploy": "configured",
+  "contentSync": "configured",
+  "securityAuditCompatibility": "documented",
+  "snapshotCompatibility": "documented"
+}

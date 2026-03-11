@@ -1,0 +1,260 @@
+TriggerHub 2.0 – Projektstruktur (Tiefe 6)
+Generiert: 2026-03-10
+Ignoriert: node_modules, dist, build, .cache, .vite, .next, .git
+============================================================
+
+e:/Programmierung/TriggerHub2.0/
+├── agent/
+│   ├── README.md
+│   └── agents/
+│       ├── master-orchestrator.md
+│       ├── core/
+│       │   ├── 00-agent-rules.md
+│       │   ├── 01-orchestrator.md
+│       │   ├── 02-product.md
+│       │   ├── 03-architecture.md
+│       │   ├── 04-implementation.md
+│       │   ├── 05-uiux.md
+│       │   ├── 06-qa.md
+│       │   ├── 07-ops.md
+│       │   ├── 08-docs.md
+│       │   └── 09-autoupdate.md
+│       ├── optional/
+│       ├── project-context/
+│       │   ├── active-tasks.md
+│       │   ├── architecture-overview.md
+│       │   ├── changelog.md
+│       │   ├── decision-log.md
+│       │   ├── design-guidelines.md
+│       │   ├── known-issues.md
+│       │   └── product-overview.md
+│       └── system/
+│           ├── context-template.md
+│           ├── decision-log-template.md
+│           ├── handoff-template.md
+│           ├── review-template.md
+│           └── task-template.md
+├── design/                          [Separates Design-System / Storybook]
+│   ├── ATTRIBUTIONS.md
+│   ├── README.md
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.mjs
+│   ├── vite.config.ts
+│   ├── guidelines/
+│   │   └── Guidelines.md
+│   ├── public/
+│   │   └── version.json
+│   ├── scripts/
+│   │   └── write-version.mjs
+│   └── src/
+│       ├── main.tsx
+│       ├── env.d.ts
+│       ├── app/
+│       │   ├── App.tsx
+│       │   └── components/
+│       │       ├── AutomationPanel.tsx
+│       │       ├── DashboardHeader.tsx
+│       │       ├── Sidebar.tsx
+│       │       ├── StatusBar.tsx
+│       │       ├── TriggerGrid.tsx
+│       │       ├── figma/
+│       │       │   └── ImageWithFallback.tsx
+│       │       └── ui/               [40+ UI-Komponenten]
+│       ├── data/
+│       │   └── mock.ts
+│       ├── imports/
+│       │   └── triggerhub-design.md
+│       ├── styles/
+│       │   ├── fonts.css
+│       │   ├── index.css
+│       │   ├── tailwind.css
+│       │   └── theme.css
+│       └── update/
+│           └── versionMonitor.ts
+├── docs/
+│   ├── PROJECT_REFERENCE.md
+│   ├── REWRITE_PLAN.md
+│   ├── STARTER_BLUEPRINT.md
+│   └── WINDOWS_DESKTOP_RELEASE.md
+├── electron/
+│   └── main.cjs                     [Electron Main Process]
+├── project-context/
+│   ├── project-context.md
+│   ├── Arbeitsweise der Agents
+│   ├── Coding-Regeln
+│   ├── Designphilosophie
+│   ├── Tech-Stack
+│   └── Wichtige Architekturentscheidungen
+├── release/
+│   ├── TriggerHubSetup.exe
+│   ├── TriggerHubSetup.exe.blockmap
+│   ├── builder-debug.yml
+│   ├── uninstall-launcher.nsi
+│   └── win-unpacked/
+│       ├── App.exe
+│       ├── LICENSE.electron.txt
+│       ├── LICENSES.chromium.html
+│       ├── locales/                  [40+ Sprachdateien]
+│       └── resources/
+├── scripts/
+│   └── collect-desktop-artifacts.mjs
+├── src/                             [Haupt-Quellcode]
+│   ├── App.tsx                      [Root React Component]
+│   ├── main.tsx                     [React Entry Point]
+│   ├── app/
+│   │   ├── bootstrap.ts
+│   │   ├── container.ts
+│   │   ├── facade.ts
+│   │   ├── index.ts
+│   │   └── readModel.ts
+│   ├── config/
+│   │   └── index.ts
+│   ├── core/
+│   │   ├── index.ts
+│   │   ├── app-control/
+│   │   │   ├── appController.ts
+│   │   │   ├── hotkeyManager.ts
+│   │   │   ├── index.ts
+│   │   │   └── windowManager.ts
+│   │   ├── macro-system/
+│   │   │   ├── index.ts
+│   │   │   ├── macroEngine.ts
+│   │   │   ├── macroRunner.ts
+│   │   │   └── macroTypes.ts
+│   │   └── trigger-engine/
+│   │       ├── index.ts
+│   │       ├── triggerEngine.ts
+│   │       ├── triggerExecutor.ts
+│   │       └── triggerTypes.ts
+│   ├── deck-engine/
+│   ├── event-bus/
+│   ├── plugin-system/
+│   ├── plugins/
+│   │   ├── index.ts
+│   │   ├── pluginRegistry.ts
+│   │   └── example-plugin/
+│   │       ├── index.ts
+│   │       ├── plugin.ts
+│   │       ├── pluginActions.ts
+│   │       └── pluginConfig.ts
+│   ├── profiles/
+│   ├── services/
+│   │   ├── index.ts
+│   │   ├── clip-service/
+│   │   │   ├── clipExporter.ts
+│   │   │   ├── clipProcessor.ts
+│   │   │   ├── contracts.ts
+│   │   │   └── index.ts
+│   │   ├── obs-service/
+│   │   │   ├── contracts.ts
+│   │   │   ├── index.ts
+│   │   │   ├── obsActions.ts
+│   │   │   └── obsClient.ts
+│   │   ├── shared/
+│   │   │   ├── http.ts
+│   │   │   ├── index.ts
+│   │   │   └── reliability.ts
+│   │   └── spotify-service/
+│   │       ├── contracts.ts
+│   │       ├── index.ts
+│   │       ├── spotifyActions.ts
+│   │       └── spotifyClient.ts
+│   ├── store/
+│   ├── tests/
+│   │   ├── README.md
+│   │   ├── app-container.test.ts
+│   │   ├── app-facade.test.ts
+│   │   ├── core-macro.test.ts
+│   │   ├── core-trigger.test.ts
+│   │   ├── plugins.test.ts
+│   │   ├── services.test.ts
+│   │   └── ui-dashboard.test.tsx
+│   ├── types/
+│   │   ├── domain.ts
+│   │   ├── globalTypes.ts
+│   │   ├── index.ts
+│   │   └── ports.ts
+│   ├── ui/
+│   │   ├── index.ts
+│   │   ├── types.ts
+│   │   ├── components/
+│   │   │   ├── Button.tsx
+│   │   │   ├── DeckButton.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   ├── PanelCard.tsx
+│   │   │   ├── StatusBar.tsx
+│   │   │   ├── TriggerCard.tsx
+│   │   │   └── index.ts
+│   │   ├── layout/
+│   │   │   ├── Header.tsx
+│   │   │   ├── MainLayout.tsx
+│   │   │   └── Sidebar.tsx
+│   │   ├── pages/
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── Editor.tsx
+│   │   │   ├── Plugins.tsx
+│   │   │   ├── Settings.tsx
+│   │   │   └── index.ts
+│   │   └── styles/
+│   │       ├── dashboard.css
+│   │       └── tokens.css
+│   └── utils/
+│       ├── fileSystem.ts
+│       ├── helpers.ts
+│       └── logger.ts
+├── tests/
+├── tools/
+│   └── exe-builder/
+│       ├── README.md
+│       ├── package.json
+│       ├── package-lock.json
+│       ├── docs/
+│       │   └── ARCHITECTURE.md
+│       ├── scripts/
+│       │   ├── run-builder.ps1
+│       │   └── smoke-test.ps1
+│       ├── src/
+│       │   ├── types.js
+│       │   ├── builder-core/
+│       │   │   └── index.js
+│       │   ├── installer-generator/
+│       │   │   └── index.js
+│       │   ├── packager/
+│       │   │   └── index.js
+│       │   ├── project-detector/
+│       │   │   └── index.js
+│       │   ├── ui/
+│       │   │   ├── main.js
+│       │   │   ├── preload.js
+│       │   │   └── renderer/
+│       │   │       ├── index.html
+│       │   │       ├── renderer.js
+│       │   │       └── styles.css
+│       │   └── utils/
+│       │       ├── fs-utils.js
+│       │       └── process-runner.js
+│       └── templates/
+│           ├── inno-setup.iss
+│           └── nsis-installer.nsi
+├── index.html
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── vite.config.ts
+├── vitest.config.ts
+├── architecture-decisions.md
+├── change-log.md
+├── migration-plan.md
+├── project-analysis.md
+└── project-architecture.md
+
+============================================================
+Statistik:
+  Hauptmodule: src/core, src/plugins, src/services, src/ui
+  Agent-Dateien: 23 (unter agent/agents/)
+  Services: OBS, Spotify, Clip
+  UI-Seiten: Dashboard, Editor, Plugins, Settings
+  Test-Dateien: 7 (unter src/tests/)
+============================================================
