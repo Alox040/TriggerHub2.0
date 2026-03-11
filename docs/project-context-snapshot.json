@@ -1,0 +1,214 @@
+{
+  "updatedAt": "2026-03-11T13:18:58.741Z",
+  "architecture": {
+    "project": {
+      "runtimeTargets": [
+        "windows-desktop",
+        "website"
+      ],
+      "compositionRootPath": "src/app/bootstrap.ts",
+      "compositionRootPresent": true
+    },
+    "subsystems": [
+      {
+        "name": "event-system",
+        "path": "src/core/event-bus",
+        "summary": "In-memory event bus with direct and wildcard topic subscriptions.",
+        "status": "implemented"
+      },
+      {
+        "name": "trigger-engine",
+        "path": "src/core/trigger-engine",
+        "summary": "Trigger graph lookup, condition evaluation, and action dispatch.",
+        "status": "implemented"
+      },
+      {
+        "name": "macro-system",
+        "path": "src/core/macro-system",
+        "summary": "Sequence, conditional, parallel, and nested macro execution.",
+        "status": "implemented"
+      },
+      {
+        "name": "service-layer",
+        "path": "src/services",
+        "summary": "OBS, Spotify, and clip adapters plus shared reliability utilities.",
+        "status": "implemented"
+      },
+      {
+        "name": "plugin-layer",
+        "path": "src/plugins",
+        "summary": "Plugin registry and default example plugin bootstrap.",
+        "status": "implemented"
+      },
+      {
+        "name": "desktop-ui",
+        "path": "src/ui",
+        "summary": "Desktop UI components, pages, and layout state.",
+        "status": "implemented"
+      },
+      {
+        "name": "website-ui",
+        "path": "website/src",
+        "summary": "Website routing, auth, prelaunch gate, and profile modules.",
+        "status": "implemented"
+      }
+    ],
+    "workflowSurface": [
+      ".github/workflows/context-sync.yml",
+      ".github/workflows/release.yml",
+      ".github/workflows/website-update.yml"
+    ]
+  },
+  "modules": [
+    {
+      "name": "desktop-runtime",
+      "path": "src/",
+      "role": "Desktop React runtime, app composition root, and automation domain.",
+      "status": "implemented"
+    },
+    {
+      "name": "electron-shell",
+      "path": "electron/",
+      "role": "Electron main-process and preload shell for the desktop target.",
+      "status": "implemented"
+    },
+    {
+      "name": "website-runtime",
+      "path": "website/",
+      "role": "Website routing, auth, access-control, and profile surface.",
+      "status": "implemented"
+    },
+    {
+      "name": "workflow-automation",
+      "path": "scripts/",
+      "role": "Automation scripts for releases, content sync, and context generation.",
+      "status": "implemented"
+    },
+    {
+      "name": "agent-system",
+      "path": "agents/",
+      "role": "Agent prompts, orchestration, and project-context control plane.",
+      "status": "implemented"
+    },
+    {
+      "name": "metadata-plane",
+      "path": "project-meta/",
+      "role": "Structured product, roadmap, feature, and integration metadata.",
+      "status": "implemented"
+    }
+  ],
+  "activeFeatures": [
+    {
+      "name": "trigger orchestration",
+      "evidence": [
+        "src/core/trigger-engine",
+        "src/tests/core-trigger.test.ts"
+      ],
+      "status": "implemented"
+    },
+    {
+      "name": "macro execution",
+      "evidence": [
+        "src/core/macro-system",
+        "src/tests/core-macro.test.ts"
+      ],
+      "status": "implemented"
+    },
+    {
+      "name": "plugin lifecycle",
+      "evidence": [
+        "src/plugins/pluginRegistry.ts",
+        "src/tests/plugins.test.ts"
+      ],
+      "status": "implemented"
+    },
+    {
+      "name": "website auth and prelaunch access",
+      "evidence": [
+        "website/src/modules/auth",
+        "src/tests/website-auth-v1.test.ts",
+        "src/tests/website-prelaunch-gate.test.ts"
+      ],
+      "status": "implemented"
+    },
+    {
+      "name": "generated website content pipeline",
+      "evidence": [
+        "scripts/generate-website-content.ts",
+        ".github/workflows/website-update.yml",
+        "project-meta/"
+      ],
+      "status": "partial"
+    },
+    {
+      "name": "desktop release orchestration",
+      "evidence": [
+        "scripts/run-release.ts",
+        ".github/workflows/release.yml",
+        "electron/"
+      ],
+      "status": "partial"
+    }
+  ],
+  "agentSystemOverview": {
+    "canonicalPath": "agents/",
+    "canonicalAgentFileCount": 36,
+    "agents": [
+      "agents/10-super-snapshot-agent.md",
+      "agents/15-context-snapshot-agent.md",
+      "agents/20-content-sync-agent.md",
+      "agents/25-context-sync-agent.md",
+      "agents/40-release-agent.md",
+      "agents/core/00-agent-rules.md",
+      "agents/core/01-orchestrator.md",
+      "agents/core/02-product.md",
+      "agents/core/03-architecture.md",
+      "agents/core/04-implementation.md",
+      "agents/core/05-uiux.md",
+      "agents/core/06-qa.md",
+      "agents/core/07-ops.md",
+      "agents/core/08-docs.md",
+      "agents/core/09-autoupdate.md",
+      "agents/core/10-marketing-ops.md",
+      "agents/core/11-debug-agent.md",
+      "agents/core/12-review-agent.md",
+      "agents/core/40-security-audit-agent.md",
+      "agents/master-orchestrator.md",
+      "agents/optional/10-snapshot.md",
+      "agents/project-context/active-tasks.md",
+      "agents/project-context/architecture-overview.md",
+      "agents/project-context/changelog.md",
+      "agents/project-context/decision-log.md",
+      "agents/project-context/design-guidelines.md",
+      "agents/project-context/known-issues.md",
+      "agents/project-context/marketing-ops-role-review.md",
+      "agents/project-context/product-overview.md",
+      "agents/project-context/project_snapshot_deep.md",
+      "agents/project-context/project_snapshot.md",
+      "agents/system/context-template.md",
+      "agents/system/decision-log-template.md",
+      "agents/system/handoff-template.md",
+      "agents/system/review-template.md",
+      "agents/system/task-template.md"
+    ],
+    "workflowIntegration": [
+      "agents/master-orchestrator.md",
+      "agents/15-context-snapshot-agent.md",
+      "agents/25-context-sync-agent.md",
+      ".github/workflows/context-sync.yml"
+    ]
+  },
+  "currentRisks": [
+    "There is no dedicated CI workflow for typecheck, tests, and build verification.",
+    "`src/services/clip-service/clipExporter.ts` is a known browser build boundary risk for the root application build.",
+    "Feature metadata files under `project-meta/features/` are empty, reducing the quality of generated content and snapshots.",
+    "`project-meta/status/roadmap.json` is empty, so roadmap prioritization relies on secondary docs instead of structured metadata."
+  ],
+  "developmentPriorities": [
+    "Fix root typecheck regressions so repository quality gates can pass consistently.",
+    "Fix the browser-incompatible clip exporter boundary in the root application build path.",
+    "Populate `project-meta/*` so generated website content and snapshots stop depending on empty metadata.",
+    "Regenerate context artifacts after agent, workflow, or architecture changes to avoid documentation drift.",
+    "Introduce a dedicated CI workflow for test, typecheck, and build verification."
+  ]
+}

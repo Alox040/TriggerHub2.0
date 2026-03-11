@@ -1,0 +1,1323 @@
+{
+  "updatedAt": "2026-03-11T13:18:58.740Z",
+  "project": {
+    "name": "triggerhub2",
+    "version": "0.1.0",
+    "private": true,
+    "packageManager": "npm",
+    "availableScripts": [
+      "build",
+      "context:sync",
+      "desktop:artifacts",
+      "desktop:build",
+      "desktop:publish",
+      "desktop:release",
+      "dev",
+      "exe-builder:smoke",
+      "exe-builder:start",
+      "preview",
+      "release",
+      "release:validate",
+      "test",
+      "test:watch",
+      "typecheck",
+      "watch:features",
+      "website:sync"
+    ],
+    "keyDependencies": {
+      "runtime": [
+        "chokidar",
+        "react",
+        "react-dom"
+      ],
+      "development": [
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "@vitejs/plugin-react",
+        "chokidar",
+        "electron",
+        "electron-builder",
+        "ts-node",
+        "tsx",
+        "typescript",
+        "vite",
+        "vitest"
+      ]
+    }
+  },
+  "contextSnapshot": {
+    "projectStructure": {
+      "topLevelEntries": [
+        ".claude",
+        ".github",
+        ".gitignore",
+        "agents",
+        "architecture-decisions.md",
+        "change-log.md",
+        "cleanup-plan.json",
+        "cleanup-plan.md",
+        "dependency_report.txt",
+        "design",
+        "dev-start-5174.err.log",
+        "dev-start-5174.out.log",
+        "dev-start.err.log",
+        "dev-start.out.log",
+        "docs",
+        "electron",
+        "index.html",
+        "marketing",
+        "migration-plan.md",
+        "package-lock.json",
+        "package.json",
+        "PROJECT_AGENT_SYSTEM_SNAPSHOT.md",
+        "PROJECT_CLEANUP_REPORT.md",
+        "project_snapshot.md",
+        "project_structure.txt",
+        "project-analysis.md",
+        "project-architecture.md",
+        "project-context",
+        "project-meta",
+        "run.cmd",
+        "run.ps1",
+        "scripts",
+        "src",
+        "tests",
+        "tools",
+        "triggerhub_project_snapshot.zip",
+        "triggerhub_snapshot_20260310_145824.zip",
+        "tsconfig.json",
+        "tsconfig.scripts.json",
+        "vite.config.ts",
+        "vitest.config.ts",
+        "website",
+        "website-dev-check.err.log",
+        "website-dev-check.out.log"
+      ],
+      "keyPaths": [
+        {
+          "path": ".github/workflows",
+          "tree": {
+            "name": ".github/workflows",
+            "type": "directory",
+            "children": [
+              {
+                "name": "context-sync.yml",
+                "type": "file"
+              },
+              {
+                "name": "release.yml",
+                "type": "file"
+              },
+              {
+                "name": "website-update.yml",
+                "type": "file"
+              }
+            ]
+          }
+        },
+        {
+          "path": "agents",
+          "tree": {
+            "name": "agents",
+            "type": "directory",
+            "children": [
+              {
+                "name": "10-super-snapshot-agent.md",
+                "type": "file"
+              },
+              {
+                "name": "15-context-snapshot-agent.md",
+                "type": "file"
+              },
+              {
+                "name": "20-content-sync-agent.md",
+                "type": "file"
+              },
+              {
+                "name": "25-context-sync-agent.md",
+                "type": "file"
+              },
+              {
+                "name": "40-release-agent.md",
+                "type": "file"
+              },
+              {
+                "name": "agents/core",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "00-agent-rules.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "01-orchestrator.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "02-product.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "03-architecture.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "04-implementation.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "05-uiux.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "06-qa.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "07-ops.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "08-docs.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "09-autoupdate.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "10-marketing-ops.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "11-debug-agent.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "12-review-agent.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "40-security-audit-agent.md",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "master-orchestrator.md",
+                "type": "file"
+              },
+              {
+                "name": "agents/optional",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "10-snapshot.md",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "agents/project-context",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "active-tasks.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "architecture-overview.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "changelog.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "decision-log.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "design-guidelines.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "known-issues.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "marketing-ops-role-review.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "product-overview.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "project_snapshot_deep.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "project_snapshot.md",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "agents/system",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "context-template.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "decision-log-template.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "handoff-template.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "review-template.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "task-template.md",
+                    "type": "file"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "path": "docs",
+          "tree": {
+            "name": "docs",
+            "type": "directory",
+            "children": [
+              {
+                "name": "docs/_tmp_img",
+                "type": "directory",
+                "children": []
+              },
+              {
+                "name": "AGENT_SYSTEM_CLEANUP_SUMMARY.md",
+                "type": "file"
+              },
+              {
+                "name": "AGENT_SYSTEM_MAP.md",
+                "type": "file"
+              },
+              {
+                "name": "AI_CONTEXT_PACK.json",
+                "type": "file"
+              },
+              {
+                "name": "docs/ai-context",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "AGENT_AND_PROMPT_SYSTEM.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "ARCHITECTURE_MAP.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "CODEBASE_INDEX.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "CONTEXT_FOR_EXTERNAL_AI.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "DEV_RUN_BUILD_RELEASE.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "IMPLEMENTATION_STATUS.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "NEXT_STEPS_ROADMAP.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "PROJECT_SNAPSHOT.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "TECH_DEBT_AND_RISKS.md",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "DEV_STATUS.md",
+                "type": "file"
+              },
+              {
+                "name": "phase-1-architecture-inventory.md",
+                "type": "file"
+              },
+              {
+                "name": "PROJECT_DEEP_SNAPSHOT.md",
+                "type": "file"
+              },
+              {
+                "name": "PROJECT_REFERENCE.md",
+                "type": "file"
+              },
+              {
+                "name": "PROJECT_SNAPSHOT.md",
+                "type": "file"
+              },
+              {
+                "name": "project-context-snapshot.json",
+                "type": "file"
+              },
+              {
+                "name": "REWRITE_PLAN.md",
+                "type": "file"
+              },
+              {
+                "name": "STARTER_BLUEPRINT.md",
+                "type": "file"
+              },
+              {
+                "name": "docs/system",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "release-requirements.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "release-update-summary.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "release-workflow-repair.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "release-workflow-status.md",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "triggerhub_agent_rules.md",
+                "type": "file"
+              },
+              {
+                "name": "triggerhub_architecture.md",
+                "type": "file"
+              },
+              {
+                "name": "triggerhub_exec_summary.txt",
+                "type": "file"
+              },
+              {
+                "name": "triggerhub_gesamtuebersicht.docx",
+                "type": "file"
+              },
+              {
+                "name": "triggerhub_gesamtuebersicht.md",
+                "type": "file"
+              },
+              {
+                "name": "triggerhub_kurzfassung_fuer_vater.docx",
+                "type": "file"
+              },
+              {
+                "name": "triggerhub_kurzfassung_fuer_vater.md",
+                "type": "file"
+              },
+              {
+                "name": "triggerhub_master_prompt.md",
+                "type": "file"
+              },
+              {
+                "name": "triggerhub_roadmap.md",
+                "type": "file"
+              },
+              {
+                "name": "TriggerHub2_Praesentation.pdf",
+                "type": "file"
+              },
+              {
+                "name": "TriggerHub2_Projektpraesentation_2026-03-11_045254.pdf",
+                "type": "file"
+              },
+              {
+                "name": "TriggerHub2_Projektstatusbericht_2026-03-11.docx",
+                "type": "file"
+              },
+              {
+                "name": "TriggerHub2_Projektübersicht.docx",
+                "type": "file"
+              },
+              {
+                "name": "WEBSITE_AUTH_PROVIDER_ARCHITECTURE.md",
+                "type": "file"
+              },
+              {
+                "name": "WEBSITE_AUTH_SEQUENCE_DIAGRAM.md",
+                "type": "file"
+              },
+              {
+                "name": "WEBSITE_AUTH_V1.md",
+                "type": "file"
+              },
+              {
+                "name": "WEBSITE_BACKEND_AUTH_CONTRACT.md",
+                "type": "file"
+              },
+              {
+                "name": "WEBSITE_OWNER_ONLY_PRELAUNCH_SETUP.md",
+                "type": "file"
+              },
+              {
+                "name": "WEBSITE_PROFILE_V1.md",
+                "type": "file"
+              },
+              {
+                "name": "WEBSITE_ROUTING_MODEL_V1.md",
+                "type": "file"
+              },
+              {
+                "name": "WINDOWS_DESKTOP_RELEASE.md",
+                "type": "file"
+              },
+              {
+                "name": "WORKFLOW_GRAPH.md",
+                "type": "file"
+              }
+            ]
+          }
+        },
+        {
+          "path": "scripts",
+          "tree": {
+            "name": "scripts",
+            "type": "directory",
+            "children": [
+              {
+                "name": "collect-desktop-artifacts.mjs",
+                "type": "file"
+              },
+              {
+                "name": "context-sync.ts",
+                "type": "file"
+              },
+              {
+                "name": "export-website-status.mjs",
+                "type": "file"
+              },
+              {
+                "name": "feature-change-watcher.ts",
+                "type": "file"
+              },
+              {
+                "name": "generate_pdf.py",
+                "type": "file"
+              },
+              {
+                "name": "generate_project_doc.py",
+                "type": "file"
+              },
+              {
+                "name": "generate_project_showcase_pdf.py",
+                "type": "file"
+              },
+              {
+                "name": "generate_project_status_report_docx.py",
+                "type": "file"
+              },
+              {
+                "name": "generate-ai-context.ts",
+                "type": "file"
+              },
+              {
+                "name": "generate-website-content.ts",
+                "type": "file"
+              },
+              {
+                "name": "release-orchestrator.ts",
+                "type": "file"
+              },
+              {
+                "name": "run-release.ts",
+                "type": "file"
+              },
+              {
+                "name": "sync-website-content.ts",
+                "type": "file"
+              }
+            ]
+          }
+        },
+        {
+          "path": "src",
+          "tree": {
+            "name": "src",
+            "type": "directory",
+            "children": [
+              {
+                "name": "src/app",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "AppContext.tsx",
+                    "type": "file"
+                  },
+                  {
+                    "name": "bootstrap.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "container.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "facade.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "index.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "readModel.ts",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "App.tsx",
+                "type": "file"
+              },
+              {
+                "name": "src/config",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "index.ts",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "src/core",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "src/core/app-control",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "src/core/event-bus",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "index.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "src/core/macro-system",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "src/core/trigger-engine",
+                    "type": "directory",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "name": "src/deck-engine",
+                "type": "directory",
+                "children": []
+              },
+              {
+                "name": "src/event-bus",
+                "type": "directory",
+                "children": []
+              },
+              {
+                "name": "main.tsx",
+                "type": "file"
+              },
+              {
+                "name": "src/plugin-system",
+                "type": "directory",
+                "children": []
+              },
+              {
+                "name": "src/plugins",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "src/plugins/example-plugin",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "index.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "pluginRegistry.ts",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "src/profiles",
+                "type": "directory",
+                "children": []
+              },
+              {
+                "name": "src/services",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "src/services/clip-service",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "index.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "src/services/obs-service",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "src/services/shared",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "src/services/spotify-service",
+                    "type": "directory",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "name": "src/store",
+                "type": "directory",
+                "children": []
+              },
+              {
+                "name": "src/tests",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "app-container.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "app-context.test.tsx",
+                    "type": "file"
+                  },
+                  {
+                    "name": "app-facade.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "core-macro.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "core-trigger.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "event-bus.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "plugins.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "README.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "services.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "trigger-executor.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "trigger-graph.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "ui-dashboard.test.tsx",
+                    "type": "file"
+                  },
+                  {
+                    "name": "website-auth-v1.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "website-browser-guards.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "website-owner-only-access.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "website-prelaunch-gate.test.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "website-profile-v1.test.ts",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "src/types",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "domain.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "globalTypes.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "index.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "ports.ts",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "src/ui",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "src/ui/components",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "index.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "src/ui/layout",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "src/ui/pages",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "src/ui/styles",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "types.ts",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "src/utils",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "fileSystem.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "helpers.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "logger.ts",
+                    "type": "file"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "path": "website",
+          "tree": {
+            "name": "website",
+            "type": "directory",
+            "children": [
+              {
+                "name": ".env.example",
+                "type": "file"
+              },
+              {
+                "name": ".env.local",
+                "type": "file"
+              },
+              {
+                "name": ".gitignore",
+                "type": "file"
+              },
+              {
+                "name": "website/.vercel",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "project.json",
+                    "type": "file"
+                  },
+                  {
+                    "name": "README.txt",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "website/api",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "_auth.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "_prelaunchGate.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "_security.ts",
+                    "type": "file"
+                  },
+                  {
+                    "name": "website/api/auth",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "website/api/prelaunch-gate",
+                    "type": "directory",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "name": "ATTRIBUTIONS.md",
+                "type": "file"
+              },
+              {
+                "name": "website/guidelines",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "Guidelines.md",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "index.html",
+                "type": "file"
+              },
+              {
+                "name": "package-lock.json",
+                "type": "file"
+              },
+              {
+                "name": "package.json",
+                "type": "file"
+              },
+              {
+                "name": "postcss.config.mjs",
+                "type": "file"
+              },
+              {
+                "name": "README.md",
+                "type": "file"
+              },
+              {
+                "name": "website/scripts",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "verify-prelaunch-security.mjs",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "website/src",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "website/src/app",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "App.tsx",
+                    "type": "file"
+                  },
+                  {
+                    "name": "website/src/assets",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "website/src/components",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "website/src/config",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "website/src/content",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "website/src/data",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "main.tsx",
+                    "type": "file"
+                  },
+                  {
+                    "name": "website/src/modules",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "website/src/pages",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "website/src/styles",
+                    "type": "directory",
+                    "children": []
+                  },
+                  {
+                    "name": "website/src/types",
+                    "type": "directory",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "name": "tsconfig.json",
+                "type": "file"
+              },
+              {
+                "name": "vite.config.ts",
+                "type": "file"
+              }
+            ]
+          }
+        },
+        {
+          "path": "electron",
+          "tree": {
+            "name": "electron",
+            "type": "directory",
+            "children": [
+              {
+                "name": "main.cjs",
+                "type": "file"
+              },
+              {
+                "name": "preload.cjs",
+                "type": "file"
+              }
+            ]
+          }
+        },
+        {
+          "path": "tests",
+          "tree": {
+            "name": "tests",
+            "type": "directory",
+            "children": []
+          }
+        },
+        {
+          "path": "project-context",
+          "tree": {
+            "name": "project-context",
+            "type": "directory",
+            "children": [
+              {
+                "name": "Arbeitsweise der Agents",
+                "type": "file"
+              },
+              {
+                "name": "Coding-Regeln",
+                "type": "file"
+              },
+              {
+                "name": "Designphilosophie",
+                "type": "file"
+              },
+              {
+                "name": "project-context.md",
+                "type": "file"
+              },
+              {
+                "name": "project-context/security-reports",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "owner-only-access-verification-2026-03-11.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "README.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "security-hardening-plan.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "security-rebuild-input.md",
+                    "type": "file"
+                  },
+                  {
+                    "name": "security-review-report.md",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "Tech-Stack",
+                "type": "file"
+              },
+              {
+                "name": "website-access-auth-identity-profile-plan-2026-03-10.md",
+                "type": "file"
+              },
+              {
+                "name": "website-status.json",
+                "type": "file"
+              },
+              {
+                "name": "Wichtige Architekturentscheidungen",
+                "type": "file"
+              }
+            ]
+          }
+        },
+        {
+          "path": "project-meta",
+          "tree": {
+            "name": "project-meta",
+            "type": "directory",
+            "children": [
+              {
+                "name": "project-meta/features",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "automation-core.json",
+                    "type": "file"
+                  },
+                  {
+                    "name": "macro-system.json",
+                    "type": "file"
+                  },
+                  {
+                    "name": "trigger-engine.json",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "project-meta/integrations",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "discord.json",
+                    "type": "file"
+                  },
+                  {
+                    "name": "obs.json",
+                    "type": "file"
+                  },
+                  {
+                    "name": "twitch.json",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "project-meta/product",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "faq.json",
+                    "type": "file"
+                  },
+                  {
+                    "name": "hero.json",
+                    "type": "file"
+                  },
+                  {
+                    "name": "positioning.json",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "project-meta/status",
+                "type": "directory",
+                "children": [
+                  {
+                    "name": "platform-support.json",
+                    "type": "file"
+                  },
+                  {
+                    "name": "release-status.json",
+                    "type": "file"
+                  },
+                  {
+                    "name": "roadmap.json",
+                    "type": "file"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "agentSystem": {
+      "canonicalPath": "agents/",
+      "canonicalAgentFileCount": 36,
+      "legacyPath": "agent/",
+      "legacyPathExists": false,
+      "legacyAgentTreeExists": false,
+      "agents": [
+        "agents/10-super-snapshot-agent.md",
+        "agents/15-context-snapshot-agent.md",
+        "agents/20-content-sync-agent.md",
+        "agents/25-context-sync-agent.md",
+        "agents/40-release-agent.md",
+        "agents/core/00-agent-rules.md",
+        "agents/core/01-orchestrator.md",
+        "agents/core/02-product.md",
+        "agents/core/03-architecture.md",
+        "agents/core/04-implementation.md",
+        "agents/core/05-uiux.md",
+        "agents/core/06-qa.md",
+        "agents/core/07-ops.md",
+        "agents/core/08-docs.md",
+        "agents/core/09-autoupdate.md",
+        "agents/core/10-marketing-ops.md",
+        "agents/core/11-debug-agent.md",
+        "agents/core/12-review-agent.md",
+        "agents/core/40-security-audit-agent.md",
+        "agents/master-orchestrator.md",
+        "agents/optional/10-snapshot.md",
+        "agents/project-context/active-tasks.md",
+        "agents/project-context/architecture-overview.md",
+        "agents/project-context/changelog.md",
+        "agents/project-context/decision-log.md",
+        "agents/project-context/design-guidelines.md",
+        "agents/project-context/known-issues.md",
+        "agents/project-context/marketing-ops-role-review.md",
+        "agents/project-context/product-overview.md",
+        "agents/project-context/project_snapshot_deep.md",
+        "agents/project-context/project_snapshot.md",
+        "agents/system/context-template.md",
+        "agents/system/decision-log-template.md",
+        "agents/system/handoff-template.md",
+        "agents/system/review-template.md",
+        "agents/system/task-template.md"
+      ],
+      "contextFilesPresent": [
+        "agents/project-context/project_snapshot.md",
+        "agents/project-context/architecture-overview.md",
+        "agents/system/context-template.md",
+        "agents/15-context-snapshot-agent.md"
+      ]
+    },
+    "workflows": [
+      {
+        "name": "context-sync.yml",
+        "path": ".github/workflows/context-sync.yml",
+        "triggers": [
+          "push",
+          "workflow_dispatch"
+        ],
+        "jobCount": 1
+      },
+      {
+        "name": "release.yml",
+        "path": ".github/workflows/release.yml",
+        "triggers": [
+          "workflow_dispatch",
+          "push"
+        ],
+        "jobCount": 5
+      },
+      {
+        "name": "website-update.yml",
+        "path": ".github/workflows/website-update.yml",
+        "triggers": [
+          "push",
+          "workflow_dispatch"
+        ],
+        "jobCount": 1
+      }
+    ],
+    "risks": [
+      "There is no dedicated CI workflow for typecheck, tests, and build verification.",
+      "`src/services/clip-service/clipExporter.ts` is a known browser build boundary risk for the root application build.",
+      "Feature metadata files under `project-meta/features/` are empty, reducing the quality of generated content and snapshots.",
+      "`project-meta/status/roadmap.json` is empty, so roadmap prioritization relies on secondary docs instead of structured metadata."
+    ],
+    "nextPriorities": [
+      "Keep `docs/AI_CONTEXT_PACK.json` current through the `context-sync` workflow and rerun it after agent, workflow, or package changes.",
+      "Keep `docs/project-context-snapshot.json` current so the agent system has a machine-readable context artifact.",
+      "Add a dedicated CI workflow for typecheck, tests, and build gates instead of relying only on release- and sync-oriented automation.",
+      "Populate `project-meta/*` to improve generated content, roadmap visibility, and context quality."
+    ]
+  }
+}

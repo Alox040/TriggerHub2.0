@@ -17,9 +17,9 @@
     "deployTriggerSecret": "VERCEL_DEPLOY_HOOK_URL"
   },
   "agents": {
-    "release": "agent/agents/40-release-agent.md",
-    "contentSync": "agent/agents/20-content-sync-agent.md",
-    "snapshot": "agent/agents/optional/10-snapshot.md",
-    "securityAudit": "agent/agents/core/40-security-audit-agent.md"
+    "release": "agents/40-release-agent.md",
+    "contentSync": "agents/20-content-sync-agent.md",
+    "snapshot": "agents/optional/10-snapshot.md",
+    "securityAudit": "agents/core/40-security-audit-agent.md"
   }
 }

@@ -20,7 +20,7 @@ Generated at: 2026-03-11T01:19:24+01:00
 flowchart TD
   A[project-meta/release/context changes] --> B[npm run website:sync]
   B --> C[website/src/content/generated/*.json]
-  C --> D[website-update.yml auto-commit on main]
+  C --> D[website-update.yml auto-commit on main/master]
 
   E[npm run release] --> F[npm run release:validate]
   F --> B
@@ -52,7 +52,7 @@ flowchart TD
 ## Trigger Rules Summary
 - Release local trigger: `npm run release`
 - Release CI trigger: Git tag `v*` or manual dispatch
-- Website sync CI trigger: `main` changes in `project-meta/**`, `releases/**`, sync script, or generated website content paths
+- Website sync CI trigger: `main` or `master` changes in `project-meta/**`, `releases/**`, sync script, or generated website content paths
 - Feature watcher trigger: filesystem changes in `project-meta`, `releases`, `docs/public`
 - Security trigger (policy): before release, after major refactor, auth/authz change, deployment/infra change, integration change, auto-update change
 - Snapshot trigger: user asks for snapshot/context export/update
