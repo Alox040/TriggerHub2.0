@@ -1,6 +1,6 @@
 {
     "name": "triggerhub2",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "private": true,
     "type": "module",
     "main": "electron/main.cjs",
@@ -11,6 +11,7 @@
         "typecheck": "tsc --noEmit",
         "test": "vitest run",
         "test:watch": "vitest",
+        "context:sync": "tsx scripts/context-sync.ts",
         "website:sync": "tsx scripts/generate-website-content.ts",
         "watch:features": "tsx scripts/feature-change-watcher.ts",
         "release": "tsx scripts/run-release.ts",
@@ -35,10 +36,16 @@
         "chokidar": "^5.0.0",
         "electron": "^36.0.0",
         "electron-builder": "^26.0.12",
+        "ts-node": "^10.9.2",
         "tsx": "^4.21.0",
         "typescript": "5.8.2",
         "vite": "^6.4.1",
         "vitest": "3.0.8"
+    },
+    "ts-node": {
+        "project": "tsconfig.scripts.json",
+        "esm": true,
+        "transpileOnly": true
     },
     "build": {
         "appId": "com.triggerhub.desktop",
