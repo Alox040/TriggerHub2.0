@@ -1,1 +1,26 @@
-{}
+{
+  "desktop": {
+    "windows": {
+      "status": "configured",
+      "distribution": "electron-builder NSIS x64",
+      "sourceOfTruth": [
+        "package.json",
+        "electron/main.cjs"
+      ]
+    },
+    "macos": {
+      "status": "not_configured"
+    },
+    "linux": {
+      "status": "not_configured"
+    }
+  },
+  "website": {
+    "status": "implemented",
+    "runtime": "Vite React application",
+    "sourceOfTruth": [
+      "website/package.json",
+      "website/src/App.tsx"
+    ]
+  }
+}

@@ -1,11 +1,63 @@
 [
   {
-    "id": "automation-core"
+    "id": "automation-core",
+    "name": "Automation Core",
+    "status": "implemented",
+    "summary": "Die Desktop-Runtime verdrahtet Event-Bus, Trigger-Engine, Makro-System, Services und Plugin-Registry in einem gemeinsamen Container.",
+    "sourceOfTruth": [
+      "src/app/bootstrap.ts",
+      "src/app/facade.ts",
+      "src/tests/app-container.test.ts",
+      "src/tests/app-facade.test.ts"
+    ],
+    "includes": [
+      "Container-Bootstrap für Desktop-Runtime",
+      "Standard-Seeding für ein Makro und einen Trigger",
+      "Runtime-Facade für UI-Lesemodelle",
+      "Laufzeitmetriken für Services, Trigger und Makros"
+    ]
   },
   {
-    "id": "macro-system"
+    "id": "macro-system",
+    "name": "Macro System",
+    "status": "implemented",
+    "summary": "Makros werden registriert, validiert und mit verschachtelten Schritt-Typen ausgeführt.",
+    "sourceOfTruth": [
+      "src/core/macro-system/macroEngine.ts",
+      "src/core/macro-system/macroRunner.ts",
+      "src/tests/core-macro.test.ts"
+    ],
+    "supportedStepTypes": [
+      "delay",
+      "service_call",
+      "plugin_action",
+      "macro_call",
+      "conditional",
+      "parallel",
+      "sequence"
+    ],
+    "notes": [
+      "Makros werden aktuell nur in-memory gehalten.",
+      "Abschluss-Ereignisse werden über den Event-Bus publiziert."
+    ]
   },
   {
-    "id": "trigger-engine"
+    "id": "trigger-engine",
+    "name": "Trigger Engine",
+    "status": "implemented",
+    "summary": "Trigger werden nach Event-Topic indexiert, optional gegen Bedingungen geprüft und anschließend Aktion für Aktion dispatcht.",
+    "sourceOfTruth": [
+      "src/core/trigger-engine/triggerEngine.ts",
+      "src/core/trigger-engine/triggerGraph.ts",
+      "src/tests/core-trigger.test.ts",
+      "src/tests/trigger-graph.test.ts",
+      "src/tests/trigger-executor.test.ts"
+    ],
+    "currentBehavior": [
+      "Registriert Subscriptions pro Event-Topic nur einmal",
+      "Überspringt deaktivierte Trigger",
+      "Sammelt Dispatch-Fehler pro Aktion statt den gesamten Lauf sofort abzubrechen",
+      "Publiziert `TRIGGER_EXECUTED` nach erfolgreicher Verarbeitung"
+    ]
   }
 ]
