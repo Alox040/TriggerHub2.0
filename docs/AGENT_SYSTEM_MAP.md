@@ -6,9 +6,8 @@ Generated at: 2026-03-11T01:19:24+01:00
 # Agent System Map
 
 ## Agent Trees
-- Primary tree: `agents/`
-- Legacy mirror tree: `agent/agents/`
-- Both trees are active in repository references.
+- Canonical tree: `agents/`
+- Legacy tree `agent/agents/` has been fully removed. The `agent/` directory no longer exists.
 
 ## Agent Inventory
 
@@ -28,31 +27,103 @@ Generated at: 2026-03-11T01:19:24+01:00
 | Ops Agent | `agents/core/07-ops.md` | Build, setup, deployment, CI/CD troubleshooting | Pipeline/build/deploy issues | Release workflow, dependency/install context |
 | Docs Agent | `agents/core/08-docs.md` | Documentation maintenance and consistency | Documentation updates | Maintains security report references and docs hygiene |
 | Auto-Update Agent | `agents/core/09-autoupdate.md` | Plan and integrate secure auto-update | Auto-update feature requests | Release/publish configuration and security audit handoff |
+| Debug Agent | `agents/core/11-debug-agent.md` | Root cause analysis, error tracing, log inspection, debugging strategy | Bug reports and error diagnosis requests | Hands off confirmed root cause to Implementation Agent; flags security-relevant errors to Security Audit Agent |
+| Review Agent | `agents/core/12-review-agent.md` | Code and PR review, quality and architectural alignment checks | Code review and PR review requests | Hands off to QA Agent for functional validation; flags security-relevant code to Security Audit Agent |
 | Security Audit Agent | `agents/core/40-security-audit-agent.md` | Security assessment and hardening recommendations | Security requests and policy triggers (release/refactor/auth/deploy/etc.) | Writes `project-context/security-reports/*` outputs |
 | Snapshot Agent | `agents/optional/10-snapshot.md` | Maintain project snapshot context files | Snapshot/context update requests | Reads project context docs and writes snapshot files |
 
-## Legacy-Only Agent Detection
-- `agent/agents/core/10-marketing-ops.md` exists only in legacy tree.
-- This creates functional asymmetry between trees.
+## Migrated Legacy Files
+- `agents/core/10-marketing-ops.md` was migrated from the legacy tree.
+- `agents/project-context/marketing-ops-role-review.md` was migrated from the legacy tree.
+
+## Added Agents (2026-03-11)
+- `agents/core/11-debug-agent.md` — Debug Agent (new; dedicated diagnosis role)
+- `agents/core/12-review-agent.md` — Review Agent (new; dedicated code/PR review role)
 
 ## Control-Plane Support Files
-- Context files: `agents/project-context/*` and `agent/agents/project-context/*`
-- Templates: `agents/system/*` and `agent/agents/system/*`
+- Context files: `agents/project-context/*`
+- Templates: `agents/system/*`
 - These files support handoff/reporting but are not specialist execution agents.
 
 ## System Coupling Map
 - Release flow depends on content sync output and quality gates.
 - Orchestrator policy requires security audit under specific triggers.
 - Snapshot flows consume context/security docs and produce repository state docs.
-- Manifest mismatch: `releases/release-manifest.json` references legacy `agent/agents/*` paths.
+- Manifests and workflows now resolve agent paths from `agents/*`.
 
 ## Agent System Risks
-- Path drift risk due to duplicate trees.
-- Routing ambiguity from mixed path usage across scripts/docs/manifests.
-- Governance inconsistency because one tree contains extra roles.
+- Generated snapshot docs need regeneration if agent inventory changes again.
 
-## Consolidation Recommendation
-1. Declare a canonical tree (`agents/` recommended).
-2. Migrate legacy-only roles into canonical tree or explicitly deprecate them.
-3. Update release manifests and workflow docs to canonical paths.
-4. Keep one context/template location to reduce drift.
+## Consolidation Status
+- `agents/` is the single source of truth for operative agents. The `agent/` directory has been fully removed.
+- All future core agent roles must be added under `agents/` only.
+- Regenerate snapshot-style docs after structural agent changes.
+
+---
+
+## .godai Specialist Library
+
+Generated: 2026-03-11 | Version: 1.0.0 | 98 agents across 18 categories
+
+### System Hierarchy
+
+```
+agents/master-orchestrator.md        (operative hub, primary entry point)
+    ↓ delegates core tasks to
+agents/core/*                        (14 specialist core agents)
+    ↓ routes specialized tasks to
+.godai/agents/                       (98 specialist agents, reference library)
+    ├── core/        (activation, routing, priority, escalation, DoD)
+    ├── engineering/ (API, backend, frontend, platform, performance, state)
+    ├── architecture/(data, domain model, modularity, scalability)
+    ├── product/     (strategy, pricing, website, onboarding, conversion)
+    ├── delivery/    (release, build, CI/CD, quality gate, versioning)
+    ├── quality/     (QA, security, compliance, regression, test-automation)
+    ├── context/     (snapshot, sync, knowledge base, dependency, repo audit)
+    ├── launch/      (launch readiness, beta rollout, feedback triage)
+    ├── desktop/     (desktop QA, EXE release, installer, updater)
+    ├── alpha/       (bug intake, tester feedback, onboarding, experiments)
+    ├── analytics/   (metrics, KPIs, telemetry, funnel, insights)
+    ├── documentation/(docs, release notes, status reports)
+    ├── governance/  (risk, decision log, change control, roadmap)
+    ├── stakeholder/ (founder briefing, investor updates, internal sync)
+    ├── workflow/    (automation orchestrator, optimization, self-improvement)
+    ├── automation/  (GitHub sync, workflow dispatch, dependabot)
+    ├── templates/   (alpha feedback, risk register, release checklist)
+    └── prompts/     (activation, master integration, deep analysis)
+```
+
+### .godai Agent Inventory
+
+| Category | Count | Key Agents |
+|----------|-------|-----------|
+| core | 8 | activation, router, priority-model, escalation, definition-of-done |
+| engineering | 12 | coding, debug, refactor, api, backend, frontend, platform, performance |
+| architecture | 6 | architecture-designer, data-architecture, domain-model, scalability |
+| product | 8 | product-strategy, pricing, onboarding, conversion-copy, growth-experiment |
+| delivery | 7 | release, build, cicd, quality-gate, versioning, recovery |
+| quality | 7 | qa, security, compliance, access-control, test-automation, regression |
+| context | 8 | snapshot, deep-snapshot, context-sync, knowledge-base, dependency |
+| launch | 4 | launch-readiness, beta-rollout, closed-alpha, feedback-triage |
+| desktop | 5 | desktop-qa, exe-release, installer, updater |
+| alpha | 4 | bug-intake, tester-feedback, tester-onboarding, alpha-experiments |
+| analytics | 5 | metrics, kpi-review, telemetry, funnel, analytics-insights |
+| documentation | 5 | docs, release-notes, architecture-doc, status-report |
+| governance | 5 | risk, decision-log, change-control, roadmap-governance |
+| stakeholder | 4 | founder-briefing, investor-update, internal-sync |
+| workflow | 5 | automation-orchestrator, workflow-hardening, self-improvement |
+| automation | 5 | github-sync, workflow-dispatch, repository-dispatch, dependabot |
+| templates | 7 | alpha-feedback, risk-register, release-checklist, integration-checklist |
+| prompts | 6 | activation-prompt, master-integration, deep-analysis, github-sync |
+
+### .godai Machine-Readable Files
+- **Agent Index:** `.godai/agents/github/agent-index.json` (98 agents)
+- **Manifest:** `.godai/agents/MANIFEST.json` (version 1.0.0)
+- **Update Policy:** `.godai/agents/github/update-policy.json`
+- **Validation Workflow:** `.github/workflows/godai-validation.yml`
+
+### .godai Integration Rules
+- `agents/` remains primary operative hub — `.godai/` is reference-only
+- Core agent conflicts: `.godai/agents/core/01-meta-agent.md` resolves them
+- Changes to `.godai/` must update: MANIFEST.json, agent-index.json, CHANGELOG.md
+- Bridge index: `agents/godai-library-index.md`

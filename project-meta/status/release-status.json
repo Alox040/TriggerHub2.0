@@ -1,6 +1,7 @@
 {
+  "note": "Diese Datei dokumentiert nur die Deployment-Konfiguration (configured/documented), keinen Live-Build-Status. Für Pass/Fail siehe build-status.json.",
   "releaseWorkflow": "github-actions",
-  "releaseCommand": "run release",
+  "releaseCommand": "npm run release",
   "desktopBuild": "configured",
   "githubReleasePublish": "configured",
   "websiteDeploy": "configured",

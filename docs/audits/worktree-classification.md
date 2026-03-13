@@ -1,0 +1,391 @@
+# Worktree Classification Audit
+
+Stand: 2026-03-12
+
+## Vorgehen
+- Grundlage: aktueller Git-Worktree, `git diff`, untracked files, aktueller Code, Tests, Build- und Typecheck-Ergebnisse.
+- Höhere Wahrheit: ausführbarer Code, Tests, `project-meta/`, Build-/Typecheck-Läufe.
+- Niedrigere Wahrheit: ältere Snapshot-/Handoff-/Statusdokumente, wenn sie dem verifizierten Stand widersprechen.
+
+## Verifizierte Checks
+- `npm run test`: PASS (`19` Testdateien, `132` Tests)
+- `npm run typecheck`: PASS
+- `npm run build`: PASS außerhalb der Sandbox; Sandbox-Fehler war `spawn EPERM`
+- `npm --prefix website run build`: PASS außerhalb der Sandbox; Sandbox-Fehler war `spawn EPERM`
+
+## Größte Konflikt- und Drift-Risiken
+- Mehrere operative Statusquellen widersprechen dem aktuellen Codezustand und den lokalen Verifikationen.
+  - Besonders betroffen: `agents/project-context/active-tasks.md`, `agents/project-context/known-issues.md`, `agents/project-context/architecture-overview.md`, `docs/DEV_STATUS.md`, `docs/ai-context/IMPLEMENTATION_STATUS.md`, `docs/ai-context/CONTEXT_FOR_EXTERNAL_AI.md`, `project-meta/status/alpha-readiness.md`, `project-meta/status/release-status.md`, `project-meta/features/storage.json`, `project-meta/features/clip-export.json`, `project-meta/features/desktop-runtime.md`, `project-meta/features/website-platform.md`.
+- Die neue Desktop-Storage-/IPC-Schicht ist inzwischen durch Code plus E2E-Test belegt, aber mehrere Meta-/Kontextdateien behaupten weiter eine unbestätigte Verdrahtung.
+- Root-Typecheck und Root-Build sind lokal verifiziert erfolgreich, aber mehrere Status-/Snapshotdateien führen sie weiterhin als Release-Blocker.
+- Die `.godai`-Bibliothek ist groß, neu und workflow-seitig validiert, aber für Produktlaufzeit und Kern-Repo-Betrieb nicht als zwingende operative Quelle belegt.
+- `scripts/generate-ai-context.ts` und Teile der erzeugten Snapshot-Artefakte kodieren veraltete Annahmen; dadurch kann neue Doku-Drift automatisch reproduziert werden.
+- `.vscode/tasks.json` verweist auf `${workspaceFolder}/agentsystem`; dieser Pfad ist im aktuellen Repo nicht als gültiger Arbeitskontext belegt.
+
+## Empfohlene Reihenfolge
+1. Zuerst sichern: produktreife Code- und Teständerungen in `electron/`, `src/`, `website/api/`, `website/src/` und den zugehörigen Tests.
+2. Danach sichern: CI-/Release-Gates und stabile Repo-Metadaten in `.github/workflows/`, `project-meta/status/build-status.json`, `project-meta/status/security-status.md`, `project-meta/status/release-status.json`.
+3. Danach bereinigen: widersprüchliche operative Kontextquellen und Generatoren (`agents/project-context/*`, `docs/DEV_STATUS.md`, `docs/ai-context/*`, `docs/project-context-snapshot.json`, `docs/AI_CONTEXT_PACK.json`, `scripts/generate-ai-context.ts`, `scripts/context-sync.ts`).
+4. Separat behandeln: `.godai/**` und `agents/godai-library-index.md` als experimentellen Zusatzbestand, nicht mit Produkt-/Runtime-Änderungen vermischen.
+5. Zuletzt ignorieren oder lokal halten: reine Editor-/Maschinenkonfiguration wie `.claude/settings.local.json`; `.vscode/tasks.json` nur nach manueller Prüfung.
+
+## Dateiklassifikation
+
+### produktreif
+- `electron/main.cjs` | Kategorie: produktreif | Begründung: Main-Process-IPC, Storage-Key-Validierung und Runtime-Boot wurden erweitert; durch Root-Build und Tests gestützt. | Risiko: mittel
+- `electron/preload.cjs` | Kategorie: produktreif | Begründung: minimale Renderer-Bridge für Storage ergänzt; passt zur Main-Process-API. | Risiko: niedrig
+- `electron/clipExporter.node.cjs` | Kategorie: produktreif | Begründung: Node-Exportpfad aus Browser-Grenze herausgezogen; Root-Build läuft damit. | Risiko: niedrig
+- `electron/jsonFileStorage.cjs` | Kategorie: produktreif | Begründung: Dateibasierter JSON-Speicher für IPC-Persistenz; durch E2E-Pfad indirekt gedeckt. | Risiko: niedrig
+- `src/app/bootstrap.ts` | Kategorie: produktreif | Begründung: Storage-gestützter Runtime-Start/Stop, defensive Rehydration, Logging; durch Tests und Build belegt. | Risiko: mittel
+- `src/app/facade.ts` | Kategorie: produktreif | Begründung: CRUD-Operationen und Persistenzanstoß ergänzt; von Storage-Tests genutzt. | Risiko: mittel
+- `src/app/runtimeConfig.ts` | Kategorie: produktreif | Begründung: Runtime-Storage-Keys als explizite Konfiguration eingeführt. | Risiko: niedrig
+- `src/app/storageHelpers.ts` | Kategorie: produktreif | Begründung: Persistenzfreundliche Strip-Helfer für Trigger/Makros. | Risiko: niedrig
+- `src/core/macro-system/macroEngine.ts` | Kategorie: produktreif | Begründung: Runtime-Metriken und beobachtbares Laufzeitverhalten ergänzt; Tests laufen. | Risiko: niedrig
+- `src/core/trigger-engine/triggerEngine.ts` | Kategorie: produktreif | Begründung: Dispatch-Metriken ergänzt; Test- und Buildpfad stabil. | Risiko: niedrig
+- `src/main.tsx` | Kategorie: produktreif | Begründung: Runtime-Guards, Error-Boundary und IPC-Storage-Anbindung aktiviert. | Risiko: mittel
+- `src/plugins/index.ts` | Kategorie: produktreif | Begründung: Registry-Logging ergänzt; passt zur Runtime-Härtung. | Risiko: niedrig
+- `src/plugins/pluginRegistry.ts` | Kategorie: produktreif | Begründung: Plugin-Lifecycle wurde auf strukturierteres Logging und beobachtbare Aktivierung umgestellt. | Risiko: niedrig
+- `src/services/clip-service/clipExporter.browser.ts` | Kategorie: produktreif | Begründung: Browserpfad sauber vom Node-Pfad getrennt; Root-Build bestätigt Grenze. | Risiko: niedrig
+- `src/services/clip-service/clipExporter.node.ts` | Kategorie: produktreif | Begründung: Node-Exporter nun boundary-konformer Baustein; Root-Build bestätigt. | Risiko: niedrig
+- `src/services/clip-service/clipExporter.interface.ts` | Kategorie: produktreif | Begründung: expliziter Exporter-Vertrag stabilisiert Browser/Node/Electron-Grenzen. | Risiko: niedrig
+- `src/services/clip-service/clipExporter.shared.ts` | Kategorie: produktreif | Begründung: gemeinsame Boundary-Helfer eingeführt; Build- und Testpfad konsistent. | Risiko: niedrig
+- `src/services/clip-service/contracts.ts` | Kategorie: produktreif | Begründung: Clip-Export-Vertrag an neue Boundary-Struktur angepasst. | Risiko: niedrig
+- `src/services/clip-service/index.ts` | Kategorie: produktreif | Begründung: Standard-Exporter auf browser-sicheren Pfad umgestellt; Root-Build bestätigt. | Risiko: niedrig
+- `src/services/shared/reliability.ts` | Kategorie: produktreif | Begründung: Reliability-Schicht speist nun Laufzeitmetriken; Tests laufen. | Risiko: niedrig
+- `src/runtime/RuntimeErrorBoundary.tsx` | Kategorie: produktreif | Begründung: expliziter UI-Fehlergrenzschutz für Desktop-Renderer. | Risiko: niedrig
+- `src/runtime/metrics.ts` | Kategorie: produktreif | Begründung: Runtime-Metrikspeicher ergänzt; von Hardening-Code genutzt. | Risiko: niedrig
+- `src/runtime/runtimeMonitor.ts` | Kategorie: produktreif | Begründung: zentrale Laufzeitmetriken und Process-Guards; durch Tests sichtbar aktiv. | Risiko: niedrig
+- `src/storage/inMemoryStorage.ts` | Kategorie: produktreif | Begründung: Test-/Fallback-Storage für neue Persistenzpfade vorhanden. | Risiko: niedrig
+- `src/storage/ipcStorageBridge.ts` | Kategorie: produktreif | Begründung: Renderer-seitige Storage-Bridge; E2E-Test belegt funktionierenden Roundtrip. | Risiko: mittel
+- `src/storage/storagePort.ts` | Kategorie: produktreif | Begründung: neuer Persistenz-Port stabilisiert Runtime-Grenzen. | Risiko: niedrig
+- `src/tests/services.test.ts` | Kategorie: produktreif | Begründung: Services und Reliability-Pfade decken neue Boundary-/Policy-Änderungen ab. | Risiko: niedrig
+- `src/tests/website-auth-v1.test.ts` | Kategorie: produktreif | Begründung: aktualisierte Website-Auth-Regressionen schützen serverseitigen Flow. | Risiko: niedrig
+- `src/tests/website-browser-guards.test.ts` | Kategorie: produktreif | Begründung: Browser-/Route-Guard-Verhalten weiter abgesichert. | Risiko: niedrig
+- `src/tests/website-owner-only-access.test.ts` | Kategorie: produktreif | Begründung: CSRF, Gate, Session und Rate-Limit werden konkret geprüft. | Risiko: niedrig
+- `src/tests/ipc-storage-bridge.e2e.test.ts` | Kategorie: produktreif | Begründung: echter Electron-IPC-Roundtrip liefert harte Evidenz für Storage-Verdrahtung. | Risiko: niedrig
+- `src/tests/runtime-hardening.test.ts` | Kategorie: produktreif | Begründung: neue Runtime-Metriken und Guards werden überprüft. | Risiko: niedrig
+- `src/tests/storage.test.ts` | Kategorie: produktreif | Begründung: Storage-Rehydration und Persistenz-Cases sind direkt verifiziert. | Risiko: niedrig
+- `src/types/globalTypes.ts` | Kategorie: produktreif | Begründung: globale Typisierung für Electron-Storage-API ergänzt. | Risiko: niedrig
+- `src/types/ports.ts` | Kategorie: produktreif | Begründung: AppFacade-Port wurde an neue CRUD-/Persistenzpfade angepasst. | Risiko: niedrig
+- `src/utils/logger.ts` | Kategorie: produktreif | Begründung: strukturierte Logs für Runtime/Plugin/Auth-Härtung. | Risiko: niedrig
+- `website/api/_auth.ts` | Kategorie: produktreif | Begründung: serverseitige JWT-/Cookie-/CSRF-Logik erweitert; Tests laufen. | Risiko: mittel
+- `website/api/_security.ts` | Kategorie: produktreif | Begründung: Rate-Limit-Buckets für Auth-Reads/Logout ergänzt; getestet. | Risiko: niedrig
+- `website/api/_middleware.ts` | Kategorie: produktreif | Begründung: zentrale Method-/Auth-/Role-/CSRF-Middleware eingeführt. | Risiko: mittel
+- `website/api/_prelaunchGate.ts` | Kategorie: produktreif | Begründung: zusätzliche serverseitige Gate-Sperre vor Owner-Auth. | Risiko: mittel
+- `website/api/auth/login.ts` | Kategorie: produktreif | Begründung: Auth-Login nutzt nun Gate, Middleware und CSRF-Header. | Risiko: mittel
+- `website/api/auth/logout.ts` | Kategorie: produktreif | Begründung: Logout ist serverseitig role-/CSRF-geschützt. | Risiko: niedrig
+- `website/api/auth/me.ts` | Kategorie: produktreif | Begründung: servervalidierter Session-Read mit Rate-Limit und CSRF-Cookie-Bootstrap. | Risiko: niedrig
+- `website/api/prelaunch-gate/login.ts` | Kategorie: produktreif | Begründung: Gate-Login implementiert serverseitigen Vorfilter vor Owner-Auth. | Risiko: mittel
+- `website/api/prelaunch-gate/me.ts` | Kategorie: produktreif | Begründung: Gate-Status-Check trägt den UX-/Guard-Flow. | Risiko: niedrig
+- `website/src/App.tsx` | Kategorie: produktreif | Begründung: App wurde an neue Provider-/Router-Struktur angepasst. | Risiko: niedrig
+- `website/src/app/providers/AuthProvider.tsx` | Kategorie: produktreif | Begründung: Frontend-Session ist jetzt serverbacked statt browser-authoritativ. | Risiko: mittel
+- `website/src/app/providers/PrelaunchGateProvider.tsx` | Kategorie: produktreif | Begründung: separater Gate-Provider macht serverseitigen Vorzugriff im Client nutzbar. | Risiko: niedrig
+- `website/src/app/routing/AppRouter.tsx` | Kategorie: produktreif | Begründung: Gate-/Auth-Initialisierung wird korrekt vor Redirects abgewartet. | Risiko: mittel
+- `website/src/app/routing/routeManifest.ts` | Kategorie: produktreif | Begründung: Route-Policies auf Owner-/Role-Modell nachgezogen. | Risiko: niedrig
+- `website/src/config/runtimeConfig.ts` | Kategorie: produktreif | Begründung: Runtime-Flags auf sicheren Prelaunch-Modus verengt. | Risiko: niedrig
+- `website/src/content/generated/features.json` | Kategorie: produktreif | Begründung: generierter Website-Content ist an neue Metadaten und Codezustand angepasst. | Risiko: mittel
+- `website/src/content/generated/integrations.json` | Kategorie: produktreif | Begründung: generierter Website-Content spiegelt implementierte vs. nicht implementierte Integrationen. | Risiko: mittel
+- `website/src/content/generated/platform-support.json` | Kategorie: produktreif | Begründung: generierter Website-Content bildet verifizierte Plattformlage ab. | Risiko: niedrig
+- `website/src/modules/access-control/policy.ts` | Kategorie: produktreif | Begründung: `allowedRoles` wird jetzt explizit erzwungen. | Risiko: niedrig
+- `website/src/modules/access-control/types.ts` | Kategorie: produktreif | Begründung: Rollenbasierte Policy wurde typseitig erweitert. | Risiko: niedrig
+- `website/src/modules/auth/authService.ts` | Kategorie: produktreif | Begründung: Entfernung des alten browser-authoritativen Auth-Service stützt das neue Sicherheitsmodell. | Risiko: niedrig
+- `website/src/modules/auth/backendAuthProvider.ts` | Kategorie: produktreif | Begründung: Altpfad entfällt zugunsten direkter serverbacked Session-Integration. | Risiko: niedrig
+- `website/src/modules/auth/ownerAuthProvider.ts` | Kategorie: produktreif | Begründung: browserseitige Owner-Credential-Prüfung wurde konsequent entfernt. | Risiko: niedrig
+- `website/src/modules/auth/passwordHashing.ts` | Kategorie: produktreif | Begründung: clientseitige Passwortprüfung wurde konsequent entfernt. | Risiko: niedrig
+- `website/src/modules/auth/sessionStore.ts` | Kategorie: produktreif | Begründung: Legacy-Browser-Session wird fail-closed geleert statt vertraut. | Risiko: niedrig
+- `website/src/modules/auth/types.ts` | Kategorie: produktreif | Begründung: Typen wurden auf serverbacked Prelaunch-Modell vereinfacht. | Risiko: niedrig
+- `website/src/modules/auth/backendSession.ts` | Kategorie: produktreif | Begründung: Backend-Session-Snapshot wird validiert und sicher in UI-Session übersetzt. | Risiko: niedrig
+- `website/src/modules/auth/errors.ts` | Kategorie: produktreif | Begründung: zentraler Auth-Fehlertyp für neuen Server-Flow. | Risiko: niedrig
+- `website/src/pages/AccessPage.tsx` | Kategorie: produktreif | Begründung: dedizierte Gate-Seite passt zur serverseitigen Vorzugriffssperre. | Risiko: niedrig
+- `website/src/types/assets.d.ts` | Kategorie: produktreif | Begründung: Asset-Typen schließen frühere Typecheck-Lücke. | Risiko: niedrig
+- `website/src/types/env.d.ts` | Kategorie: produktreif | Begründung: `ImportMeta.env`-Typisierung schließt frühere Typecheck-Lücke. | Risiko: niedrig
+- `website/src/types/vercel-node.d.ts` | Kategorie: produktreif | Begründung: Repo-eigene Vercel-Typen ermöglichen lokalen API-Typecheck. | Risiko: niedrig
+
+### experimentell
+- `.github/workflows/godai-validation.yml` | Kategorie: experimentell | Begründung: validiert eine neue Zusatzbibliothek, die nicht zur Produktlaufzeit gehört. | Risiko: niedrig
+- `.godai/agents/CHANGELOG.md` | Kategorie: experimentell | Begründung: Teil einer neuen, großen Zusatz-Agentenbibliothek ohne Produktbezug. | Risiko: niedrig
+- `.godai/agents/INSTALLATION-UND-INTEGRATION.md` | Kategorie: experimentell | Begründung: Zusatzdoku für die neue `.godai`-Bibliothek. | Risiko: niedrig
+- `.godai/agents/MANIFEST.json` | Kategorie: experimentell | Begründung: Maschinenmanifest für die neue `.godai`-Bibliothek. | Risiko: niedrig
+- `.godai/agents/PROMPTS-FUER-CODEX-UND-CLOUD.md` | Kategorie: experimentell | Begründung: Zusatzprompt-Sammlung außerhalb des Kern-Agentensystems. | Risiko: niedrig
+- `.godai/agents/README.md` | Kategorie: experimentell | Begründung: Einstieg in die neue `.godai`-Bibliothek. | Risiko: niedrig
+- `.godai/agents/VERSION` | Kategorie: experimentell | Begründung: Versionsmarker für Zusatzbibliothek. | Risiko: niedrig
+- `.godai/agents/alpha/alpha-experiments-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/alpha/bug-intake-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/alpha/tester-feedback-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/alpha/tester-onboarding-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/analytics/analytics-insights-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/analytics/funnel-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/analytics/kpi-review-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/analytics/metrics-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/analytics/observability-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/analytics/telemetry-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/architecture/architecture-designer-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/architecture/data-architecture-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/architecture/domain-model-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/architecture/modularity-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/architecture/scalability-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/architecture/system-architecture-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/automation/automation-operator-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/automation/dependabot-maintenance-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/automation/github-sync-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/automation/repository-dispatch-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/automation/workflow-dispatch-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/context/changelog-sync-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/context/context-manager-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/context/context-sync-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/context/deep-snapshot-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/context/dependency-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/context/knowledge-base-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/context/repo-audit-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/context/snapshot-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/core/00-activation.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/core/01-meta-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/core/02-router.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/core/03-task-template.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/core/04-priority-model.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/core/05-escalation-rules.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/core/06-definition-of-done.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/core/core-orchestrator-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/delivery/build-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/delivery/cicd-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/delivery/delivery-manager-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/delivery/quality-gate-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/delivery/recovery-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/delivery/release-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/delivery/release-orchestration-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/delivery/versioning-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/desktop/desktop-experience-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/desktop/desktop-qa-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/desktop/exe-release-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/desktop/installer-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/desktop/updater-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/documentation/architecture-doc-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/documentation/docs-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/documentation/documentation-writer-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/documentation/release-notes-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/documentation/status-report-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/api-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/backend-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/coding-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/debug-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/desktop-runtime-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/engineering-implementer-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/frontend-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/integration-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/performance-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/platform-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/refactor-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/engineering/state-management-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/github/agent-index.json` | Kategorie: experimentell | Begründung: Maschinenindex für Zusatzbibliothek. | Risiko: niedrig
+- `.godai/agents/github/github-operations-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/github/reusable-sync-workflow.yml` | Kategorie: experimentell | Begründung: wiederverwendbarer Workflow für Zusatzbibliothek. | Risiko: niedrig
+- `.godai/agents/github/reusable-validation-workflow.yml` | Kategorie: experimentell | Begründung: wiederverwendbarer Workflow für Zusatzbibliothek. | Risiko: niedrig
+- `.godai/agents/github/update-policy.json` | Kategorie: experimentell | Begründung: Policy-Datei für Zusatzbibliothek. | Risiko: niedrig
+- `.godai/agents/governance/change-control-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/governance/decision-log-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/governance/governance-compliance-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/governance/risk-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/governance/roadmap-governance-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/launch/beta-rollout-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/launch/closed-alpha-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/launch/feedback-triage-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/launch/launch-readiness-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/product/conversion-copy-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/product/feature-prioritization-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/product/growth-experiment-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/product/onboarding-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/product/pricing-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/product/product-strategy-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/product/product-website-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/product/user-feedback-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/prompts/activation-prompt.txt` | Kategorie: experimentell | Begründung: Zusatzprompt außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/prompts/deep-analysis-prompt.txt` | Kategorie: experimentell | Begründung: Zusatzprompt außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/prompts/github-sync-prompt.txt` | Kategorie: experimentell | Begründung: Zusatzprompt außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/prompts/master-integration-prompt.txt` | Kategorie: experimentell | Begründung: Zusatzprompt außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/prompts/prompt-engineering-agent.md` | Kategorie: experimentell | Begründung: Zusatzrolle außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/prompts/self-heal-prompt.txt` | Kategorie: experimentell | Begründung: Zusatzprompt außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/quality/access-control-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/quality/compliance-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/quality/qa-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/quality/quality-assurance-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/quality/regression-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/quality/security-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/quality/test-automation-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/stakeholder/founder-briefing-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/stakeholder/internal-sync-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/stakeholder/investor-update-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/stakeholder/stakeholder-communication-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/templates/alpha-feedback-template.md` | Kategorie: experimentell | Begründung: Zusatztemplate außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/templates/decision-log-template.md` | Kategorie: experimentell | Begründung: Zusatztemplate außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/templates/integration-checklist.md` | Kategorie: experimentell | Begründung: Zusatztemplate außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/templates/release-checklist-template.md` | Kategorie: experimentell | Begründung: Zusatztemplate außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/templates/risk-register-template.md` | Kategorie: experimentell | Begründung: Zusatztemplate außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/templates/status-report-template.md` | Kategorie: experimentell | Begründung: Zusatztemplate außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/templates/template-curation-agent.md` | Kategorie: experimentell | Begründung: Zusatztemplate außerhalb des Kernsystems. | Risiko: niedrig
+- `.godai/agents/workflow/automation-orchestrator-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/workflow/project-operations-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/workflow/self-improvement-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/workflow/task-routing-auditor-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/workflow/workflow-hardening-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `.godai/agents/workflow/workflow-optimization-agent.md` | Kategorie: experimentell | Begründung: neue Zusatzrolle ohne Produkt-/Runtime-Evidenz. | Risiko: niedrig
+- `agents/godai-library-index.md` | Kategorie: experimentell | Begründung: Integrationsindex für die neue Zusatzbibliothek, nicht für die Produktlaufzeit. | Risiko: niedrig
+
+### doku-only
+- `PROJECT_AGENT_SYSTEM_SNAPSHOT.md` | Kategorie: doku-only | Begründung: dokumentiert Agentenpfade und wurde auf `agents/` umgestellt. | Risiko: niedrig
+- `PROJECT_CLEANUP_REPORT.md` | Kategorie: doku-only | Begründung: Cleanup-Dokumentation, keine Laufzeitwirkung. | Risiko: niedrig
+- `cleanup-plan.md` | Kategorie: doku-only | Begründung: Ausführungsplan für Bereinigung, keine Laufzeitwirkung. | Risiko: niedrig
+- `docs/AGENT_SYSTEM_MAP.md` | Kategorie: doku-only | Begründung: beschreibt Agentensystem und `.godai`-Einordnung. | Risiko: niedrig
+- `docs/PROJECT_DEEP_SNAPSHOT.md` | Kategorie: doku-only | Begründung: tiefer Projektsnapshot; enthält bereits aktuelle Build-Hinweise. | Risiko: mittel
+- `docs/PROJECT_SNAPSHOT.md` | Kategorie: doku-only | Begründung: kompakter Snapshot ohne direkte Laufzeitwirkung. | Risiko: niedrig
+- `docs/WEBSITE_AUTH_PROVIDER_ARCHITECTURE.md` | Kategorie: doku-only | Begründung: Architekturbeschreibung für Website-Auth. | Risiko: niedrig
+- `docs/ai-context/CODEBASE_INDEX.md` | Kategorie: doku-only | Begründung: Codebasis-Index; nur Dokumentationsfunktion. | Risiko: mittel
+- `docs/ai-context/PROJECT_SNAPSHOT.md` | Kategorie: doku-only | Begründung: Snapshot-Dokument ohne direkte Laufzeitwirkung. | Risiko: mittel
+- `docs/system/release-requirements.md` | Kategorie: doku-only | Begründung: Release-Gates dokumentiert, keine Codewirkung. | Risiko: niedrig
+- `docs/system/release-update-summary.md` | Kategorie: doku-only | Begründung: Release-Zusammenfassung, keine Codewirkung. | Risiko: niedrig
+- `docs/triggerhub_gesamtuebersicht.md` | Kategorie: doku-only | Begründung: Übersichts- und Kontextdokument. | Risiko: niedrig
+- `docs/AGENT_SYSTEM_CLEANUP_SUMMARY.md` | Kategorie: doku-only | Begründung: Zusammenfassung der Agentenkonsolidierung. | Risiko: niedrig
+- `docs/TriggerHub2_Projektpraesentation_2026-03-11_045254.pdf` | Kategorie: doku-only | Begründung: binäre Präsentationsdokumentation. | Risiko: niedrig
+- `docs/TriggerHub2_Projektstatusbericht_2026-03-11.docx` | Kategorie: doku-only | Begründung: binärer Statusbericht. | Risiko: niedrig
+- `docs/chatgpt-handoff/01_PROJEKTANALYSE_FUER_CHATGPT.md` | Kategorie: doku-only | Begründung: Handoff-Dokument für Modelle. | Risiko: niedrig
+- `docs/chatgpt-handoff/02_ROADMAP_UND_FORTFUEHRUNG.md` | Kategorie: doku-only | Begründung: Handoff-/Roadmap-Dokument. | Risiko: niedrig
+- `docs/chatgpt-handoff/03_PROMPT_BAUKASTEN_AGENTENSYSTEM.md` | Kategorie: doku-only | Begründung: Prompt-Bausteine für Agentensystem. | Risiko: niedrig
+- `docs/chatgpt-handoff/04_KURZSNAPSHOT_FUER_MODELLE.json` | Kategorie: doku-only | Begründung: Handoff-Artefakt für Modelle. | Risiko: niedrig
+- `docs/chatgpt-handoff/README.md` | Kategorie: doku-only | Begründung: Einordnung der Handoff-Dokumente. | Risiko: niedrig
+- `docs/devops/release-pipeline.md` | Kategorie: doku-only | Begründung: Release-Pipeline-Dokumentation. | Risiko: mittel
+- `docs/product/closed-alpha-system.md` | Kategorie: doku-only | Begründung: Produkt-/Alpha-Dokumentation. | Risiko: niedrig
+- `docs/runtime/clip-exporter-architecture.md` | Kategorie: doku-only | Begründung: Architekturdoku zum Clip-Exporter. | Risiko: niedrig
+- `docs/runtime/runtime-hardening.md` | Kategorie: doku-only | Begründung: Doku zu Runtime-Härtung. | Risiko: niedrig
+- `docs/security/security-audit-phase2.md` | Kategorie: doku-only | Begründung: Security-Audit-Dokument, keine Laufzeitwirkung. | Risiko: niedrig
+- `docs/security/security-phase2-1.md` | Kategorie: doku-only | Begründung: Security-Folgedokumentation. | Risiko: niedrig
+- `docs/system/project-cleanup-phase1.md` | Kategorie: doku-only | Begründung: Cleanup-Dokumentation. | Risiko: niedrig
+- `docs/system/stability-audit-phase1.md` | Kategorie: doku-only | Begründung: Stabilitätsaudit mit aktuellen Build-/Sandbox-Hinweisen. | Risiko: niedrig
+- `docs/website/product-website-plan.md` | Kategorie: doku-only | Begründung: Website-Planungsdokument. | Risiko: niedrig
+- `marketing/automation/content-sync-flows.md` | Kategorie: doku-only | Begründung: Marketing-Automationsdokument. | Risiko: niedrig
+- `marketing/automation/marketing-automation-blueprint.md` | Kategorie: doku-only | Begründung: Marketing-Blueprint, keine Laufzeitwirkung. | Risiko: niedrig
+- `marketing/orchestrator-plan.md` | Kategorie: doku-only | Begründung: Marketing-Orchestrierungsplan. | Risiko: niedrig
+- `scripts/generate_project_showcase_pdf.py` | Kategorie: doku-only | Begründung: Generator für Präsentationsdokumente, keine Produktlaufzeit. | Risiko: niedrig
+- `scripts/generate_project_status_report_docx.py` | Kategorie: doku-only | Begründung: Generator für Statusdokumente, keine Produktlaufzeit. | Risiko: niedrig
+- `project-context/security-reports/README.md` | Kategorie: doku-only | Begründung: Report-Übersicht. | Risiko: niedrig
+- `project-context/security-reports/security-hardening-plan.md` | Kategorie: doku-only | Begründung: Security-Hardening-Plan. | Risiko: niedrig
+- `project-context/security-reports/security-rebuild-input.md` | Kategorie: doku-only | Begründung: Security-Rebuild-Input. | Risiko: niedrig
+- `project-context/security-reports/security-review-report.md` | Kategorie: doku-only | Begründung: Security-Review-Dokumentation. | Risiko: niedrig
+- `project-context/security-reports/owner-only-access-verification-2026-03-11.md` | Kategorie: doku-only | Begründung: punktuelle Verifikationsdokumentation. | Risiko: niedrig
+- `project_snapshot.md` | Kategorie: doku-only | Begründung: Datei markiert sich selbst als veraltet und nimmt keine Laufzeitrolle ein. | Risiko: niedrig
+- `project_structure.txt` | Kategorie: doku-only | Begründung: Strukturübersicht ohne Laufzeitwirkung. | Risiko: niedrig
+- `website/README.md` | Kategorie: doku-only | Begründung: Setup-/Architekturdokumentation zur Website. | Risiko: niedrig
+
+### meta-only
+- `.github/workflows/ci-quality.yml` | Kategorie: meta-only | Begründung: Entfernung eines doppelten CI-Workflows reduziert Status-Ambiguität. | Risiko: niedrig
+- `.github/workflows/context-sync.yml` | Kategorie: meta-only | Begründung: Trigger-/Add-Pfade für Kontextsync wurden angepasst. | Risiko: niedrig
+- `.github/workflows/release.yml` | Kategorie: meta-only | Begründung: Release führt jetzt Pflicht-Gates explizit erneut aus. | Risiko: niedrig
+- `.github/workflows/ci.yml` | Kategorie: meta-only | Begründung: separater Desktop-Build-Workflow für Artefakte. | Risiko: niedrig
+- `.github/workflows/quality-gate.yml` | Kategorie: meta-only | Begründung: klarer zentraler Merge-Gate-Workflow für Typecheck/Test/Audit/Build. | Risiko: niedrig
+- `.gitignore` | Kategorie: meta-only | Begründung: lokale Env-/Vercel-Dateien werden ignoriert. | Risiko: niedrig
+- `.claude/settings.local.json` | Kategorie: meta-only | Begründung: lokale Tool-Permissions ohne Repo-Laufzeitwirkung. | Risiko: niedrig
+- `agent/README.md` | Kategorie: meta-only | Begründung: Entfernen des Legacy-Agentenbaums beseitigt Doppelpflege. | Risiko: niedrig
+- `agent/agents/20-content-sync-agent.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/40-release-agent.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/00-agent-rules.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/01-orchestrator.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/02-product.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/03-architecture.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/04-implementation.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/05-uiux.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/06-qa.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/07-ops.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/08-docs.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/09-autoupdate.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/10-marketing-ops.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/core/40-security-audit-agent.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/optional/10-snapshot.md` | Kategorie: meta-only | Begründung: Legacy-Agent entfernt zugunsten kanonischer Struktur. | Risiko: niedrig
+- `agent/agents/project-context/active-tasks.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/project-context/architecture-overview.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/project-context/changelog.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/project-context/closed-alpha-checklist.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/project-context/decision-log.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/project-context/design-guidelines.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/project-context/known-issues.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/project-context/marketing-ops-role-review.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/project-context/product-overview.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/project-context/project_snapshot.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/project-context/project_snapshot_deep.md` | Kategorie: meta-only | Begründung: Legacy-Kontextbaum entfernt. | Risiko: niedrig
+- `agent/agents/system/context-template.md` | Kategorie: meta-only | Begründung: Legacy-Agententemplate entfernt. | Risiko: niedrig
+- `agent/agents/system/decision-log-template.md` | Kategorie: meta-only | Begründung: Legacy-Agententemplate entfernt. | Risiko: niedrig
+- `agent/agents/system/handoff-template.md` | Kategorie: meta-only | Begründung: Legacy-Agententemplate entfernt. | Risiko: niedrig
+- `agent/agents/system/review-template.md` | Kategorie: meta-only | Begründung: Legacy-Agententemplate entfernt. | Risiko: niedrig
+- `agent/agents/system/task-template.md` | Kategorie: meta-only | Begründung: Legacy-Agententemplate entfernt. | Risiko: niedrig
+- `agents/core/01-orchestrator.md` | Kategorie: meta-only | Begründung: kanonischer Agent wurde weiterentwickelt. | Risiko: niedrig
+- `agents/master-orchestrator.md` | Kategorie: meta-only | Begründung: kanonischer Orchestrator erweitert. | Risiko: niedrig
+- `agents/project-context/changelog.md` | Kategorie: meta-only | Begründung: operativer Kontext, keine Produktlaufzeit. | Risiko: niedrig
+- `agents/project-context/design-guidelines.md` | Kategorie: meta-only | Begründung: operativer Kontext, keine Produktlaufzeit. | Risiko: niedrig
+- `agents/project-context/product-overview.md` | Kategorie: meta-only | Begründung: operativer Kontext, keine Produktlaufzeit. | Risiko: niedrig
+- `agents/project-context/project_snapshot.md` | Kategorie: meta-only | Begründung: Löschung eines Snapshot-Artefakts reduziert Redundanz. | Risiko: niedrig
+- `agents/project-context/project_snapshot_deep.md` | Kategorie: meta-only | Begründung: tiefer operativer Snapshot des Agentenkontexts. | Risiko: mittel
+- `agents/project-context/marketing-ops-role-review.md` | Kategorie: meta-only | Begründung: rollenbezogener Agentenkontext. | Risiko: niedrig
+- `agents/15-context-snapshot-agent.md` | Kategorie: meta-only | Begründung: neuer operativer Agent, keine Produktlaufzeit. | Risiko: niedrig
+- `agents/core/10-marketing-ops.md` | Kategorie: meta-only | Begründung: neuer operativer Agent, keine Produktlaufzeit. | Risiko: niedrig
+- `agents/core/11-debug-agent.md` | Kategorie: meta-only | Begründung: neuer operativer Agent, keine Produktlaufzeit. | Risiko: niedrig
+- `agents/core/12-review-agent.md` | Kategorie: meta-only | Begründung: neuer operativer Agent, keine Produktlaufzeit. | Risiko: niedrig
+- `agents/system/decision-log-template.md` | Kategorie: meta-only | Begründung: Agententemplate ohne Produktlaufzeit. | Risiko: niedrig
+- `agents/system/task-template.md` | Kategorie: meta-only | Begründung: Agententemplate ohne Produktlaufzeit. | Risiko: niedrig
+- `agents/system/alpha-feedback-template.md` | Kategorie: meta-only | Begründung: Agententemplate ohne Produktlaufzeit. | Risiko: niedrig
+- `agents/system/integration-checklist.md` | Kategorie: meta-only | Begründung: Agententemplate ohne Produktlaufzeit. | Risiko: niedrig
+- `agents/system/release-checklist-template.md` | Kategorie: meta-only | Begründung: Agententemplate ohne Produktlaufzeit. | Risiko: niedrig
+- `agents/system/risk-register-template.md` | Kategorie: meta-only | Begründung: Agententemplate ohne Produktlaufzeit. | Risiko: niedrig
+- `project-meta/features/automation-core.json` | Kategorie: meta-only | Begründung: strukturierte Feature-Metadaten als Projektkontrollfläche. | Risiko: niedrig
+- `project-meta/features/macro-system.json` | Kategorie: meta-only | Begründung: strukturierte Feature-Metadaten als Projektkontrollfläche. | Risiko: niedrig
+- `project-meta/features/trigger-engine.json` | Kategorie: meta-only | Begründung: strukturierte Feature-Metadaten als Projektkontrollfläche. | Risiko: niedrig
+- `project-meta/features/app-control.json` | Kategorie: meta-only | Begründung: strukturierte Feature-Metadaten als Projektkontrollfläche. | Risiko: niedrig
+- `project-meta/features/event-bus.json` | Kategorie: meta-only | Begründung: strukturierte Feature-Metadaten als Projektkontrollfläche. | Risiko: niedrig
+- `project-meta/features/macro-system.md` | Kategorie: meta-only | Begründung: Modul-Metadoku für Kernsystem. | Risiko: niedrig
+- `project-meta/features/plugin-system.json` | Kategorie: meta-only | Begründung: strukturierte Feature-Metadaten als Projektkontrollfläche. | Risiko: niedrig
+- `project-meta/features/plugin-system.md` | Kategorie: meta-only | Begründung: Modul-Metadoku für Kernsystem. | Risiko: niedrig
+- `project-meta/features/profile-system.md` | Kategorie: meta-only | Begründung: Modul-Metadoku für Website-Profile. | Risiko: niedrig
+- `project-meta/features/trigger-system.md` | Kategorie: meta-only | Begründung: Modul-Metadoku für Trigger-System. | Risiko: niedrig
+- `project-meta/integrations/discord.json` | Kategorie: meta-only | Begründung: strukturierte Integrationsmetadaten. | Risiko: niedrig
+- `project-meta/integrations/obs.json` | Kategorie: meta-only | Begründung: strukturierte Integrationsmetadaten. | Risiko: niedrig
+- `project-meta/integrations/twitch.json` | Kategorie: meta-only | Begründung: strukturierte Integrationsmetadaten. | Risiko: niedrig
+- `project-meta/integrations/discord.md` | Kategorie: meta-only | Begründung: Integrations-Metadoku. | Risiko: niedrig
+- `project-meta/integrations/obs.md` | Kategorie: meta-only | Begründung: Integrations-Metadoku. | Risiko: niedrig
+- `project-meta/integrations/spotify.json` | Kategorie: meta-only | Begründung: strukturierte Integrationsmetadaten. | Risiko: niedrig
+- `project-meta/integrations/twitch.md` | Kategorie: meta-only | Begründung: Integrations-Metadoku. | Risiko: niedrig
+- `project-meta/integrations/youtube.md` | Kategorie: meta-only | Begründung: Integrations-Metadoku. | Risiko: niedrig
+- `project-meta/product/hero.json` | Kategorie: meta-only | Begründung: Produkt-/Marketing-Metadaten. | Risiko: niedrig
+- `project-meta/product/positioning.json` | Kategorie: meta-only | Begründung: Produkt-/Marketing-Metadaten. | Risiko: niedrig
+- `project-meta/status/platform-support.json` | Kategorie: meta-only | Begründung: strukturierte Plattformmetadaten, konsistent mit Build-Konfig. | Risiko: niedrig
+- `project-meta/status/release-status.json` | Kategorie: meta-only | Begründung: trennt bewusst Konfig- von Live-Build-Status. | Risiko: niedrig
+- `project-meta/status/roadmap.json` | Kategorie: meta-only | Begründung: strukturierte Roadmap-Metadaten. | Risiko: mittel
+- `project-meta/status/build-status.json` | Kategorie: meta-only | Begründung: maschinenlesbarer Status passt zu den heute verifizierten Checks. | Risiko: niedrig
+- `project-meta/status/security-status.md` | Kategorie: meta-only | Begründung: sicherheitsbezogene Projektmetadoku, aktuell weitgehend konsistent. | Risiko: mittel
+- `project-meta/architecture/system-boundaries.md` | Kategorie: meta-only | Begründung: Architektur-Metadoku ohne direkte Laufzeitwirkung. | Risiko: mittel
+- `scripts/feature-change-watcher.ts` | Kategorie: meta-only | Begründung: Watcher für Content-/Meta-Sync, nicht Produktlaufzeit. | Risiko: mittel
+- `scripts/sync-website-content.ts` | Kategorie: meta-only | Begründung: Entfernung einer Altdatei aus dem Sync-/Meta-Bereich. | Risiko: niedrig
+- `tsconfig.json` | Kategorie: meta-only | Begründung: Root-Typecheck-Scope wurde erweitert und ist jetzt verifiziert grün. | Risiko: niedrig
+- `tsconfig.scripts.json` | Kategorie: meta-only | Begründung: separates Script-Typecheck-Setup, keine Produktlaufzeit. | Risiko: niedrig
+- `website/.env.example` | Kategorie: meta-only | Begründung: Deployment-/Setup-Konfiguration, kein Runtime-Code. | Risiko: niedrig
+- `website/.gitignore` | Kategorie: meta-only | Begründung: lokale Website-Artefakte werden ausgefiltert. | Risiko: niedrig
+- `website/package.json` | Kategorie: meta-only | Begründung: Build-/Prebuild-Konfiguration für Website. | Risiko: niedrig
+- `website/scripts/verify-prelaunch-security.mjs` | Kategorie: meta-only | Begründung: Build-Sicherheitscheck für Website-Deployment, keine Produktlaufzeit. | Risiko: niedrig
+- `website/tsconfig.json` | Kategorie: meta-only | Begründung: API-Handler in Website-Typecheck aufgenommen. | Risiko: niedrig
+
+### unklar / manuell prüfen
+- `.vscode/tasks.json` | Kategorie: unklar / manuell prüfen | Begründung: lokaler Task verweist auf `${workspaceFolder}/agentsystem`; dieser Pfad ist im aktuellen Repo nicht belegt. | Risiko: mittel
+- `agents/project-context/active-tasks.md` | Kategorie: unklar / manuell prüfen | Begründung: behauptet weiter FAIL für Root-Typecheck/Root-Build und offene IPC-Verifikation, widerspricht heutigen Checks. | Risiko: hoch
+- `agents/project-context/architecture-overview.md` | Kategorie: unklar / manuell prüfen | Begründung: führt alte Release-Blocker weiter, obwohl Typecheck und Build heute verifiziert grün sind. | Risiko: hoch
+- `agents/project-context/known-issues.md` | Kategorie: unklar / manuell prüfen | Begründung: listet inzwischen behobene Root-Gates und eine nicht verifizierte IPC-Brücke als offen. | Risiko: hoch
+- `docs/AI_CONTEXT_PACK.json` | Kategorie: unklar / manuell prüfen | Begründung: generiertes Kontextpaket enthält veraltete Aussagen über fehlende CI-Gates. | Risiko: hoch
+- `docs/DEV_STATUS.md` | Kategorie: unklar / manuell prüfen | Begründung: dokumentiert veraltete FAIL-Zustände für Typecheck und Root-Build. | Risiko: hoch
+- `docs/ai-context/AGENT_AND_PROMPT_SYSTEM.md` | Kategorie: unklar / manuell prüfen | Begründung: enthält noch Aussagen wie fehlendes IPC und ältere Prioritäten; gegen aktuellen Code prüfen. | Risiko: hoch
+- `docs/ai-context/CONTEXT_FOR_EXTERNAL_AI.md` | Kategorie: unklar / manuell prüfen | Begründung: beschreibt noch fehlendes Electron-IPC, was dem aktuellen Code widerspricht. | Risiko: hoch
+- `docs/ai-context/IMPLEMENTATION_STATUS.md` | Kategorie: unklar / manuell prüfen | Begründung: führt noch fehlendes IPC und alte Phasenstände, widerspricht aktuellem Repo. | Risiko: hoch
+- `docs/project-context-snapshot.json` | Kategorie: unklar / manuell prüfen | Begründung: enthält veraltete Risikopunkte wie fehlende dedizierte CI-Workflows. | Risiko: hoch
+- `docs/phase-1-architecture-inventory.md` | Kategorie: unklar / manuell prüfen | Begründung: benennt alte Release-Blocker für Build/Typecheck, die heute nicht reproduziert wurden. | Risiko: hoch
+- `project-meta/architecture/data-flow.md` | Kategorie: unklar / manuell prüfen | Begründung: dokumentiert gleichzeitig echten IPC-E2E-Beleg und offene Unverifiziertheit; Status konsolidieren. | Risiko: mittel
+- `project-meta/features/clip-export.json` | Kategorie: unklar / manuell prüfen | Begründung: nennt Root-Build-Blocker, obwohl Root-Build heute grün lief. | Risiko: hoch
+- `project-meta/features/desktop-runtime.md` | Kategorie: unklar / manuell prüfen | Begründung: nennt noch Root-Build-Blocker und offene IPC-Frage, widerspricht heutigen Checks. | Risiko: hoch
+- `project-meta/features/storage.json` | Kategorie: unklar / manuell prüfen | Begründung: behauptet noch unbestätigte Main-/Renderer-Verdrahtung, obwohl E2E-Test existiert und läuft. | Risiko: hoch
+- `project-meta/features/website-platform.md` | Kategorie: unklar / manuell prüfen | Begründung: erwähnt weiter Root-Typecheck-Fehler aus Website-Dateien, die heute nicht mehr auftreten. | Risiko: hoch
+- `project-meta/status/alpha-readiness.md` | Kategorie: unklar / manuell prüfen | Begründung: dokumentiert weiterhin fehlgeschlagene Root-Gates und unverifizierte IPC-Brücke. | Risiko: hoch
+- `project-meta/status/release-status.md` | Kategorie: unklar / manuell prüfen | Begründung: beschreibt noch fehlgeschlagene Root-Gates statt des aktuellen verifizierten Status. | Risiko: hoch
+- `scripts/context-sync.ts` | Kategorie: unklar / manuell prüfen | Begründung: Generatorlogik arbeitet mit fest kodierten Annahmen und Referenzen, die gegen den heutigen Repo-Zustand geprüft werden müssen. | Risiko: hoch
+- `scripts/generate-ai-context.ts` | Kategorie: unklar / manuell prüfen | Begründung: schreibt veraltete Problemannahmen in `docs/` und kann Doku-Drift erneut erzeugen. | Risiko: hoch

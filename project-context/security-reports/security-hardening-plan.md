@@ -7,6 +7,10 @@
 - [x] Produktive Credential-Fallbacks entfernen.
 - [x] Fail-closed bei fehlender Owner-Konfiguration erzwingen.
 - [x] Session-Hydration gegen Storage-Tampering absichern.
+- [x] Legacy-Browser-Storage als Sessionquelle fuer Prelaunch deaktivieren.
+- [x] Nur servervalidierte Owner-Snapshots in den Client-Guard uebernehmen.
+- [x] Reload-Initialisierung vor Guard-Redirects abschliessen.
+- [x] Zusaetzliche serverseitige Prelaunch-Gate-Sperre vor der Owner-Auth einziehen.
 - [x] `/signup` routing-/policy-seitig blockieren, wenn deaktiviert.
 - [x] Gezielte Sicherheits- und Guard-Tests ergaenzen.
 
@@ -16,8 +20,9 @@
 - [ ] Login-Failure- und Security-Event-Logging definieren.
 
 ## Mittel- und langfristige Massnahmen
-- [ ] Serverseitige Session mit HttpOnly-Cookie und Revocation einfuehren.
-- [ ] Clientseitige Rollen-/Session-Entscheidungen auf serververifizierte Claims umstellen.
+- [ ] Serverseitige Revocation/Rotation fuer Prelaunch-Session einfuehren.
+- [ ] CSRF-Schutz fuer state-changing Auth-Endpoints verbindlich machen.
+- [ ] Clientseitige Rollen-/Session-Entscheidungen weiter auf serververifizierte Claims begrenzen.
 - [ ] Signup erst mit Abuse-Schutz (Rate-Limit, ggf. CAPTCHA, Monitoring) aktivieren.
 
 ## Priorisierung
@@ -25,7 +30,7 @@
   - Vermeidung von unsicheren Credential-Fallbacks
   - Fail-closed-Konfiguration
 - Hoch:
-  - Serverseitige Trust-Boundary fuer Auth/Session
+  - Revocation/CSRF/Logging fuer Prelaunch-Session
 - Mittel:
   - Security-Header und Observability
 - Niedrig:

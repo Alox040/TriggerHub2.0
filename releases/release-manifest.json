@@ -2,7 +2,7 @@
   "name": "TriggerHub 2.0",
   "version": "0.1.0",
   "channel": "stable",
-  "releaseCommand": "run release",
+  "releaseCommand": "npm run release",
   "desktop": {
     "artifactDirectory": "dist",
     "releaseDirectory": "release",

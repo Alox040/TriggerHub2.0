@@ -237,7 +237,7 @@ All important files with path, purpose, and status.
 
 ---
 
-## AGENT SYSTEM FILES (`agents/` — primary; also mirrored at `agent/agents/`)
+## AGENT SYSTEM FILES (`agents/`)
 
 | File | Purpose |
 |------|---------|

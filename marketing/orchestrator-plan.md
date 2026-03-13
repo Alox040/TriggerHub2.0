@@ -28,7 +28,7 @@ Create a marketing operations foundation for TriggerHub that matches the current
 - The requested `marketing/` folder structure exists with starter files that are immediately editable.
 - Documentation explains what each area is for and how agents should use it.
 - QA review explicitly checks messaging against `docs/ai-context/IMPLEMENTATION_STATUS.md`.
-- `agent/agents/project-context/active-tasks.md` and `agent/agents/project-context/product-overview.md` reflect the new marketing operations track.
+- `agents/project-context/active-tasks.md` and `agents/project-context/product-overview.md` reflect the new marketing operations track.
 
 ## Empfohlene Reihenfolge
 1. Product Agent output

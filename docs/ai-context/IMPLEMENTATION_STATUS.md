@@ -1,5 +1,5 @@
 # IMPLEMENTATION STATUS — TriggerHub 2.0
-> Generated: 2026-03-10 | Updated: 2026-03-10 — Phase 1 UI integration complete
+> Generated: 2026-03-10 | Updated: 2026-03-11 — EventBus publishing active; CI/CD vollständig eingerichtet
 
 Status classifications: COMPLETE | PARTIAL | PLANNED | DISCONNECTED | BROKEN | LEGACY
 
@@ -43,9 +43,9 @@ Status classifications: COMPLETE | PARTIAL | PLANNED | DISCONNECTED | BROKEN | L
 | CSS Design Tokens | COMPLETE | --th-* custom properties |
 | Type System (domain.ts) | COMPLETE | All domain types defined |
 | Port Interfaces (ports.ts) | COMPLETE | All ports defined |
-| Test Suite | COMPLETE | 14 test files covering all layers (incl. website auth) |
+| Test Suite | COMPLETE | 17 test files, 128 tests passing, covering all layers (incl. website auth) |
 | Electron-Builder Config | COMPLETE | NSIS installer configured |
-| CI/CD | PARTIAL | Only website-update.yml; no build/test CI |
+| CI/CD | COMPLETE | quality-gate.yml (typecheck, tests, audit, website-build), ci.yml (desktop), release.yml |
 | Auto-Update | PLANNED | Agent prompt exists; implementation not started |
 | Design System | COMPLETE (separate) | Standalone Vite project with shadcn/ui |
 | Legacy Modules | LEGACY | deck-engine, event-bus, plugin-system, profiles, store |
@@ -112,7 +112,7 @@ Phase 1 UI integration complete (2026-03-10):
 
 **What doesn't work / still open:**
 - Editor, Plugins, Settings pages are empty scaffolds
-- EventBus events (`trigger:executed`, `macro:completed`) not yet published by TriggerEngine/MacroRunner — subscriptions are wired but currently inert
+- ~~EventBus events not yet published~~ — **RESOLVED**: `TRIGGER_EXECUTED` publiziert in `triggerEngine.ts` (Z.85–88, Z.133–136); `MACRO_COMPLETED` in `macroEngine.ts` (Z.54–58). Dashboard-Refresh ist aktiv.
 - Trigger `active` visual (TriggerCard highlight) does not change on click — no enable/disable on AppFacadePort
 - Error state on trigger failure replaces the full dashboard (no inline toast)
 
@@ -138,17 +138,20 @@ Phase 1 UI integration complete (2026-03-10):
 
 ### AUTO-UPDATE — PLANNED
 
-- Agent prompt `agent/agents/core/09-autoupdate.md` defines the approach
+- Agent prompt `agents/core/09-autoupdate.md` defines the approach
 - No implementation exists in source code
 - electron-builder supports auto-update via electron-updater (not installed yet)
 
 ---
 
-### CI/CD — PARTIAL
+### CI/CD — COMPLETE
 
-- `.github/workflows/website-update.yml`: Syncs website content
-- No CI workflow for: build, typecheck, test, or release automation
-- No automated release pipeline
+- `quality-gate.yml`: Typecheck (root), Tests (128), Dependency-Audit (root + website), Website-Check (typecheck + build) — triggert auf `main`, `develop`, `release/**`
+- `ci.yml`: Desktop-Build (windows-latest, electron-builder NSIS) — triggert auf `main`/`master`
+- `release.yml`: Release-Packaging
+- `context-sync.yml`: Auto-Updates AI-Kontextdateien
+- `godai-validation.yml`: Validiert `.godai`-Agentenbibliothek
+- `website-update.yml`: Website-Content-Sync
 
 ---
 
@@ -174,7 +177,7 @@ Phase 1 UI integration complete (2026-03-10):
 - `website-browser-guards.test.ts` — Route guard / browser-side auth checks
 - `website-profile-v1.test.ts` (106 lines) — Website profile functionality
 
-All tests use Vitest 3.0.8 with InMemory transports. Coverage configuration not yet enabled.
+17 test files, 128 tests, alle grün. Vitest 3.0.8 mit InMemory-Transports. Coverage configuration not yet enabled.
 
 ---
 
@@ -197,5 +200,5 @@ All tests use Vitest 3.0.8 with InMemory transports. Coverage configuration not 
 | Phase 2 | Core engines, service adapters, plugin system, tests | COMPLETE |
 | Phase 3 | UI ↔ engine connection, live data, real service integration | PARTIAL — UI connected; IPC, real services not started |
 | Phase 4 | Electron IPC, hotkeys, window management | NOT STARTED |
-| Phase 5 | Auto-update, release pipeline, production hardening | NOT STARTED |
+| Phase 5 | Auto-update, release pipeline, production hardening | PARTIAL — Release pipeline CI vorhanden; auto-update noch nicht implementiert |
 | Phase 6 | Plugin ecosystem, marketplace | PLANNED |

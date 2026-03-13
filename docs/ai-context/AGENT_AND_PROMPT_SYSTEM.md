@@ -5,7 +5,7 @@
 
 ## OVERVIEW
 
-TriggerHub 2.0 uses a structured AI multi-agent system to coordinate development, architecture decisions, QA, documentation, and releases. Agents are defined as markdown prompt files stored in `agents/` (primary) and also mirrored at `agent/agents/`.
+TriggerHub 2.0 uses a structured AI multi-agent system to coordinate development, architecture decisions, QA, documentation, and releases. Agents are defined as markdown prompt files stored in `agents/`.
 
 The system follows a **hierarchical orchestration model**:
 - A Master Orchestrator delegates tasks to specialized agents
@@ -49,7 +49,6 @@ agents/                                # PRIMARY agent directory
 ├── 20-content-sync-agent.md           # Website content sync
 └── 40-release-agent.md                # Release management
 
-agent/agents/                          # Mirror / legacy path (same content)
 ```
 
 ---
@@ -235,7 +234,7 @@ From `agents/project-context/active-tasks.md`:
 
 ## NOTES FOR AI AGENTS PICKING UP WORK
 
-1. **Always read `agents/core/00-agent-rules.md` first** — global constraints apply (also at `agent/agents/core/00-agent-rules.md`)
+1. **Always read `agents/core/00-agent-rules.md` first** — global constraints apply
 2. **Check `agents/project-context/active-tasks.md`** for current work items before starting
 3. **Check `agents/project-context/known-issues.md`** for existing bugs before adding features
 4. **Respect ADRs** — never contradict architecture decisions without creating a new ADR
@@ -243,3 +242,64 @@ From `agents/project-context/active-tasks.md`:
 6. **The UI IS connected** — `App.tsx` uses live `AppFacade` data via `useAppFacade()`. Top current priority is Electron IPC bridge (RISK-02).
 7. **Don't touch legacy folders** (deck-engine, event-bus, plugin-system, profiles, store) — preserved intentionally per ADR-003
 8. **Design system lives in `design/`** — don't import from it into `src/`; copy/adapt instead
+
+---
+
+## .godai SPECIALIST LIBRARY
+
+> Updated: 2026-03-11 — `.godai/agents` integrated as specialist reference library
+
+TriggerHub has a second, complementary agent layer: the `.godai/agents` specialist library.
+
+### Architecture
+
+```
+agents/                    <- OPERATIVE HUB (primary, CI-integrated)
+  master-orchestrator.md   <- entry point for all tasks
+  core/*                   <- 14 core agents
+  project-context/*        <- living project memory (PROTECTED)
+
+.godai/agents/             <- SPECIALIST LIBRARY (reference, 98 agents)
+  core/     engineering/   architecture/  product/   delivery/
+  quality/  context/       launch/        desktop/   alpha/
+  analytics/ documentation/ governance/  stakeholder/ workflow/
+  automation/ templates/   prompts/       github/
+```
+
+### When to Use .godai Specialists
+
+Use `.godai/agents` when the 14 core agents are not sufficient:
+- **Alpha/Launch** — tester onboarding, beta rollout, launch readiness
+- **Desktop** — EXE release, installer, auto-updater QA
+- **Analytics** — KPIs, telemetry, funnel analysis
+- **Governance** — risk register, change control, roadmap governance
+- **Stakeholder** — founder briefings, investor updates
+- **Deep Engineering** — API design, backend architecture, performance profiling
+
+### .godai Activation Protocol
+
+```
+1. .godai/agents/core/00-activation.md      (set task context)
+2. .godai/agents/core/02-router.md          (route to specialist)
+3. .godai/agents/core/04-priority-model.md  (assess priority)
+4. .godai/agents/{category}/{agent}.md      (run specialist)
+5. .godai/agents/core/06-definition-of-done.md (validate completion)
+```
+
+### .godai Prompts
+
+| Prompt | Use Case |
+|--------|----------|
+| `.godai/agents/prompts/activation-prompt.txt` | Standard task entry |
+| `.godai/agents/prompts/master-integration-prompt.txt` | Complex cross-domain tasks |
+| `.godai/agents/prompts/deep-analysis-prompt.txt` | Deep problem analysis |
+| `.godai/agents/prompts/github-sync-prompt.txt` | Sync agent library to GitHub |
+| `.godai/agents/prompts/self-heal-prompt.txt` | Fix agent system drift |
+
+### .godai CI Validation
+Workflow: `.github/workflows/godai-validation.yml`
+Triggers on: Push to `.godai/agents/**`
+Validates: MANIFEST.json consistency, agent-index.json counts, all referenced files exist and non-empty
+
+### Bridge Document
+Full category index and routing rules: `agents/godai-library-index.md`

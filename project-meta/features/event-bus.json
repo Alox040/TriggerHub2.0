@@ -1,0 +1,18 @@
+{
+  "name": "Event Bus",
+  "status": "implemented",
+  "summary": "Der EventBus ist ein prozesslokales In-Memory-Pub/Sub-System mit normalen und einmaligen Subscriptions sowie Topic-Wildcards per `:*`-Präfix.",
+  "sourceOfTruth": [
+    "src/core/event-bus/inMemoryEventBus.ts",
+    "src/core/event-bus/eventBusTypes.ts"
+  ],
+  "currentBehavior": [
+    "Registriert Subscriber pro Topic mit fortlaufender Subscription-ID",
+    "Unterstützt reguläre `subscribe`- und einmalige `once`-Subscriptions",
+    "Publiziert Events an exakte Topic-Matches und an Wildcard-Subscriptions wie `obs:*`",
+    "Führt Handler beim Publish sequentiell in Subscription-Reihenfolge aus",
+    "Entfernt `once`-Subscriptions vor der Handler-Ausführung automatisch",
+    "Lässt Fehler aus Handlern aus `publish()` heraus propagieren, statt sie intern zu schlucken",
+    "Erlaubt gezieltes `unsubscribe` per Subscription sowie `unsubscribeAll` pro Topic"
+  ]
+}

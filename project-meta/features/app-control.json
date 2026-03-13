@@ -1,0 +1,17 @@
+{
+  "name": "App Control",
+  "status": "implemented",
+  "summary": "App-Control verwaltet den Laufzustand der Desktop-App und verbindet Hotkeys mit Fensterkommandos.",
+  "sourceOfTruth": [
+    "src/core/app-control/appController.ts",
+    "src/core/app-control/hotkeyManager.ts",
+    "src/core/app-control/windowManager.ts"
+  ],
+  "includes": [
+    "AppController mit Start-/Stop-Zustand und `isRunning`-Abfrage",
+    "Hotkey-Registrierung und Auslösung asynchroner Handler über den HotkeyManager",
+    "Standard-Hotkey `F11` zum Umschalten von Fullscreen über den WindowManager",
+    "WindowManager für die Befehle `focus`, `minimize` und `toggle-fullscreen`",
+    "In-Memory-Nachverfolgung ausgeführter Fensterkommandos"
+  ]
+}

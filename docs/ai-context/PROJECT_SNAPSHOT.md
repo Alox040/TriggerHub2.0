@@ -137,7 +137,7 @@ The project uses an AI multi-agent system (11+ specialized agents in `agents/cor
 - Master orchestrator (`agents/master-orchestrator.md`) coordinates all agents
 - Specialized agents: product, architecture, implementation, UI/UX, QA, ops, docs, autoupdate, security, content-sync, release
 - Living project-context docs track active tasks, decisions, known issues (`agents/project-context/`)
-- Also mirrored at `agent/agents/` (legacy path)
+- Canonical location: `agents/`
 
 ---
 

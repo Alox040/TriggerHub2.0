@@ -95,7 +95,7 @@ Use the existing release pipeline as the confirmed signal for public-facing mark
 #### Source Inputs
 - `releases/release-manifest.json`
 - `releases/changelog-source.json`
-- `agent/agents/project-context/changelog.md`
+- `agents/project-context/changelog.md`
 - `website/src/content/generated/changelog.json`
 - `marketing/messaging/messaging-core.md`
 
