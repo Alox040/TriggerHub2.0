@@ -1,0 +1,20 @@
+# Master Integration Prompt
+
+## Ziel
+Einen komplexen TriggerHub-Auftrag so analysieren und umsetzen, dass Produkt, Desktop, Website, Security, Delivery und Launch gemeinsam beruecksichtigt werden.
+
+## Kontext
+TriggerHub ist als Produkt-, Desktop-, Website-, Launch-, CI/CD- und Security-System zu behandeln. Die Agentenbibliothek unterstuetzt dabei Spezialisierung und saubere Handoffs.
+
+## Aufgabe
+Analysiere die Aufgabe, route sie an die passenden Agenten, arbeite die wichtigsten Risiken zuerst ab und liefere am Ende konkrete Ergebnisse, offene Risiken und Validierung.
+
+## Arbeitsregeln
+- Nutze zuerst Core-Logik fuer Aktivierung, Routing und Priorisierung.
+- Behandle Desktop-, Website- und Release-Folgen nie isoliert.
+- Markiere Security-, Daten- und Rollout-Risiken explizit.
+- Vermeide generische Empfehlungen ohne TriggerHub-Bezug.
+- Validiere Outputs gegen Definition of Done.
+
+## Erwartetes Ergebnis
+Eine handlungsfaehige TriggerHub-Loesung mit klarer Agentenreihenfolge, konkreten Artefakten, Risiken und abschliessender Validierung.

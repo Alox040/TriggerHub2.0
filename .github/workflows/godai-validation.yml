@@ -1,0 +1,113 @@
+name: godai Agent Library Validation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - '.godai/agents/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-godai-agents:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: MANIFEST.json und agent-index.json pruefen (existenz + nicht leer)
+        shell: bash
+        run: |
+          MANIFEST=".godai/agents/MANIFEST.json"
+          INDEX=".godai/agents/github/agent-index.json"
+          if [ ! -f "$MANIFEST" ]; then
+            echo "FEHLER: $MANIFEST nicht gefunden" && exit 1
+          fi
+          if [ ! -s "$MANIFEST" ]; then
+            echo "FEHLER: $MANIFEST ist leer" && exit 1
+          fi
+          if [ ! -f "$INDEX" ]; then
+            echo "FEHLER: $INDEX nicht gefunden" && exit 1
+          fi
+          if [ ! -s "$INDEX" ]; then
+            echo "FEHLER: $INDEX ist leer" && exit 1
+          fi
+          echo "MANIFEST.json und agent-index.json vorhanden und nicht leer"
+
+      - name: Agent-Anzahl zwischen MANIFEST.json und agent-index.json vergleichen
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, sys
+
+          manifest = json.loads(open(".godai/agents/MANIFEST.json", encoding="utf-8").read())
+          index    = json.loads(open(".godai/agents/github/agent-index.json", encoding="utf-8").read())
+
+          # Alle Dateipfade aus MANIFEST-Kategorien sammeln
+          manifest_files = []
+          for cat in manifest.get("categories", []):
+              manifest_files.extend(cat.get("files", []))
+
+          manifest_count = len(manifest_files)
+          index_count    = index.get("total_agents", len(index.get("agents", [])))
+
+          print(f"MANIFEST Dateien (Kategorien): {manifest_count}")
+          print(f"agent-index total_agents:      {index_count}")
+          print(f"agent-index tatsaechlich:      {len(index.get('agents', []))}")
+
+          if index_count != len(index.get("agents", [])):
+              print(f"WARNUNG: total_agents ({index_count}) != tatsaechliche Eintraege ({len(index.get('agents', []))})")
+              sys.exit(1)
+
+          print("Konsistenz-Check bestanden")
+          PY
+
+      - name: Alle in agent-index.json referenzierten Dateien pruefen
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, sys
+
+          root  = pathlib.Path(".godai/agents")
+          index = json.loads((root / "github/agent-index.json").read_text(encoding="utf-8"))
+
+          missing = []
+          empty   = []
+          for agent in index.get("agents", []):
+              rel  = agent.get("path", "")
+              path = root / rel
+              if not path.exists():
+                  missing.append(rel)
+              elif path.stat().st_size == 0:
+                  empty.append(rel)
+
+          if missing:
+              print(f"FEHLER: Fehlende Dateien ({len(missing)}): {missing}")
+          if empty:
+              print(f"FEHLER: Leere Dateien ({len(empty)}): {empty}")
+          if missing or empty:
+              sys.exit(1)
+
+          print(f"Alle {len(index.get('agents', []))} referenzierten Agentendateien vorhanden und nicht leer")
+          PY
+
+      - name: Root-Dateien pruefen
+        shell: bash
+        run: |
+          for f in \
+            ".godai/agents/README.md" \
+            ".godai/agents/CHANGELOG.md" \
+            ".godai/agents/VERSION" \
+            ".godai/agents/INSTALLATION-UND-INTEGRATION.md" \
+            ".godai/agents/PROMPTS-FUER-CODEX-UND-CLOUD.md"; do
+            if [ ! -s "$f" ]; then
+              echo "FEHLER: $f fehlt oder ist leer" && exit 1
+            fi
+          done
+          echo "Alle Root-Dateien vorhanden und nicht leer"

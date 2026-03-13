@@ -1,0 +1,65 @@
+{
+    "product":  "TriggerHub",
+    "updated_at":  "2026-03-11",
+    "sync_rules":  [
+                       {
+                           "scope":  "agent-files",
+                           "triggers":  [
+                                            "new-agent",
+                                            "renamed-agent",
+                                            "deleted-agent",
+                                            "responsibility-change"
+                                        ],
+                           "required_updates":  [
+                                                    "MANIFEST.json",
+                                                    "github/agent-index.json",
+                                                    "CHANGELOG.md"
+                                                ]
+                       },
+                       {
+                           "scope":  "root-files",
+                           "triggers":  [
+                                            "version-change",
+                                            "integration-change",
+                                            "prompt-bundle-change"
+                                        ],
+                           "required_updates":  [
+                                                    "README.md",
+                                                    "INSTALLATION-UND-INTEGRATION.md",
+                                                    "PROMPTS-FUER-CODEX-UND-CLOUD.md",
+                                                    "CHANGELOG.md"
+                                                ]
+                       },
+                       {
+                           "scope":  "github-metadata",
+                           "triggers":  [
+                                            "workflow-change",
+                                            "dispatch-change",
+                                            "policy-change"
+                                        ],
+                           "required_updates":  [
+                                                    "github/update-policy.json",
+                                                    "github/agent-index.json",
+                                                    "MANIFEST.json"
+                                                ]
+                       },
+                       {
+                           "scope":  "release-traceability",
+                           "triggers":  [
+                                            "release-prep",
+                                            "version-bump"
+                                        ],
+                           "required_updates":  [
+                                                    "VERSION",
+                                                    "CHANGELOG.md",
+                                                    "documentation/release-notes-agent.md"
+                                                ]
+                       }
+                   ],
+    "guardrails":  [
+                       "Keine Agentendatei ohne Pflichtstruktur anlegen.",
+                       "Neue oder geaenderte Agenten muessen TriggerHub-spezifische Verantwortlichkeiten enthalten.",
+                       "GitHub-Workflows duerfen nur minimale noetige Berechtigungen erhalten.",
+                       "Manifest, Agent Index und reale Dateistruktur muessen konsistent bleiben."
+                   ]
+}

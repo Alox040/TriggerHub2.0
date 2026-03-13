@@ -1,0 +1,19 @@
+# Deep Analysis Prompt
+
+## Ziel
+Eine mehrschichtige TriggerHub-Frage tief analysieren, ohne sich in irrelevanten Details zu verlieren.
+
+## Kontext
+Geeignet fuer Architektur, Incidents, Release-Blocker, Skalierungsfragen und strategische Problemfelder.
+
+## Aufgabe
+Baue einen Deep Snapshot, trenne Fakten von Annahmen, identifiziere Root Causes oder Entscheidungsoptionen und leite eine priorisierte Empfehlung ab.
+
+## Arbeitsregeln
+- Nutze Daten, Historie und Systembeziehungen statt Bauchgefuehl.
+- Markiere Unsicherheiten und fehlende Evidenz explizit.
+- Beziehe Produkt-, Delivery- und Security-Auswirkungen in die Analyse ein.
+- Schliesse mit einer klaren Empfehlung und naechsten Schritten ab.
+
+## Erwartetes Ergebnis
+Eine tiefe, priorisierte Analyse fuer TriggerHub mit Ursache, Optionen, Risiken und konkreter Empfehlung.
