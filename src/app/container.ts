@@ -7,6 +7,7 @@ import type {
   ObsServicePort,
   PluginRegistryPort,
   SpotifyServicePort,
+  TwitchServicePort,
   TriggerEnginePort,
 } from '../types'
 
@@ -17,6 +18,7 @@ export interface AppModuleContainer {
   obsService: ObsServicePort
   spotifyService: SpotifyServicePort
   clipService: ClipServicePort
+  twitchService: TwitchServicePort
   pluginRegistry: PluginRegistryPort
   appFacade: AppFacadePort
   eventBus: EventBusPort

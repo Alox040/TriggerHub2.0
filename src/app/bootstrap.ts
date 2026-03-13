@@ -11,10 +11,18 @@ import {
 import type { Macro } from '../types'
 import { EventTopics } from '../types'
 import type { AppModuleContainer } from './container'
-import { createClipService, createObsService, createSpotifyService } from '../services'
+import { createClipService, createObsService, createSpotifyService, createTwitchService } from '../services'
 import { createPluginRegistryWithDefaults, PluginRegistry } from '../plugins'
 import { TriggerHubAppFacade } from './facade'
 import { createConsoleLogger } from '../utils/logger'
+import type { StoragePort } from '../storage/storagePort'
+import { DEFAULT_RUNTIME_CONFIG, type RuntimeConfig } from './runtimeConfig'
+import { stripMacroRecord, stripTriggerRecord } from './storageHelpers'
+import type { GraphTrigger } from '../core/trigger-engine/triggerGraphTypes'
+import { parseMacros, parseTriggers } from './storageValidation'
+
+const runtimeLogger = createConsoleLogger('DesktopRuntime')
+const RUNTIME_CONFIG_STORAGE_KEY = 'runtime-config'
 
 const seedDefaultCoreData = async (
   triggerEngine: TriggerEngine,
@@ -57,18 +65,110 @@ export interface RuntimeContainer extends AppModuleContainer {
   stop(): Promise<void>
 }
 
-export const createAppModuleContainer = async (): Promise<RuntimeContainer> => {
+const isRuntimeConfig = (value: unknown): value is RuntimeConfig => {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const candidate = value as { storageKeys?: { triggers?: unknown; macros?: unknown } }
+  return (
+    !!candidate.storageKeys &&
+    typeof candidate.storageKeys.triggers === 'string' &&
+    typeof candidate.storageKeys.macros === 'string'
+  )
+}
+
+const loadOrSeedCoreData = async (
+  triggerEngine: TriggerEngine,
+  macroEngine: MacroEngine,
+  storage: StoragePort | undefined,
+  runtimeConfig: RuntimeConfig,
+): Promise<{ mode: 'loaded' | 'seeded-fallback'; seededFallback: boolean }> => {
+  if (triggerEngine.getAll().length > 0 || macroEngine.getAllMacros().length > 0) {
+    return { mode: 'loaded', seededFallback: false }
+  }
+
+  if (!storage) {
+    await seedDefaultCoreData(triggerEngine, macroEngine)
+    return { mode: 'seeded-fallback', seededFallback: true }
+  }
+
+  const storedTriggers = await storage.load<unknown>(runtimeConfig.storageKeys.triggers)
+  const storedMacros = await storage.load<unknown>(runtimeConfig.storageKeys.macros)
+  let hasUsablePersistedState = false
+
+  if (Array.isArray(storedMacros)) {
+    hasUsablePersistedState = true
+    for (const macro of parseMacros(storedMacros)) {
+      try {
+        await macroEngine.registerMacro(macro)
+      } catch (error) {
+        runtimeLogger.warn('Skipping invalid stored macro', { error, macro })
+      }
+    }
+  } else if (storedMacros !== null) {
+    runtimeLogger.warn('Skipping stored macros payload with invalid shape', {
+      payload: storedMacros,
+    })
+  }
+
+  if (Array.isArray(storedTriggers)) {
+    hasUsablePersistedState = true
+    for (const trigger of parseTriggers(storedTriggers)) {
+      try {
+        await triggerEngine.registerTrigger(trigger)
+      } catch (error) {
+        runtimeLogger.warn('Skipping invalid stored trigger', { error, trigger })
+      }
+    }
+  } else if (storedTriggers !== null) {
+    runtimeLogger.warn('Skipping stored triggers payload with invalid shape', {
+      payload: storedTriggers,
+    })
+  }
+
+  if (hasUsablePersistedState) {
+    return { mode: 'loaded', seededFallback: false }
+  }
+
+  await seedDefaultCoreData(triggerEngine, macroEngine)
+  return { mode: 'seeded-fallback', seededFallback: true }
+}
+
+const persistCoreData = async (
+  triggerEngine: TriggerEngine,
+  macroEngine: MacroEngine,
+  storage: StoragePort | undefined,
+  runtimeConfig: RuntimeConfig,
+): Promise<void> => {
+  if (!storage) {
+    return
+  }
+
+  await storage.save(
+    runtimeConfig.storageKeys.triggers,
+    triggerEngine.getAll().map((trigger) => stripTriggerRecord(trigger)),
+  )
+  await storage.save(
+    runtimeConfig.storageKeys.macros,
+    macroEngine.getAllMacros().map((macro) => stripMacroRecord(macro)),
+  )
+}
+
+export const createAppModuleContainer = async (storage?: StoragePort): Promise<RuntimeContainer> => {
   const serviceState = {
     obs: false,
     spotify: false,
     clip: false,
   }
+  let runtimeConfig = DEFAULT_RUNTIME_CONFIG
 
   const eventBus = new InMemoryEventBus()
 
   const obsService = createObsService()
   const spotifyService = createSpotifyService()
-  const clipService = createClipService({ exporter: 'filesystem' })
+  const clipService = createClipService()
+  const twitchService = createTwitchService({ eventBus })
   const executor = new TriggerExecutor()
 
   let macroEngine!: MacroEngine
@@ -223,12 +323,20 @@ export const createAppModuleContainer = async (): Promise<RuntimeContainer> => {
     createConsoleLogger('TriggerEngine'),
   )
 
-  await seedDefaultCoreData(triggerEngine, macroEngine)
-
   const appController = new AppController(new HotkeyManager(), new WindowManager())
   const pluginRegistry: PluginRegistry = await createPluginRegistryWithDefaults()
 
-  const appFacade = new TriggerHubAppFacade(triggerEngine, macroEngine, serviceState)
+  const appFacade = new TriggerHubAppFacade(
+    triggerEngine,
+    macroEngine,
+    serviceState,
+    {
+      persist: async () => {
+        await persistCoreData(triggerEngine, macroEngine, storage, runtimeConfig)
+      },
+    },
+    runtimeConfig,
+  )
 
   return {
     appController,
@@ -237,37 +345,77 @@ export const createAppModuleContainer = async (): Promise<RuntimeContainer> => {
     obsService,
     spotifyService,
     clipService,
+    twitchService,
     pluginRegistry,
     appFacade,
     eventBus,
     start: async () => {
-      await appController.start()
-      await obsService.connect()
-      await spotifyService.play()
-      await clipService.startCapture()
+      runtimeLogger.info('Desktop runtime start requested')
+      try {
+        const storedRuntimeConfig = await storage?.load<unknown>(RUNTIME_CONFIG_STORAGE_KEY)
+        runtimeConfig = isRuntimeConfig(storedRuntimeConfig) ? storedRuntimeConfig : DEFAULT_RUNTIME_CONFIG
 
-      serviceState.obs = true
-      serviceState.spotify = true
-      serviceState.clip = true
+        const coreDataInitialization = await loadOrSeedCoreData(
+          triggerEngine,
+          macroEngine,
+          storage,
+          runtimeConfig,
+        )
+        if (coreDataInitialization.seededFallback && storage) {
+          await persistCoreData(triggerEngine, macroEngine, storage, runtimeConfig)
+        }
+        await appController.start()
+        await obsService.connect()
+        await spotifyService.play()
+        await clipService.startCapture()
 
-      await pluginRegistry.activateAll({
-        appController,
-        triggerEngine,
-        macroEngine,
-        eventBus,
-        actionRegistry: executor,
-      })
+        serviceState.obs = true
+        serviceState.spotify = true
+        serviceState.clip = true
+
+        await pluginRegistry.activateAll({
+          appController,
+          triggerEngine,
+          macroEngine,
+          eventBus,
+          actionRegistry: executor,
+        })
+        runtimeLogger.info('Desktop runtime started', {
+          services: { ...serviceState },
+        })
+      } catch (error) {
+        runtimeLogger.error('Desktop runtime start failed', {
+          error,
+          services: { ...serviceState },
+        })
+        throw error
+      }
     },
     stop: async () => {
-      triggerEngine.destroy()
-      await pluginRegistry.deactivateAll()
-      await obsService.disconnect()
-      await spotifyService.pause()
-      await appController.stop()
+      runtimeLogger.info('Desktop runtime stop requested')
+      try {
+        await persistCoreData(triggerEngine, macroEngine, storage, runtimeConfig)
 
-      serviceState.obs = false
-      serviceState.spotify = false
-      serviceState.clip = false
+        triggerEngine.destroy()
+        await pluginRegistry.deactivateAll()
+        await obsService.disconnect()
+        await spotifyService.pause()
+        await twitchService.disconnect()
+        await appController.stop()
+
+        serviceState.obs = false
+        serviceState.spotify = false
+        serviceState.clip = false
+        runtimeLogger.info('Desktop runtime stopped', {
+          services: { ...serviceState },
+        })
+      } catch (error) {
+        runtimeLogger.error('Desktop runtime stop failed', {
+          error,
+          services: { ...serviceState },
+        })
+        throw error
+      }
     },
   }
 }

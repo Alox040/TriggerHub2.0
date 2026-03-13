@@ -18,22 +18,9 @@ export interface AuthIdentity {
   createdAt?: number
 }
 
-export interface OwnerCredentialConfig {
+export interface PrelaunchOwnerConfig {
   userId: string
   email: string
-  username: string
-  passwordHashBase64: string
-  saltBase64: string
-  iterations: number
-}
-
-export interface AuthConfig {
-  sessionTtlMs: number
-}
-
-export interface OwnerAuthConfigStatus {
-  configured: boolean
-  reasons: string[]
 }
 
 export interface LoginRequest {
@@ -45,16 +32,4 @@ export interface SessionStore {
   read(): AuthSession | null
   write(session: AuthSession): void
   clear(): void
-}
-
-export interface AuthPort {
-  getSession(): AuthSession | null
-  login(request: LoginRequest): Promise<AuthSession>
-  logout(): void
-  hydrateSession(): AuthSession | null
-}
-
-export interface AuthIdentityProvider {
-  authenticate(request: LoginRequest): Promise<AuthIdentity>
-  isSessionIdentityValid(identity: AuthIdentity): boolean
 }

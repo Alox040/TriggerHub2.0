@@ -1,66 +1,112 @@
 const path = require('node:path')
-const { mkdir, writeFile } = require('node:fs/promises')
 const { app, BrowserWindow, ipcMain } = require('electron')
+const { exportClipToFile } = require('./clipExporter.node.cjs')
+const { readJsonFile, writeJsonFile } = require('./jsonFileStorage.cjs')
+let storageHandlersRegistered = false
+let clipExportHandlerRegistered = false
 
-function resolveClipOutputPath(buffer, request) {
-  const requestedOutputDir =
-    request && typeof request.outputDir === 'string' && request.outputDir.length > 0
-      ? request.outputDir
-      : path.join(app.getPath('videos'), 'TriggerHub 2.0')
-
-  return path.join(requestedOutputDir, `${buffer.id}.json`)
-}
-
-async function exportClipToFile(buffer, request) {
-  const outputPath = resolveClipOutputPath(buffer, request)
-  await mkdir(path.dirname(outputPath), { recursive: true })
-  await writeFile(outputPath, JSON.stringify(buffer, null, 2), 'utf-8')
-
-  return {
-    clipId: buffer.id,
-    path: outputPath,
+function assertValidStorageKey(key) {
+  if (typeof key !== 'string' || !/^[A-Za-z0-9._-]+$/.test(key)) {
+    throw new Error('Invalid storage key')
   }
 }
 
-function createMainWindow() {
+function getStorageFilePath(key) {
+  assertValidStorageKey(key)
+  return path.join(app.getPath('userData'), 'TriggerHub2', `${key}.json`)
+}
+
+function registerStorageHandlers() {
+  if (storageHandlersRegistered) {
+    return
+  }
+
+  ipcMain.handle('storage:load', async (_event, key) => {
+    return readJsonFile(getStorageFilePath(key))
+  })
+  ipcMain.handle('storage:save', async (_event, key, data) => {
+    await writeJsonFile(getStorageFilePath(key), data)
+  })
+
+  storageHandlersRegistered = true
+}
+
+function registerClipExportHandler(targetApp = app) {
+  if (clipExportHandlerRegistered) {
+    return
+  }
+
+  ipcMain.handle('clip-exporter:export', async (_event, buffer, request) => {
+    return exportClipToFile(buffer, request, targetApp)
+  })
+
+  clipExportHandlerRegistered = true
+}
+
+function registerIpcHandlers(targetApp = app) {
+  registerStorageHandlers()
+  registerClipExportHandler(targetApp)
+}
+
+async function createMainWindow(options = {}) {
+  const show = options.show ?? true
   const mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
     minWidth: 980,
     minHeight: 640,
-    show: false,
+    show,
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
+      webSecurity: true,
     },
   })
 
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show()
-  })
+  if (show) {
+    mainWindow.once('ready-to-show', () => {
+      mainWindow.show()
+    })
+  }
 
-  const rendererPath = path.join(__dirname, '..', 'dist', 'index.html')
-  mainWindow.loadFile(rendererPath)
+  const rendererPath = options.rendererPath ?? path.join(__dirname, '..', 'dist', 'index.html')
+  await mainWindow.loadFile(rendererPath)
+  return mainWindow
 }
 
-app.whenReady().then(() => {
-  ipcMain.handle('clip-exporter:export', async (_event, buffer, request) => {
-    return exportClipToFile(buffer, request)
-  })
-
-  createMainWindow()
+async function bootMainProcess(options = {}) {
+  await app.whenReady()
+  registerIpcHandlers(options.app ?? app)
+  const mainWindow = await createMainWindow(options)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createMainWindow()
+      void createMainWindow(options)
     }
   })
-})
+
+  return mainWindow
+}
+
+if (require.main === module) {
+  bootMainProcess().catch((error) => {
+    console.error(error)
+    app.quit()
+  })
+}
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
+
+module.exports = {
+  assertValidStorageKey,
+  bootMainProcess,
+  createMainWindow,
+  getStorageFilePath,
+  registerIpcHandlers,
+}

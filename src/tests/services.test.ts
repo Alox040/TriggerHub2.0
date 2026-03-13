@@ -11,6 +11,8 @@ import {
   createSpotifyService,
   HttpRequestError,
   InMemoryObsTransport,
+  InMemoryTwitchTransport,
+  ObsSceneValidationError,
   ObsService,
   ResponseValidationError,
   type ObsTransport,
@@ -19,7 +21,12 @@ import {
   type OperationPolicy,
   SpotifyService,
   type SpotifyTransport,
+  TwitchActionTypes,
+  TwitchService,
 } from '../services'
+import { InMemoryEventBus } from '../core/event-bus'
+import type { StreamStatus } from '../services/twitch-service/contracts'
+import { FileSystemClipExporter } from '../services/clip-service/clipExporter.node'
 
 class FlakyObsTransport implements ObsTransport {
   private attempts = 0
@@ -73,6 +80,13 @@ describe('Services', () => {
     await expect(obs.switchScene('Main')).resolves.toBeUndefined()
   })
 
+  it('OBS service rejects empty scene names', async () => {
+    const obs = createObsService()
+    await obs.connect()
+
+    await expect(obs.switchScene('   ')).rejects.toBeInstanceOf(ObsSceneValidationError)
+  })
+
   it('Spotify service methods resolve', async () => {
     const spotify = createSpotifyService()
 
@@ -112,10 +126,7 @@ describe('Services', () => {
 
   it('creates clip files with filesystem exporter option', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'triggerhub-clip-test-'))
-    const clip = createClipService({
-      exporter: 'filesystem',
-      outputDir: dir,
-    })
+    const clip = new ClipService(new FileSystemClipExporter({ outputDir: dir }))
 
     await clip.startCapture()
     const path = await clip.saveClip()
@@ -194,6 +205,27 @@ describe('Services', () => {
     }
   })
 
+  it('requires http.baseUrl for OBS http transport', () => {
+    expect(() => createObsService({ transport: 'http' })).toThrow('OBS HTTP transport requires http.baseUrl')
+  })
+
+  it('trims scene names before sending them through the OBS http transport', async () => {
+    const fetchImpl = vi.fn(async () => jsonResponse(200, { success: true }))
+    const obs = createObsService({
+      transport: 'http',
+      http: { baseUrl: 'http://obs.test', fetchImpl },
+    })
+
+    await obs.connect()
+    await obs.switchScene('  Main Scene  ')
+
+    const calls = fetchImpl.mock.calls as unknown[][]
+    expect(calls).toHaveLength(2)
+    expect(JSON.parse(String(calls[1]?.[1] && (calls[1][1] as RequestInit).body))).toEqual({
+      sceneName: 'Main Scene',
+    })
+  })
+
   it('calls spotify http endpoints with expected routes', async () => {
     const fetchImpl = vi.fn(async () => jsonResponse(200, { success: true }))
 
@@ -224,6 +256,78 @@ describe('Services', () => {
     })
 
     await expect(spotify.play()).rejects.toBeInstanceOf(ServiceOperationError)
+  })
+
+  it('supports twitch connect and disconnect lifecycle', async () => {
+    const eventBus = new InMemoryEventBus()
+    const transport = new InMemoryTwitchTransport()
+    const twitch = new TwitchService(transport, eventBus)
+
+    await twitch.connect('TriggerHubChannel')
+
+    expect(transport.getSnapshot()).toMatchObject({
+      connected: true,
+      channelName: 'triggerhubchannel',
+    })
+    await expect(twitch.getStreamStatus()).resolves.toMatchObject({
+      channelName: 'triggerhubchannel',
+      isLive: false,
+    })
+
+    await twitch.disconnect()
+
+    expect(transport.getSnapshot()).toMatchObject({
+      connected: false,
+      channelName: 'triggerhubchannel',
+    })
+    await expect(twitch.getStreamStatus()).rejects.toThrow('must be connected')
+  })
+
+  it('emits twitch stream status events while polling', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const eventBus = new InMemoryEventBus()
+      const transport = new InMemoryTwitchTransport()
+      const twitch = new TwitchService(transport, eventBus, undefined, 30_000)
+      const streamEvents: Array<{ topic: string; isLive: boolean }> = []
+
+      eventBus.subscribe<StreamStatus>(TwitchActionTypes.ON_STREAM_LIVE, async (payload: StreamStatus) => {
+        streamEvents.push({ topic: TwitchActionTypes.ON_STREAM_LIVE, isLive: payload.isLive })
+      })
+      eventBus.subscribe<StreamStatus>(TwitchActionTypes.ON_STREAM_OFFLINE, async (payload: StreamStatus) => {
+        streamEvents.push({ topic: TwitchActionTypes.ON_STREAM_OFFLINE, isLive: payload.isLive })
+      })
+
+      await twitch.connect('streamer')
+
+      transport.setStreamStatus({
+        isLive: true,
+        title: 'Going Live',
+        categoryName: 'Gaming',
+        viewerCount: 42,
+        startedAt: '2026-03-13T10:00:00.000Z',
+      })
+      await vi.advanceTimersByTimeAsync(30_000)
+
+      transport.setStreamStatus({
+        isLive: false,
+        title: null,
+        categoryName: null,
+        viewerCount: 0,
+        startedAt: null,
+      })
+      await vi.advanceTimersByTimeAsync(30_000)
+
+      expect(streamEvents).toEqual([
+        { topic: TwitchActionTypes.ON_STREAM_LIVE, isLive: true },
+        { topic: TwitchActionTypes.ON_STREAM_OFFLINE, isLive: false },
+      ])
+
+      await twitch.disconnect()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
 

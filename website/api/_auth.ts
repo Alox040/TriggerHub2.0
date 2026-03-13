@@ -1,9 +1,11 @@
 import crypto from 'node:crypto'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import type { UserRole } from '../src/modules/access-control/types'
 
 export const PRELAUNCH_SESSION_COOKIE = 'th_prelaunch_session'
+export const PRELAUNCH_CSRF_COOKIE = 'th_csrf'
 
-interface OwnerServerConfig {
+export interface OwnerServerConfig {
   userId: string
   email: string
   username: string
@@ -14,14 +16,31 @@ interface OwnerServerConfig {
   sessionTtlMs: number
 }
 
-interface SignedSessionPayload {
+export interface SignedSessionPayload {
   userId: string
   email: string
-  role: 'owner'
+  role: UserRole
   issuedAt: string
   expiresAt: string
   lastAuthenticatedAt: string
   sessionVersion: number
+  tokenId: string
+}
+
+interface JwtHeader {
+  alg: 'HS256'
+  typ: 'JWT'
+}
+
+interface JwtSessionClaims {
+  sub: string
+  email: string
+  role: UserRole
+  iat: number
+  exp: number
+  lat: string
+  ver: number
+  jti: string
 }
 
 const readEnv = (name: string): string => (process.env[name] ?? '').trim()
@@ -77,47 +96,143 @@ const base64UrlDecode = (value: string): Buffer => {
   return Buffer.from(padded, 'base64')
 }
 
-const signPayload = (payload: string, secret: string): string =>
+const signValue = (payload: string, secret: string): string =>
   base64UrlEncode(crypto.createHmac('sha256', secret).update(payload).digest())
 
-const encodeSessionCookieValue = (payload: SignedSessionPayload, secret: string): string => {
-  const payloadJson = JSON.stringify(payload)
-  const encodedPayload = base64UrlEncode(payloadJson)
-  const signature = signPayload(encodedPayload, secret)
-  return `${encodedPayload}.${signature}`
+const parseCookies = (req: Pick<VercelRequest, 'headers'>): Record<string, string> => {
+  const cookieHeader = req.headers.cookie ?? ''
+
+  return cookieHeader
+    .split(';')
+    .map((entry: string) => entry.trim())
+    .filter(Boolean)
+    .reduce<Record<string, string>>((cookies, entry) => {
+      const separatorIndex = entry.indexOf('=')
+      if (separatorIndex <= 0) {
+        return cookies
+      }
+
+      const key = entry.slice(0, separatorIndex)
+      const value = entry.slice(separatorIndex + 1)
+      cookies[key] = value
+      return cookies
+    }, {})
 }
 
-export const decodeSessionCookieValue = (
-  cookieValue: string | undefined,
-  secret: string,
-): SignedSessionPayload | null => {
-  if (!cookieValue) {
+const createJwt = (claims: JwtSessionClaims, secret: string): string => {
+  const header: JwtHeader = { alg: 'HS256', typ: 'JWT' }
+  const encodedHeader = base64UrlEncode(JSON.stringify(header))
+  const encodedClaims = base64UrlEncode(JSON.stringify(claims))
+  const signature = signValue(`${encodedHeader}.${encodedClaims}`, secret)
+  return `${encodedHeader}.${encodedClaims}.${signature}`
+}
+
+const verifyJwt = (token: string | undefined, secret: string): JwtSessionClaims | null => {
+  if (!token) {
     return null
   }
 
-  const [encodedPayload, providedSignature] = cookieValue.split('.')
-  if (!encodedPayload || !providedSignature) {
+  const [encodedHeader, encodedClaims, providedSignature] = token.split('.')
+  if (!encodedHeader || !encodedClaims || !providedSignature) {
     return null
   }
 
-  const expectedSignature = signPayload(encodedPayload, secret)
-  const provided = Buffer.from(providedSignature)
+  const expectedSignature = signValue(`${encodedHeader}.${encodedClaims}`, secret)
+  const provided = Buffer.from(providedSignature, 'utf8')
   const expected = Buffer.from(expectedSignature)
   if (provided.length !== expected.length || !crypto.timingSafeEqual(provided, expected)) {
     return null
   }
 
   try {
-    const payload = JSON.parse(base64UrlDecode(encodedPayload).toString('utf8')) as SignedSessionPayload
-    if (!payload.userId || !payload.email || payload.role !== 'owner') {
+    const header = JSON.parse(base64UrlDecode(encodedHeader).toString('utf8')) as Partial<JwtHeader>
+    if (header.alg !== 'HS256' || header.typ !== 'JWT') {
       return null
     }
-    if (Date.parse(payload.expiresAt) <= Date.now()) {
+
+    const claims = JSON.parse(base64UrlDecode(encodedClaims).toString('utf8')) as Partial<JwtSessionClaims>
+    const sessionVersion = claims.ver
+    if (
+      typeof claims.sub !== 'string' ||
+      !claims.sub ||
+      typeof claims.email !== 'string' ||
+      !claims.email ||
+      (claims.role !== 'owner' && claims.role !== 'user') ||
+      typeof claims.iat !== 'number' ||
+      typeof claims.exp !== 'number' ||
+      typeof claims.lat !== 'string' ||
+      typeof sessionVersion !== 'number' ||
+      !Number.isInteger(sessionVersion) ||
+      sessionVersion < 1 ||
+      typeof claims.jti !== 'string' ||
+      !claims.jti
+    ) {
       return null
     }
-    return payload
+
+    const nowSeconds = Math.floor(Date.now() / 1000)
+    if (claims.exp <= nowSeconds || claims.iat > claims.exp) {
+      return null
+    }
+
+    return {
+      sub: claims.sub,
+      email: claims.email,
+      role: claims.role,
+      iat: claims.iat,
+      exp: claims.exp,
+      lat: claims.lat,
+      ver: sessionVersion,
+      jti: claims.jti,
+    }
   } catch {
     return null
+  }
+}
+
+export const readCsrfCookie = (req: Pick<VercelRequest, 'headers'>): string | null =>
+  parseCookies(req)[PRELAUNCH_CSRF_COOKIE] ?? null
+
+const createCsrfToken = (): string => crypto.randomBytes(32).toString('base64url')
+
+export const ensureCsrfCookie = (
+  req: Pick<VercelRequest, 'headers'>,
+  res: VercelResponse,
+  maxAgeSeconds: number,
+): string => {
+  const existingToken = readCsrfCookie(req)
+  if (existingToken) {
+    return existingToken
+  }
+
+  const csrfToken = createCsrfToken()
+  const secureFlag = process.env.NODE_ENV === 'production' ? '; Secure' : ''
+  res.setHeader(
+    'Set-Cookie',
+    `${PRELAUNCH_CSRF_COOKIE}=${csrfToken}; SameSite=Strict; Path=/; Max-Age=${maxAgeSeconds}${secureFlag}`,
+  )
+
+  return csrfToken
+}
+
+export const decodeSessionCookieValue = (
+  cookieValue: string | undefined,
+  secret: string,
+): SignedSessionPayload | null => {
+  const claims = verifyJwt(cookieValue, secret)
+  if (!claims) {
+    return null
+  }
+
+  return {
+    userId: claims.sub,
+    email: claims.email,
+    role: claims.role,
+    issuedAt: new Date(claims.iat * 1000).toISOString(),
+    expiresAt: new Date(claims.exp * 1000).toISOString(),
+    lastAuthenticatedAt: claims.lat,
+    sessionVersion: claims.ver,
+    tokenId: claims.jti,
   }
 }
 
@@ -144,16 +259,33 @@ export const createOwnerSessionPayload = (config: OwnerServerConfig): SignedSess
     expiresAt: expiresAt.toISOString(),
     lastAuthenticatedAt: now.toISOString(),
     sessionVersion: 1,
+    tokenId: crypto.randomUUID(),
   }
 }
 
 export const writeSessionCookie = (res: VercelResponse, payload: SignedSessionPayload, config: OwnerServerConfig) => {
-  const cookieValue = encodeSessionCookieValue(payload, config.sessionSecret)
   const secureFlag = process.env.NODE_ENV === 'production' ? '; Secure' : ''
   const maxAge = Math.floor(config.sessionTtlMs / 1000)
+  const sessionToken = createJwt(
+    {
+      sub: payload.userId,
+      email: payload.email,
+      role: payload.role,
+      iat: Math.floor(Date.parse(payload.issuedAt) / 1000),
+      exp: Math.floor(Date.parse(payload.expiresAt) / 1000),
+      lat: payload.lastAuthenticatedAt,
+      ver: payload.sessionVersion,
+      jti: payload.tokenId,
+    },
+    config.sessionSecret,
+  )
+
   res.setHeader(
     'Set-Cookie',
-    `${PRELAUNCH_SESSION_COOKIE}=${cookieValue}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secureFlag}`,
+    [
+      `${PRELAUNCH_SESSION_COOKIE}=${sessionToken}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secureFlag}`,
+      `${PRELAUNCH_CSRF_COOKIE}=${createCsrfToken()}; SameSite=Strict; Path=/; Max-Age=${maxAge}${secureFlag}`,
+    ] as unknown as string,
   )
 }
 
@@ -161,22 +293,37 @@ export const clearSessionCookie = (res: VercelResponse) => {
   const secureFlag = process.env.NODE_ENV === 'production' ? '; Secure' : ''
   res.setHeader(
     'Set-Cookie',
-    `${PRELAUNCH_SESSION_COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secureFlag}`,
+    [
+      `${PRELAUNCH_SESSION_COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secureFlag}`,
+      `${PRELAUNCH_CSRF_COOKIE}=; SameSite=Strict; Path=/; Max-Age=0${secureFlag}`,
+    ] as unknown as string,
   )
 }
 
 export const readSessionCookie = (req: VercelRequest, config: OwnerServerConfig): SignedSessionPayload | null => {
-  const cookieHeader = req.headers.cookie ?? ''
-  const cookieValue = cookieHeader
-    .split(';')
-    .map((entry: string) => entry.trim())
-    .find((entry: string) => entry.startsWith(`${PRELAUNCH_SESSION_COOKIE}=`))
-    ?.slice(PRELAUNCH_SESSION_COOKIE.length + 1)
+  const cookieValue = parseCookies(req)[PRELAUNCH_SESSION_COOKIE]
 
   return decodeSessionCookieValue(cookieValue, config.sessionSecret)
 }
 
+export const applySecurityHeaders = (res: VercelResponse) => {
+  res.setHeader('Cache-Control', 'no-store, private')
+  res.setHeader('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin')
+  res.setHeader('Origin-Agent-Cluster', '?1')
+  res.setHeader('Referrer-Policy', 'no-referrer')
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('X-DNS-Prefetch-Control', 'off')
+  res.setHeader('X-Download-Options', 'noopen')
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('X-Permitted-Cross-Domain-Policies', 'none')
+  res.setHeader('X-XSS-Protection', '0')
+}
+
 export const sendJson = (res: VercelResponse, status: number, payload: unknown) => {
+  applySecurityHeaders(res)
   res.status(status).setHeader('Content-Type', 'application/json')
   res.send(JSON.stringify(payload))
 }

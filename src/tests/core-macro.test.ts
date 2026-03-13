@@ -82,4 +82,40 @@ describe('MacroEngine', () => {
       }),
     ).rejects.toThrow('already registered')
   })
+
+  it('updates an existing macro and preserves its identity', async () => {
+    const engine = new MacroEngine(async () => undefined)
+    await engine.registerMacro({
+      id: 'm-update',
+      name: 'Original',
+      enabled: true,
+      steps: [],
+    })
+
+    await engine.updateMacro({
+      id: 'm-update',
+      name: 'Updated',
+      enabled: false,
+      steps: [{ id: 's-updated', type: 'delay', durationMs: 0 }],
+    })
+
+    expect(engine.getMacroById('m-update')).toMatchObject({
+      id: 'm-update',
+      name: 'Updated',
+      enabled: false,
+    })
+  })
+
+  it('throws when updating an unknown macro', async () => {
+    const engine = new MacroEngine(async () => undefined)
+
+    await expect(
+      engine.updateMacro({
+        id: 'missing-macro',
+        name: 'Missing',
+        enabled: true,
+        steps: [],
+      }),
+    ).rejects.toThrow('not registered')
+  })
 })

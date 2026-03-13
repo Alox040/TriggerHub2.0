@@ -9,6 +9,7 @@ import {
   type MacroStep,
 } from './macroTypes'
 import { runMacro } from './macroRunner'
+import { recordRuntimeMetric } from '../../runtime/runtimeMonitor'
 
 const noopEventBus: EventBusPort = {
   publish: async () => undefined,
@@ -27,24 +28,34 @@ export class MacroEngine implements MacroEnginePort {
   ) {}
 
   public async registerMacro(macro: Macro): Promise<void> {
-    if (!macro.id.trim()) {
-      throw new MacroInvariantError('Macro id must not be empty')
-    }
-
-    if (!macro.name.trim()) {
-      throw new MacroInvariantError('Macro name must not be empty')
-    }
-
+    this.assertValidMacro(macro)
     if (this.macroMap.has(macro.id)) {
       throw new MacroInvariantError(`Macro "${macro.id}" is already registered`)
     }
-
-    macro.steps.forEach((step) => this.assertValidStep(step, macro.id))
 
     this.macroMap.set(macro.id, {
       ...macro,
       createdAt: Date.now(),
     })
+  }
+
+  public async updateMacro(macro: Macro): Promise<void> {
+    this.assertValidMacro(macro)
+
+    const existing = this.macroMap.get(macro.id)
+    if (!existing) {
+      throw new MacroInvariantError(`Macro "${macro.id}" is not registered`)
+    }
+
+    this.macroMap.set(macro.id, {
+      ...macro,
+      createdAt: existing.createdAt,
+      lastRunAt: existing.lastRunAt,
+    })
+  }
+
+  public async removeMacro(macroId: string): Promise<void> {
+    this.macroMap.delete(macroId)
   }
 
   public async runMacro(macroId: string, options: MacroRunOptions = {}): Promise<void> {
@@ -64,6 +75,7 @@ export class MacroEngine implements MacroEnginePort {
     depth = 0,
     triggerPayload?: Record<string, unknown>,
   ): Promise<MacroExecutionResult> {
+    const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
     const macro = this.macroMap.get(macroId)
     if (!macro) {
       throw new Error(`Macro "${macroId}" is not registered`)
@@ -78,9 +90,27 @@ export class MacroEngine implements MacroEnginePort {
       }
     }
 
-    const result = await runMacro(macro, this.stepHandler, options, depth, triggerPayload)
-    macro.lastRunAt = result.executedAt
-    return result
+    try {
+      const result = await runMacro(macro, this.stepHandler, options, depth, triggerPayload)
+      macro.lastRunAt = result.executedAt
+      const finishedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
+      recordRuntimeMetric('macro_execution_time', Math.max(0, Number((finishedAt - startedAt).toFixed(3))), {
+        macroId,
+        depth,
+        skipped: false,
+        success: true,
+      })
+      return result
+    } catch (error) {
+      const finishedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
+      recordRuntimeMetric('macro_execution_time', Math.max(0, Number((finishedAt - startedAt).toFixed(3))), {
+        macroId,
+        depth,
+        skipped: false,
+        success: false,
+      })
+      throw error
+    }
   }
 
   public getMacroById(macroId: string): MacroRecord | undefined {
@@ -93,6 +123,18 @@ export class MacroEngine implements MacroEnginePort {
 
   public hasMacro(macroId: string): boolean {
     return this.macroMap.has(macroId)
+  }
+
+  private assertValidMacro(macro: Macro): void {
+    if (!macro.id.trim()) {
+      throw new MacroInvariantError('Macro id must not be empty')
+    }
+
+    if (!macro.name.trim()) {
+      throw new MacroInvariantError('Macro name must not be empty')
+    }
+
+    macro.steps.forEach((step) => this.assertValidStep(step, macro.id))
   }
 
   private assertValidStep(step: MacroStep, macroId: string): void {

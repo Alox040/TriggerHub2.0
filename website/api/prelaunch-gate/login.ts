@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { sendJson } from '../_auth'
+import { ensureCsrfCookie, sendJson } from '../_auth'
+import { requireMethod } from '../_middleware'
 import {
   createPrelaunchGatePayload,
   loadPrelaunchGateConfig,
@@ -9,8 +10,7 @@ import {
 import { enforceLoginRateLimit, logSecurityEvent } from '../_security'
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    sendJson(res, 405, { error: { code: 'AUTH_INVALID_REQUEST', message: 'Method not allowed' } })
+  if (!requireMethod(req, res, ['POST'])) {
     return
   }
 
@@ -25,6 +25,17 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     sendJson(res, 503, {
       authorized: false,
       error: { code: 'PRELAUNCH_GATE_UNAVAILABLE', message: 'Prelaunch access gate config is incomplete' },
+    })
+    return
+  }
+
+  const csrfToken = ensureCsrfCookie(req, res, Math.floor(config.gateTtlMs / 1000))
+  const csrfHeader = typeof req.headers['x-csrf-token'] === 'string' ? req.headers['x-csrf-token'] : ''
+  if (!csrfHeader || csrfHeader !== csrfToken) {
+    logSecurityEvent('prelaunch_gate_login_failed', req, { reason: 'csrf_missing_or_invalid' })
+    sendJson(res, 403, {
+      authorized: false,
+      error: { code: 'AUTH_CSRF_REQUIRED', message: 'A valid CSRF token is required' },
     })
     return
   }

@@ -1,12 +1,7 @@
 import type { ClipServicePort } from '../../types'
 import { defaultOperationPolicy, runWithPolicy, type OperationPolicy } from '../shared'
-import {
-  BrowserClipExporter,
-  exportClip,
-  InMemoryClipExporter,
-  type ClipExporter,
-  type ClipExportRequest,
-} from './clipExporter.browser'
+import { exportClip, InMemoryClipExporter } from './clipExporter.browser'
+import type { ClipExporter } from './clipExporter.interface'
 import { buildClipBuffer } from './clipProcessor'
 
 export class ClipService implements ClipServicePort {
@@ -45,26 +40,14 @@ export class ClipService implements ClipServicePort {
 }
 
 export interface CreateClipServiceOptions {
-  exporter?: 'memory' | 'filesystem'
-  outputDir?: string
+  exporter?: ClipExporter
   policy?: Partial<OperationPolicy>
 }
 
 export const createClipService = (options: CreateClipServiceOptions = {}): ClipService => {
-  const exporterKind = options.exporter ?? 'memory'
-
-  if (exporterKind === 'filesystem') {
-    const request: ClipExportRequest = {}
-    if (options.outputDir) {
-      request.outputDir = options.outputDir
-    }
-
-    return new ClipService(new BrowserClipExporter(request), options.policy)
-  }
-
-  return new ClipService(new InMemoryClipExporter(), options.policy)
+  return new ClipService(options.exporter ?? new InMemoryClipExporter(), options.policy)
 }
 
 export * from './clipProcessor'
 export * from './clipExporter.browser'
-export * from './contracts'
+export * from './clipExporter.interface'

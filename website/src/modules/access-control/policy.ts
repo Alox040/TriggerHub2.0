@@ -26,6 +26,10 @@ export const evaluateRouteAccess = (
     }
   }
 
+  if (policy.allowedRoles && !policy.allowedRoles.includes(context.identity.role)) {
+    return { allow: false, reason: 'insufficient_role', redirectTo: '/forbidden' }
+  }
+
   if (policy.ownerOnly && context.identity.role !== 'owner') {
     return { allow: false, reason: 'insufficient_role', redirectTo: '/forbidden' }
   }

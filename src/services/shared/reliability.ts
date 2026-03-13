@@ -1,3 +1,5 @@
+import { recordRuntimeMetric } from '../../runtime/runtimeMonitor'
+
 export interface OperationPolicy {
   timeoutMs: number
   retries: number
@@ -58,10 +60,24 @@ export const runWithPolicy = async <T>(
   let lastError: unknown = undefined
 
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
     try {
-      return await withTimeout(operation, policy.timeoutMs, task)
+      const result = await withTimeout(operation, policy.timeoutMs, task)
+      const finishedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
+      recordRuntimeMetric('service_latency', Math.max(0, Number((finishedAt - startedAt).toFixed(3))), {
+        operation,
+        attempt,
+        success: true,
+      })
+      return result
     } catch (error) {
       lastError = error
+      const finishedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
+      recordRuntimeMetric('service_latency', Math.max(0, Number((finishedAt - startedAt).toFixed(3))), {
+        operation,
+        attempt,
+        success: false,
+      })
 
       if (attempt < attempts) {
         await delay(policy.retryDelayMs)

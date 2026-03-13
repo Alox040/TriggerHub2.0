@@ -11,6 +11,6 @@
     "jsx": "react-jsx",
     "types": ["node", "vitest/globals"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vitest.config.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vitest.config.ts", "website/src/types/**/*.d.ts"],
   "exclude": ["design", "node_modules", "dist", "out"]
 }

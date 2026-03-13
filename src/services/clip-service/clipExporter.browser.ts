@@ -1,23 +1,12 @@
 import type { ClipBuffer } from './clipProcessor'
-import { ClipExportValidationError, isClipExportResult, type ClipExporter, type ClipExportResult } from './contracts'
+import type { ClipExporter, ClipExportResult } from './clipExporter.interface'
+import { exportClipWithValidation } from './clipExporter.shared'
 
 export interface ClipExportRequest {
   outputDir?: string
 }
 
-interface ElectronClipExporterApi {
-  exportClip(buffer: ClipBuffer, request?: ClipExportRequest): Promise<ClipExportResult>
-}
-
-declare global {
-  interface Window {
-    triggerHubElectron?: {
-      clipExporter?: ElectronClipExporterApi
-    }
-  }
-}
-
-const getElectronClipExporterApi = (): ElectronClipExporterApi | undefined => {
+const getElectronClipExporterApi = (): TriggerHubElectron['clipExporter'] | undefined => {
   if (typeof window === 'undefined') {
     return undefined
   }
@@ -58,10 +47,5 @@ export const exportClip = async (
   buffer: ClipBuffer,
   exporter: ClipExporter = new BrowserClipExporter(),
 ): Promise<ClipExportResult> => {
-  const result = await exporter.export(buffer)
-  if (!isClipExportResult(result)) {
-    throw new ClipExportValidationError(result)
-  }
-
-  return result
+  return exportClipWithValidation(buffer, exporter)
 }
