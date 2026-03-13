@@ -5,12 +5,12 @@ Generated: 2026-03-10T23:46:30.647Z
 ## 1. Duplicate Files
 
 - Exact duplicate groups found: 75
-- High-confidence duplicate tree: `agent/agents` vs `agents/` (18 exact duplicate groups). The workflow references `agent/agents/`, so that tree is the canonical copy today.
+- High-confidence duplicate tree was `agent/agents` vs `agents/` before consolidation.
 - High-confidence duplicate tree: `design/` vs `website/` (57 exact duplicate groups). Most exact matches are copied UI primitives, shared styles, and metadata files.
 - Near-duplicate candidates found: 12. Strongest pairs include `design/package.json` vs `website/package.json`, `design/index.html` vs `website/index.html`, and `design/vite.config.ts` vs `website/vite.config.ts`.
 
 Recommended canonical files:
-- Keep `agent/agents/**` as canonical for the agent system until workflow paths are changed.
+- Keep `agents/**` as the canonical agent system tree.
 - Keep `website/**` as canonical for the live marketing/product website.
 - Treat `design/**` as a separate prototype workspace only if it is still intentionally maintained; otherwise remove/archive it wholesale.
 
@@ -29,7 +29,7 @@ Recommended canonical files:
 
 ## 3. Manual Review Required
 
-- Entire `agents/**` tree: duplicate of `agent/agents/**` with no detected workflow usage.
+- Legacy duplicate tree `agent/agents/**` has been removed after migrating legacy-only files into `agents/**`.
 - Entire `design/**` workspace: internally consistent and buildable, but separate from the active root app. Remove only if the prototype is no longer needed.
 - Unreferenced UI/component leaves: 97 files, concentrated in `website/src/components/**`, `website/src/components/ui/**`, `design/src/app/components/ui/**`, and a few root `src/ui/components/**` leaves.
 - Standalone analysis/context documents such as `architecture-decisions.md`, `change-log.md`, and `dependency_report.txt` are not in the active code path. Keep them only if they still serve documentation or audit purposes.

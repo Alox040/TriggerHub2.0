@@ -1,0 +1,15 @@
+{
+  "name": "Plugin System",
+  "status": "implemented",
+  "summary": "Plugins werden zentral registriert, gelistet und gesammelt aktiviert oder deaktiviert; Aktivierungs- und Deaktivierungsfehler werden dabei pro Plugin isoliert geloggt.",
+  "sourceOfTruth": [
+    "src/plugins/pluginRegistry.ts",
+    "src/plugins/example-plugin/plugin.ts"
+  ],
+  "notes": [
+    "Die Registry verhindert doppelte Registrierungen über die Plugin-ID.",
+    "`activateAll` und `deactivateAll` iterieren über alle registrierten Plugins und stoppen bei Fehlern einzelner Plugins nicht den Gesamtlauf.",
+    "Das Example-Plugin implementiert ein `PluginModule` mit `id`, `name`, idempotenter Aktivierung und separater Deaktivierung.",
+    "Das Example-Plugin startet bei Aktivierung eine konfigurationsbasierte Automation über den übergebenen `PluginContext`."
+  ]
+}

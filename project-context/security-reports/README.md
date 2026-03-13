@@ -11,7 +11,7 @@ Dieser Ordner definiert den Standard-Output für Security-Audits.
 - `project-context/security-reports/security-rebuild-input.md`
 
 ## Kurzanleitung für den Security Audit Run
-1. Security-Audit-Agent starten (`agent/agents/core/40-security-audit-agent.md`).
+1. Security-Audit-Agent starten (`agents/core/40-security-audit-agent.md`).
 2. Scope für den ersten Baseline-Run setzen:
    - gesamtes Repository
    - Fokus auf reale/potenzielle Risiken, keine Platzhalter

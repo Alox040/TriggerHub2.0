@@ -171,7 +171,7 @@ Eine skalierungsfähige Struktur sollte in drei Ebenen wachsen:
 ## 7. Agentensystem für das Projekt
 
 ### Agent-System-Agent: sinnvoller Einsatz
-Das Projekt hat bereits ein Rollenmodell (`agent/agents/core/*`). Es eignet sich gut für Entwicklungskoordination, solange Rollen klar operationalisiert werden.
+Das Projekt hat bereits ein Rollenmodell (`agents/core/*`). Es eignet sich gut für Entwicklungskoordination, solange Rollen klar operationalisiert werden.
 
 ### Sinnvolle feste Agentenrollen
 - Orchestrator (Priorisierung, Scope-Kontrolle)

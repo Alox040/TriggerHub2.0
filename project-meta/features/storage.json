@@ -1,0 +1,19 @@
+{
+  "name": "Storage",
+  "status": "implemented",
+  "summary": "Die Persistenz für Runtime-Daten läuft über eine Renderer-seitige IPC-Bridge auf JSON-Dateien im Electron-Main-Prozess; Trigger und Makros werden beim Start geladen und beim Stop gespeichert.",
+  "sourceOfTruth": [
+    "src/storage/ipcStorageBridge.ts",
+    "electron/jsonFileStorage.cjs",
+    "electron/preload.cjs",
+    "electron/main.cjs",
+    "src/app/bootstrap.ts",
+    "src/tests/storage.test.ts",
+    "src/tests/ipc-storage-bridge.e2e.test.ts"
+  ],
+  "notes": [
+    "Die Renderer-Bridge liest und schreibt über `window.triggerHubElectron.storage` und fällt ohne verfügbare API auf `null` bzw. No-Op zurück.",
+    "Der Electron-Speicher nutzt JSON-Dateien unter `app.getPath('userData')/TriggerHub2` und legt Zielverzeichnisse rekursiv an.",
+    "Ein Electron-E2E-Test verifiziert den echten IPC-Roundtrip für Laden und Speichern."
+  ]
+}

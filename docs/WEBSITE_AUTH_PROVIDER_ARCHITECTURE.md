@@ -24,10 +24,23 @@ Date: 2026-03-10
 
 ### `OwnerAuthProvider`
 
-- Uses ENV-backed owner credentials (`VITE_OWNER_*`)
-- Performs password verification
-- Returns owner identity for session creation
-- Validates hydrated session identity against configured owner
+- Legacy client-side adapter retained for tests and migration context
+- Must not be used for deployed prelaunch builds because client env values are bundle-visible
+
+### Temporary Prelaunch Server Auth
+
+- Uses server-side env values (`OWNER_*`, `PRELAUNCH_SESSION_SECRET`)
+- Uses an additional server-side shared secret gate (`PRELAUNCH_ACCESS_KEY`) before owner auth
+- Performs password verification on the server
+- Issues signed HttpOnly cookie
+- Hydrates browser auth state via `GET /api/auth/me`
+
+### Prelaunch Gate Layer
+
+- Separate from owner identity/authentication
+- Verified through `/api/prelaunch-gate/*`
+- Issues its own signed HttpOnly gate cookie
+- Enforced ahead of `/api/auth/*`
 
 ## Service Boundary
 
@@ -46,6 +59,6 @@ Date: 2026-03-10
 
 To integrate backend auth later:
 
-1. Add a new provider adapter (e.g. `BackendAuthProvider`).
-2. Keep `AuthService` unchanged.
-3. Swap provider wiring in `AuthProvider`.
+1. Replace the temporary signed-cookie prelaunch endpoints with the planned backend auth service.
+2. Keep the browser-side contract centered on `GET /auth/me`, `POST /auth/login`, `POST /auth/logout`.
+3. Remove the legacy client-side `OwnerAuthProvider` path from deployment wiring.

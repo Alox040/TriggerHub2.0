@@ -51,39 +51,39 @@ The project uses a **formal multi-agent coordination system** with 10 named agen
 
 | # | Agent Name | File Path | Type | Language |
 |---|---|---|---|---|
-| 0 | **Global Rules** | `agent/agents/core/00-agent-rules.md` | Rules (applies to all) | German |
-| M | **Master Orchestrator** | `agent/agents/master-orchestrator.md` | Meta-prompt / coordinator | German |
-| 1 | **Orchestrator Agent** | `agent/agents/core/01-orchestrator.md` | Coordinator | German |
-| 2 | **Product Agent** | `agent/agents/core/02-product.md` | Strategy | German |
-| 3 | **Architecture Agent** | `agent/agents/core/03-architecture.md` | Technical design | German |
-| 4 | **Implementation Agent** | `agent/agents/core/04-implementation.md` | Code delivery | German |
-| 5 | **UI/UX Agent** | `agent/agents/core/05-uiux.md` | Interface design | German |
-| 6 | **QA Agent** | `agent/agents/core/06-qa.md` | Quality assurance | German |
-| 7 | **Ops Agent** | `agent/agents/core/07-ops.md` | Build / deployment | German |
-| 8 | **Documentation Agent** | `agent/agents/core/08-docs.md` | Knowledge capture | German |
-| 9 | **Auto-Update Agent** | `agent/agents/core/09-autoupdate.md` | Update mechanism | German |
+| 0 | **Global Rules** | `agents/core/00-agent-rules.md` | Rules (applies to all) | German |
+| M | **Master Orchestrator** | `agents/master-orchestrator.md` | Meta-prompt / coordinator | German |
+| 1 | **Orchestrator Agent** | `agents/core/01-orchestrator.md` | Coordinator | German |
+| 2 | **Product Agent** | `agents/core/02-product.md` | Strategy | German |
+| 3 | **Architecture Agent** | `agents/core/03-architecture.md` | Technical design | German |
+| 4 | **Implementation Agent** | `agents/core/04-implementation.md` | Code delivery | German |
+| 5 | **UI/UX Agent** | `agents/core/05-uiux.md` | Interface design | German |
+| 6 | **QA Agent** | `agents/core/06-qa.md` | Quality assurance | German |
+| 7 | **Ops Agent** | `agents/core/07-ops.md` | Build / deployment | German |
+| 8 | **Documentation Agent** | `agents/core/08-docs.md` | Knowledge capture | German |
+| 9 | **Auto-Update Agent** | `agents/core/09-autoupdate.md` | Update mechanism | German |
 
 ### System Templates
 
 | Template | File Path | Purpose |
 |---|---|---|
-| Task Template | `agent/agents/system/task-template.md` | Standard task definition format |
-| Handoff Template | `agent/agents/system/handoff-template.md` | Structured agent-to-agent handoff |
-| Decision Log Template | `agent/agents/system/decision-log-template.md` | ADR format |
-| Review Template | `agent/agents/system/review-template.md` | Code review format |
-| Context Template | `agent/agents/system/context-template.md` | Project context documentation |
+| Task Template | `agents/system/task-template.md` | Standard task definition format |
+| Handoff Template | `agents/system/handoff-template.md` | Structured agent-to-agent handoff |
+| Decision Log Template | `agents/system/decision-log-template.md` | ADR format |
+| Review Template | `agents/system/review-template.md` | Code review format |
+| Context Template | `agents/system/context-template.md` | Project context documentation |
 
 ### Source of Truth Files (Project Context)
 
 | File | Path | Status |
 |---|---|---|
-| Product Overview | `agent/agents/project-context/product-overview.md` | Empty |
-| Architecture Overview | `agent/agents/project-context/architecture-overview.md` | Empty |
-| Design Guidelines | `agent/agents/project-context/design-guidelines.md` | Empty |
-| Active Tasks | `agent/agents/project-context/active-tasks.md` | Has content |
-| Decision Log | `agent/agents/project-context/decision-log.md` | Has content |
-| Known Issues | `agent/agents/project-context/known-issues.md` | Empty |
-| Changelog | `agent/agents/project-context/changelog.md` | Has content |
+| Product Overview | `agents/project-context/product-overview.md` | Empty |
+| Architecture Overview | `agents/project-context/architecture-overview.md` | Empty |
+| Design Guidelines | `agents/project-context/design-guidelines.md` | Empty |
+| Active Tasks | `agents/project-context/active-tasks.md` | Has content |
+| Decision Log | `agents/project-context/decision-log.md` | Has content |
+| Known Issues | `agents/project-context/known-issues.md` | Empty |
+| Changelog | `agents/project-context/changelog.md` | Has content |
 
 ---
 
@@ -455,11 +455,11 @@ Applies to ALL agents. Not a worker — defines governing principles.
 ```
 docs/triggerhub_master_prompt.md  (Vision — read by all agents before acting)
          |
-agent/agents/core/00-agent-rules.md  (Global governance — applies to all)
+agents/core/00-agent-rules.md  (Global governance — applies to all)
          |
-agent/agents/master-orchestrator.md  (Meta-coordinator)
+agents/master-orchestrator.md  (Meta-coordinator)
          |
-agent/agents/core/01-orchestrator.md  (Runtime coordinator)
+agents/core/01-orchestrator.md  (Runtime coordinator)
          |
     ┌────┼────────────────────────────────────────────┐
     |    |         |          |       |       |        |        |
@@ -485,7 +485,7 @@ product arch  implement   uiux    qa     ops       docs  autoupdate
 | 07-ops | resolves build/deploy blockers for | 04-implementation |
 | 08-docs | documents decisions from | 03-architecture |
 | 09-autoupdate | integrates with | 07-ops (build/release pipeline) |
-| Any agent | writes handoff using | `agent/agents/system/handoff-template.md` |
+| Any agent | writes handoff using | `agents/system/handoff-template.md` |
 
 ### Handoff Protocol
 
@@ -785,7 +785,7 @@ Dieses Dokument ist die zentrale Orientierung für Architektur, Vision und Struk
 
 ---
 
-### PROMPT: `agent/agents/master-orchestrator.md` — Master Orchestrator
+### PROMPT: `agents/master-orchestrator.md` — Master Orchestrator
 
 ```markdown
 # PROJECT ORCHESTRATOR PROMPT
@@ -831,7 +831,7 @@ Output Struktur:
 
 ---
 
-### PROMPT: `agent/agents/core/00-agent-rules.md` — Global Agent Rules
+### PROMPT: `agents/core/00-agent-rules.md` — Global Agent Rules
 
 ```markdown
 # GLOBAL AGENT RULES
@@ -972,7 +972,7 @@ Nicht die "coolere". Nicht die "KI-mäßigere". Die bessere.
 
 ---
 
-### PROMPT: `agent/agents/core/01-orchestrator.md` — Orchestrator Agent
+### PROMPT: `agents/core/01-orchestrator.md` — Orchestrator Agent
 
 ```markdown
 # ORCHESTRATOR AGENT
@@ -1027,7 +1027,7 @@ Projektaufgaben strukturieren, priorisieren und an die passenden Agenten delegie
 
 ---
 
-### PROMPT: `agent/agents/core/02-product.md` — Product Agent
+### PROMPT: `agents/core/02-product.md` — Product Agent
 
 ```markdown
 # PRODUCT AGENT
@@ -1085,7 +1085,7 @@ Aus einer Idee ein klares Produktkonzept entwickeln.
 
 ---
 
-### PROMPT: `agent/agents/core/03-architecture.md` — Architecture Agent
+### PROMPT: `agents/core/03-architecture.md` — Architecture Agent
 
 ```markdown
 # ARCHITECTURE AGENT
@@ -1135,7 +1135,7 @@ Eine stabile, wartbare Systemstruktur definieren.
 
 ---
 
-### PROMPT: `agent/agents/core/04-implementation.md` — Implementation Agent
+### PROMPT: `agents/core/04-implementation.md` — Implementation Agent
 
 ```markdown
 # IMPLEMENTATION AGENT
@@ -1183,7 +1183,7 @@ Sauberen, stabilen Code liefern.
 
 ---
 
-### PROMPT: `agent/agents/core/05-uiux.md` — UI/UX Agent
+### PROMPT: `agents/core/05-uiux.md` — UI/UX Agent
 
 ```markdown
 # UI UX AGENT
@@ -1228,7 +1228,7 @@ Eine klare, konsistente und benutzerfreundliche Oberfläche.
 
 ---
 
-### PROMPT: `agent/agents/core/06-qa.md` — QA Agent
+### PROMPT: `agents/core/06-qa.md` — QA Agent
 
 ```markdown
 # QA AGENT
@@ -1271,7 +1271,7 @@ Fehler und Risiken frühzeitig erkennen.
 
 ---
 
-### PROMPT: `agent/agents/core/07-ops.md` — Ops Agent
+### PROMPT: `agents/core/07-ops.md` — Ops Agent
 
 ```markdown
 # OPS AGENT
@@ -1314,7 +1314,7 @@ Sicherstellen, dass das Projekt stabil läuft.
 
 ---
 
-### PROMPT: `agent/agents/core/08-docs.md` — Documentation Agent
+### PROMPT: `agents/core/08-docs.md` — Documentation Agent
 
 ```markdown
 # DOCUMENTATION AGENT
@@ -1356,7 +1356,7 @@ Das Projekt verständlich und wartbar halten.
 
 ---
 
-### PROMPT: `agent/agents/core/09-autoupdate.md` — Auto-Update Agent
+### PROMPT: `agents/core/09-autoupdate.md` — Auto-Update Agent
 
 ```markdown
 Aktiviere den Auto-Update-Agenten für dieses Projekt.
@@ -1452,7 +1452,7 @@ Beginne jetzt mit der Analyse des Projekts und aktiviere danach die Auto-Update-
 
 ---
 
-### SYSTEM TEMPLATE: `agent/agents/system/task-template.md`
+### SYSTEM TEMPLATE: `agents/system/task-template.md`
 
 ```markdown
 # TASK TEMPLATE
@@ -1496,7 +1496,7 @@ Beginne jetzt mit der Analyse des Projekts und aktiviere danach die Auto-Update-
 
 ---
 
-### SYSTEM TEMPLATE: `agent/agents/system/handoff-template.md`
+### SYSTEM TEMPLATE: `agents/system/handoff-template.md`
 
 ```markdown
 # HANDOFF TEMPLATE
@@ -1578,7 +1578,7 @@ docs/
 
 ### Runtime Configuration
 
-Agent behavior is configured entirely through files in `agent/agents/project-context/`:
+Agent behavior is configured entirely through files in `agents/project-context/`:
 
 | Config File | Purpose | Current State |
 |---|---|---|
@@ -1596,8 +1596,8 @@ Agents are **prompt-activated** — there is no automated scheduler, CI/CD trigg
 
 1. User provides a task or goal to an AI assistant
 2. AI assistant reads `docs/triggerhub_master_prompt.md` first (mandatory)
-3. AI assistant reads `agent/agents/core/00-agent-rules.md`
-4. AI assistant selects the appropriate agent prompt from `agent/agents/core/`
+3. AI assistant reads `agents/core/00-agent-rules.md`
+4. AI assistant selects the appropriate agent prompt from `agents/core/`
 5. AI assistant operates within that agent's role, constraints, and output format
 
 ### CI/CD Integration
@@ -1645,7 +1645,7 @@ The current agent system is capable of the following:
 - **Task decomposition:** Orchestrator Agent breaks goals into concrete tasks with priorities
 - **Agent selection:** Master Orchestrator routes work to the correct specialized agent
 - **Structured handoffs:** Handoff Template ensures no context loss between agents
-- **Decision logging:** All architecture decisions logged in `agent/agents/project-context/decision-log.md`
+- **Decision logging:** All architecture decisions logged in `agents/project-context/decision-log.md`
 
 ### Product Definition
 - **MVP scoping:** Product Agent defines minimum viable product and feature priorities

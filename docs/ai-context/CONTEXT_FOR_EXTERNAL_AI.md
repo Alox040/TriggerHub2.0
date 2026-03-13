@@ -77,7 +77,7 @@ electron/main.cjs           # Electron main process
 3. **Always respect port interfaces** in `src/types/ports.ts` — never bypass them with direct service calls from UI
 4. **Core domain must stay framework-free** — no React, no Electron APIs in `src/core/`
 5. **New architecture decisions must be recorded as ADRs** in `architecture-decisions.md`
-6. **Update `agents/project-context/`** docs after significant changes (also synced at `agent/agents/project-context/`)
+6. **Update `agents/project-context/`** docs after significant changes
 
 ---
 
@@ -193,19 +193,19 @@ Source: `src/ui/styles/tokens.css`
 
 ## AGENT SYSTEM
 
-The project has 11+ specialized AI agent prompts in `agents/core/` (also mirrored at `agent/agents/core/`):
+The project has 11+ specialized AI agent prompts in `agents/core/`:
 - 00-agent-rules (global constraints)
 - 01-orchestrator, 02-product, 03-architecture, 04-implementation
 - 05-uiux, 06-qa, 07-ops, 08-docs, 09-autoupdate, 40-security
 - Additional: 20-content-sync-agent, 30-release-agent, master-orchestrator
 
-Living state docs: `agents/project-context/` (also at `agent/agents/project-context/`)
+Living state docs: `agents/project-context/`
 
 ---
 
 ## RECOMMENDED FIRST ACTIONS FOR NEW AI AGENT
 
-1. Read `agents/core/00-agent-rules.md` (global rules — also at `agent/agents/core/00-agent-rules.md`)
+1. Read `agents/core/00-agent-rules.md` (global rules)
 2. Read `agents/project-context/active-tasks.md` (current work items)
 3. Read `agents/project-context/known-issues.md` (existing bugs)
 4. Read `docs/ai-context/TECH_DEBT_AND_RISKS.md` (RISK-02 Electron IPC is current top blocker)

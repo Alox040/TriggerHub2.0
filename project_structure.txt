@@ -253,7 +253,7 @@ e:/Programmierung/TriggerHub2.0/
 ============================================================
 Statistik:
   Hauptmodule: src/core, src/plugins, src/services, src/ui
-  Agent-Dateien: 23 (unter agent/agents/)
+  Agent-Dateien: 25 (unter agents/)
   Services: OBS, Spotify, Clip
   UI-Seiten: Dashboard, Editor, Plugins, Settings
   Test-Dateien: 7 (unter src/tests/)

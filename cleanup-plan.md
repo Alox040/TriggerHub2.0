@@ -17,7 +17,7 @@ This file is the execution-oriented companion to `PROJECT_CLEANUP_REPORT.md`. No
 
 ## Preconditions
 
-- Preserve `agent/agents/**`, `.github/workflows/**`, `project-meta/**`, and the website content generation scripts.
+- Preserve `agents/**`, `.github/workflows/**`, `project-meta/**`, and the website content generation scripts.
 - Fix the existing root desktop build issue before using build success as the final safety gate for desktop-side deletions.
 
 ## Evidence

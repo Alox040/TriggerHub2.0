@@ -71,7 +71,7 @@ Marketing automation should sit as a cross-functional layer between:
   - changelog updated
   - release workflow completed
 - Input Data:
-  - `agent/agents/project-context/changelog.md`
+  - `agents/project-context/changelog.md`
   - release metadata
   - approved messaging from `marketing/messaging/messaging-core.md`
 - Processing Logic:
