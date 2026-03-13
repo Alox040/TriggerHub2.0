@@ -1,4 +1,9 @@
-import { isObsApiResponse, type ObsApiResponse, type ObsSetSceneRequest } from './contracts'
+import {
+  isObsApiResponse,
+  normalizeObsSceneName,
+  type ObsApiResponse,
+  type ObsSetSceneRequest,
+} from './contracts'
 import { HttpClient, type HttpClientOptions } from '../shared'
 
 export interface ObsTransport {
@@ -24,7 +29,7 @@ export class InMemoryObsTransport implements ObsTransport {
       throw new Error('OBS transport is not connected')
     }
 
-    this.currentScene = sceneName
+    this.currentScene = normalizeObsSceneName(sceneName)
   }
 
   public getSnapshot(): { connected: boolean; currentScene: string } {
@@ -53,7 +58,7 @@ export class ObsHttpTransport implements ObsTransport {
   }
 
   public async setCurrentScene(sceneName: string): Promise<void> {
-    const payload: ObsSetSceneRequest = { sceneName }
+    const payload: ObsSetSceneRequest = { sceneName: normalizeObsSceneName(sceneName) }
     await this.http.post<ObsApiResponse>('/scene', payload, isObsApiResponse)
   }
 }

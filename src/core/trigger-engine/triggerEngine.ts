@@ -1,6 +1,7 @@
 import type { EventBusPort, EventSubscription, TriggerEnginePort, TriggerGraphPort } from '../../types'
 import { EventTopics } from '../../types'
 import { createNoopLogger, type Logger } from '../../utils/logger'
+import { recordRuntimeMetric } from '../../runtime/runtimeMonitor'
 import { evaluateCondition, type TriggerPayload } from './triggerConditions'
 import type { GraphTriggerRecord, GraphTrigger } from './triggerGraphTypes'
 import { type ActionDispatcher, TriggerEngineError, type TriggerExecutionResult } from './triggerTypes'
@@ -50,6 +51,52 @@ export class TriggerEngine implements TriggerEnginePort {
     })
   }
 
+  public async updateTrigger(trigger: GraphTrigger): Promise<void> {
+    if (!trigger.id.trim()) {
+      throw new TriggerEngineError('Trigger id must not be empty')
+    }
+
+    if (!trigger.name.trim()) {
+      throw new TriggerEngineError('Trigger name must not be empty')
+    }
+
+    if (!trigger.event.trim()) {
+      throw new TriggerEngineError('Trigger event must not be empty')
+    }
+
+    const previousEventName = this.triggerEventIndex.get(trigger.id)
+    if (!previousEventName) {
+      throw new TriggerEngineError(`Trigger "${trigger.id}" is not registered`)
+    }
+
+    this.graph.updateTrigger(trigger)
+    this.triggerEventIndex.set(trigger.id, trigger.event)
+
+    if (previousEventName !== trigger.event) {
+      if (this.graph.getTriggersByEvent(previousEventName).length === 0) {
+        const previousSubscription = this.eventSubscriptions.get(previousEventName)
+        if (previousSubscription) {
+          this.eventBus.unsubscribe(previousSubscription)
+        }
+        this.eventSubscriptions.delete(previousEventName)
+      }
+
+      if (!this.eventSubscriptions.has(trigger.event)) {
+        const eventName = trigger.event
+        const subscription = this.eventBus.subscribe<TriggerPayload>(eventName, async (payload) => {
+          await this.handleEvent(eventName, payload)
+        })
+        this.eventSubscriptions.set(eventName, subscription)
+      }
+    }
+
+    this.logger.debug('Updated trigger', {
+      triggerId: trigger.id,
+      previousEvent: previousEventName,
+      event: trigger.event,
+    })
+  }
+
   public async removeTrigger(triggerId: string): Promise<void> {
     if (!this.graph.hasTrigger(triggerId)) {
       this.logger.warn('Attempted to remove unknown trigger', { triggerId })
@@ -89,6 +136,10 @@ export class TriggerEngine implements TriggerEnginePort {
 
   public hasTrigger(triggerId: string): boolean {
     return this.graph.hasTrigger(triggerId)
+  }
+
+  public getTrigger(triggerId: string): GraphTriggerRecord | undefined {
+    return this.graph.getTrigger(triggerId)
   }
 
   public getAll(): GraphTriggerRecord[] {
@@ -140,6 +191,7 @@ export class TriggerEngine implements TriggerEnginePort {
     trigger: GraphTriggerRecord,
     payload: TriggerPayload,
   ): Promise<TriggerExecutionResult> {
+    const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
     const actionErrors: Array<{ actionType: string; error: unknown }> = []
 
     for (const action of trigger.actions) {
@@ -157,6 +209,13 @@ export class TriggerEngine implements TriggerEnginePort {
         })
       }
     }
+
+    const finishedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
+    recordRuntimeMetric('trigger_dispatch_time', Math.max(0, Number((finishedAt - startedAt).toFixed(3))), {
+      triggerId: trigger.id,
+      actionsAttempted: trigger.actions.length,
+      actionErrors: actionErrors.length,
+    })
 
     return {
       triggerId: trigger.id,

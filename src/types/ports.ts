@@ -1,7 +1,7 @@
 import type { DashboardState, Macro } from './domain'
 import type { ActionRegistryPort } from '../core/trigger-engine'
 import type { GraphTrigger, GraphTriggerRecord } from '../core/trigger-engine/triggerGraphTypes'
-import type { MacroRunOptions } from '../core/macro-system/macroTypes'
+import type { MacroDefinition, MacroRunOptions } from '../core/macro-system/macroTypes'
 
 /** A handler for a typed event payload. May return a promise. */
 export type EventHandler<TPayload = unknown> = (payload: TPayload) => void | Promise<void>
@@ -39,8 +39,10 @@ export interface EventBusPort {
 
 export interface TriggerEnginePort {
   registerTrigger(trigger: GraphTrigger): Promise<void>
+  updateTrigger(trigger: GraphTrigger): Promise<void>
   removeTrigger(triggerId: string): Promise<void>
   executeTrigger(triggerId: string): Promise<void>
+  getTrigger(triggerId: string): GraphTriggerRecord | undefined
   hasTrigger(triggerId: string): boolean
   getAll(): GraphTriggerRecord[]
   destroy(): void
@@ -48,7 +50,9 @@ export interface TriggerEnginePort {
 
 export interface TriggerGraphPort {
   registerTrigger(trigger: GraphTrigger): void
+  updateTrigger(trigger: GraphTrigger): void
   removeTrigger(triggerId: string): void
+  getTrigger(triggerId: string): GraphTriggerRecord | undefined
   getTriggersByEvent(eventName: string): GraphTriggerRecord[]
   hasTrigger(triggerId: string): boolean
   size(): number
@@ -57,6 +61,10 @@ export interface TriggerGraphPort {
 
 export interface MacroEnginePort {
   registerMacro(macro: Macro): Promise<void>
+  updateMacro(macro: Macro): Promise<void>
+  removeMacro(macroId: string): Promise<void>
+  getMacroById(macroId: string): MacroDefinition | undefined
+  getAllMacros(): MacroDefinition[]
   runMacro(macroId: string, options?: MacroRunOptions): Promise<void>
 }
 
@@ -82,6 +90,19 @@ export interface ClipServicePort {
   saveClip(): Promise<string>
 }
 
+export interface TwitchServicePort {
+  connect(channelName: string): Promise<void>
+  disconnect(): Promise<void>
+  getStreamStatus(): Promise<{
+    channelName: string
+    isLive: boolean
+    title: string | null
+    categoryName: string | null
+    viewerCount: number
+    startedAt: string | null
+  }>
+}
+
 export interface PluginContext {
   appController: AppControllerPort
   triggerEngine: TriggerEnginePort
@@ -105,6 +126,16 @@ export interface PluginRegistryPort {
 
 export interface AppFacadePort {
   getDashboardState(): Promise<DashboardState>
+  listTriggers(): Promise<GraphTrigger[]>
+  getTrigger(triggerId: string): Promise<GraphTrigger | undefined>
   executeTrigger(triggerId: string): Promise<void>
+  updateTrigger(trigger: GraphTrigger): Promise<void>
+  listMacros(): Promise<MacroDefinition[]>
+  getMacro(macroId: string): Promise<MacroDefinition | undefined>
   runMacro(macroId: string): Promise<void>
+  createTrigger(trigger: GraphTrigger): Promise<void>
+  deleteTrigger(triggerId: string): Promise<void>
+  createMacro(macro: MacroDefinition): Promise<void>
+  updateMacro(macro: MacroDefinition): Promise<void>
+  deleteMacro(macroId: string): Promise<void>
 }

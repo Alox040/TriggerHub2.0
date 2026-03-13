@@ -12,10 +12,16 @@ interface RateLimitDecision {
   retryAfterSeconds: number
 }
 
+type RateLimitBucket = 'prelaunch_gate_login' | 'owner_login' | 'auth_session_read' | 'auth_logout'
+
 const LOGIN_RATE_LIMIT_DEFAULT_MAX_ATTEMPTS = 5
 const LOGIN_RATE_LIMIT_DEFAULT_WINDOW_MS = 5 * 60 * 1000
 const LOGIN_RATE_LIMIT_MAX_ATTEMPTS_ENV = 'PRELAUNCH_LOGIN_RATE_LIMIT_MAX_ATTEMPTS'
 const LOGIN_RATE_LIMIT_WINDOW_MS_ENV = 'PRELAUNCH_LOGIN_RATE_LIMIT_WINDOW_MS'
+const AUTH_READ_RATE_LIMIT_DEFAULT_MAX_ATTEMPTS = 60
+const AUTH_READ_RATE_LIMIT_DEFAULT_WINDOW_MS = 60 * 1000
+const AUTH_LOGOUT_RATE_LIMIT_DEFAULT_MAX_ATTEMPTS = 30
+const AUTH_LOGOUT_RATE_LIMIT_DEFAULT_WINDOW_MS = 60 * 1000
 
 const inMemoryRateLimitStore = new Map<string, InMemoryRateLimitEntry>()
 
@@ -28,7 +34,21 @@ const parsePositiveIntEnv = (name: string, fallback: number): number => {
   return parsed
 }
 
-const resolveLoginRateLimitConfig = (): { maxAttempts: number; windowMs: number } => {
+const resolveRateLimitConfig = (bucket: RateLimitBucket): { maxAttempts: number; windowMs: number } => {
+  if (bucket === 'auth_session_read') {
+    return {
+      maxAttempts: AUTH_READ_RATE_LIMIT_DEFAULT_MAX_ATTEMPTS,
+      windowMs: AUTH_READ_RATE_LIMIT_DEFAULT_WINDOW_MS,
+    }
+  }
+
+  if (bucket === 'auth_logout') {
+    return {
+      maxAttempts: AUTH_LOGOUT_RATE_LIMIT_DEFAULT_MAX_ATTEMPTS,
+      windowMs: AUTH_LOGOUT_RATE_LIMIT_DEFAULT_WINDOW_MS,
+    }
+  }
+
   return {
     maxAttempts: parsePositiveIntEnv(LOGIN_RATE_LIMIT_MAX_ATTEMPTS_ENV, LOGIN_RATE_LIMIT_DEFAULT_MAX_ATTEMPTS),
     windowMs: parsePositiveIntEnv(LOGIN_RATE_LIMIT_WINDOW_MS_ENV, LOGIN_RATE_LIMIT_DEFAULT_WINDOW_MS),
@@ -116,7 +136,15 @@ export const enforceLoginRateLimit = (
   res: VercelResponse,
   bucket: 'prelaunch_gate_login' | 'owner_login',
 ): boolean => {
-  const config = resolveLoginRateLimitConfig()
+  return enforceApiRateLimit(req, res, bucket)
+}
+
+export const enforceApiRateLimit = (
+  req: VercelRequest,
+  res: VercelResponse,
+  bucket: RateLimitBucket,
+): boolean => {
+  const config = resolveRateLimitConfig(bucket)
   const clientFingerprint = getClientFingerprint(req)
   const key = `${bucket}:${clientFingerprint}`
   const decision = consumeInMemoryRateLimit(key, config.maxAttempts, config.windowMs)

@@ -4,11 +4,15 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite",
-    "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
-  },
+  "prebuild": "node --env-file-if-exists=.env.local scripts/verify-prelaunch-security.mjs",
+  "build": "vite build",
+  "dev": "vite",
+  "preview": "vite preview",
+
+  "website:sync": "tsx scripts/generate-website-content.ts",
+  "watch:features": "tsx scripts/feature-change-watcher.ts",
+  "release:validate": "tsx scripts/release-orchestrator.ts"
+},
   "dependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",

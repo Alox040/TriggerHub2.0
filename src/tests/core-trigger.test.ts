@@ -206,6 +206,36 @@ describe('TriggerEngine', () => {
       expect(eventBus.getActiveCountForTopic('obs:connected')).toBe(0)
       expect(eventBus.unsubscribeCallsByTopic.get('obs:connected')).toBe(1)
     })
+
+    it('updating a trigger to a new event moves the subscription', async () => {
+      const eventBus = new InstrumentedEventBus()
+      const calls: string[] = []
+      const engine = new TriggerEngine(
+        eventBus,
+        new TriggerGraph(),
+        async (action) => {
+          calls.push(String(action.type))
+        },
+        createNoopLogger(),
+      )
+
+      await engine.registerTrigger(createTrigger({ id: 't-update', event: 'obs:connected' }))
+      await engine.updateTrigger(
+        createTrigger({
+          id: 't-update',
+          event: 'spotify:track-changed',
+          actions: [{ type: 'action.updated' }],
+        }),
+      )
+
+      expect(eventBus.getActiveCountForTopic('obs:connected')).toBe(0)
+      expect(eventBus.getActiveCountForTopic('spotify:track-changed')).toBe(1)
+
+      await eventBus.publish('obs:connected', {})
+      await eventBus.publish('spotify:track-changed', {})
+
+      expect(calls).toEqual(['action.updated'])
+    })
   })
 
   describe('condition evaluation', () => {
@@ -388,6 +418,19 @@ describe('TriggerEngine', () => {
       expect(published).toHaveLength(1)
       expect(published[0]?.triggerId).toBe('t-manual')
       expect(published[0]?.firedAt).toBeTypeOf('number')
+    })
+
+    it('throws for unknown trigger update id', async () => {
+      const engine = new TriggerEngine(
+        new InMemoryEventBus(),
+        new TriggerGraph(),
+        async () => undefined,
+        createNoopLogger(),
+      )
+
+      await expect(engine.updateTrigger(createTrigger({ id: 'unknown' }))).rejects.toThrow(
+        'not registered',
+      )
     })
   })
 

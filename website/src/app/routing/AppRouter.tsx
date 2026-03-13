@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react'
 import { appAccessMode, isSignupEnabled } from '../../config/runtimeConfig'
 import { useAuth } from '../providers/AuthProvider'
+import { usePrelaunchGate } from '../providers/PrelaunchGateProvider'
 import { resolveRouteDecision } from './accessGuard'
-import { getResolvedRoutePolicy, type RoutePath } from './routeManifest'
+import { getResolvedRoutePolicy, normalizeRoutePath, type RoutePath } from './routeManifest'
+import { AccessPage } from '../../pages/AccessPage'
 import { LoginPage } from '../../pages/LoginPage'
 import { AppPage } from '../../pages/AppPage'
 import { DashboardPage } from '../../pages/DashboardPage'
@@ -49,25 +51,6 @@ const readNextPath = (): string => {
   return nextValue && nextValue.startsWith('/') ? nextValue : '/'
 }
 
-export const normalizeRoutePath = (path: string): RoutePath =>
-  (path in {
-    '/': true,
-    '/features': true,
-    '/pricing': true,
-    '/about': true,
-    '/login': true,
-    '/signup': true,
-    '/app': true,
-    '/dashboard': true,
-    '/profile': true,
-    '/settings': true,
-    '/forbidden': true,
-    '/logout': true,
-    '/internal': true,
-  }
-    ? path
-    : '/') as RoutePath
-
 export const getSystemRedirectForRoute = (path: RoutePath): string | null => {
   if (path === '/internal') {
     return '/dashboard'
@@ -78,7 +61,9 @@ export const getSystemRedirectForRoute = (path: RoutePath): string | null => {
 
 export const AppRouter = () => {
   const currentPath = usePathname()
-  const { identity, logout } = useAuth()
+  const normalizedPath = normalizeRoutePath(currentPath)
+  const { isGateEnabled, isGateInitializing, isGateOpen } = usePrelaunchGate()
+  const { identity, isInitializing, logout } = useAuth()
   const routePolicy = useMemo(
     () => getResolvedRoutePolicy(currentPath, appAccessMode, { signupEnabled: isSignupEnabled }),
     [currentPath],
@@ -86,16 +71,66 @@ export const AppRouter = () => {
   const decision = resolveRouteDecision(routePolicy, appAccessMode, identity, currentPath)
 
   useEffect(() => {
+    if (appAccessMode === 'private_prelaunch' && isGateEnabled) {
+      if (isGateInitializing) {
+        return
+      }
+
+      if (!isGateOpen && normalizedPath !== '/access') {
+        replaceTo(`/access?next=${encodeURIComponent(currentPath)}`)
+      }
+      return
+    }
+
+    if (isInitializing) {
+      return
+    }
+
     if (!decision.allow && decision.redirectTo) {
       replaceTo(decision.redirectTo)
     }
-  }, [decision.allow, decision.redirectTo])
+  }, [
+    appAccessMode,
+    currentPath,
+    decision.allow,
+    decision.redirectTo,
+    isGateEnabled,
+    isGateInitializing,
+    isGateOpen,
+    isInitializing,
+    normalizedPath,
+  ])
+
+  if (appAccessMode === 'private_prelaunch' && isGateEnabled) {
+    if (isGateInitializing) {
+      return null
+    }
+
+    if (!isGateOpen) {
+      if (normalizedPath !== '/access') {
+        return null
+      }
+
+      return <AccessPage onNavigate={navigateTo} nextPath={readNextPath()} />
+    }
+
+    if (normalizedPath === '/access') {
+      replaceTo('/login')
+      return null
+    }
+  }
+
+  if (isInitializing) {
+    return null
+  }
 
   if (!decision.allow) {
     return null
   }
-
-  const normalizedPath = normalizeRoutePath(currentPath)
+  if (identity && normalizedPath === '/login') {
+    replaceTo('/dashboard')
+    return null
+  }
 
   if (normalizedPath === '/logout') {
     logout()
@@ -110,6 +145,7 @@ export const AppRouter = () => {
   }
 
   const rendererMap: Record<RoutePath, () => ReactElement | null> = {
+    '/access': () => <AccessPage onNavigate={navigateTo} nextPath={readNextPath()} />,
     '/': () => <WebsiteLandingPage />,
     '/features': () => (
       <MarketingPage

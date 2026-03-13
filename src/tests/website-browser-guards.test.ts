@@ -48,20 +48,32 @@ describe('website session guard in browser context', () => {
     const sessionStore = createLocalSessionStore()
     const session = buildSession()
     localStorage.setItem('th.website.auth.session.v1', JSON.stringify(session))
+    sessionStorage.setItem('th.website.auth.session.guard.v1', `${session.sessionId}:${session.guardId}`)
 
     const hydrated = sessionStore.read()
     expect(hydrated).toBeNull()
     expect(localStorage.getItem('th.website.auth.session.v1')).toBeNull()
+    expect(sessionStorage.getItem('th.website.auth.session.guard.v1')).toBeNull()
   })
 
-  it('clears local session when guard token mismatches', () => {
+  it('clears local session even when guard token matches', () => {
     const sessionStore = createLocalSessionStore()
     const session = buildSession()
     localStorage.setItem('th.website.auth.session.v1', JSON.stringify(session))
-    sessionStorage.setItem('th.website.auth.session.guard.v1', `${session.sessionId}:wrong-token`)
+    sessionStorage.setItem('th.website.auth.session.guard.v1', `${session.sessionId}:${session.guardId}`)
 
     const hydrated = sessionStore.read()
     expect(hydrated).toBeNull()
+    expect(localStorage.getItem('th.website.auth.session.v1')).toBeNull()
+    expect(sessionStorage.getItem('th.website.auth.session.guard.v1')).toBeNull()
+  })
+
+  it('never persists sessions into browser storage on write', () => {
+    const sessionStore = createLocalSessionStore()
+    const session = buildSession()
+
+    sessionStore.write(session)
+
     expect(localStorage.getItem('th.website.auth.session.v1')).toBeNull()
     expect(sessionStorage.getItem('th.website.auth.session.guard.v1')).toBeNull()
   })

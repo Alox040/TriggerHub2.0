@@ -1,17 +1,18 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import {
   createOwnerSessionPayload,
+  ensureCsrfCookie,
   loadOwnerServerConfig,
   sendJson,
   verifyOwnerPassword,
   writeSessionCookie,
 } from '../_auth'
+import { requireMethod } from '../_middleware'
 import { requirePrelaunchGate } from '../_prelaunchGate'
 import { enforceLoginRateLimit, logSecurityEvent } from '../_security'
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    sendJson(res, 405, { error: { code: 'AUTH_INVALID_REQUEST', message: 'Method not allowed' } })
+  if (!requireMethod(req, res, ['POST'])) {
     return
   }
 
@@ -28,6 +29,14 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     config = loadOwnerServerConfig()
   } catch {
     sendJson(res, 503, { error: { code: 'AUTH_INVALID_REQUEST', message: 'Owner auth server config is incomplete' } })
+    return
+  }
+
+  const csrfToken = ensureCsrfCookie(req, res, Math.floor(config.sessionTtlMs / 1000))
+  const csrfHeader = typeof req.headers['x-csrf-token'] === 'string' ? req.headers['x-csrf-token'] : ''
+  if (!csrfHeader || csrfHeader !== csrfToken) {
+    logSecurityEvent('owner_login_failed', req, { reason: 'csrf_missing_or_invalid' })
+    sendJson(res, 403, { error: { code: 'AUTH_CSRF_REQUIRED', message: 'A valid CSRF token is required' } })
     return
   }
 

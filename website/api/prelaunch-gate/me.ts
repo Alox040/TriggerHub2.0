@@ -1,10 +1,15 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { sendJson } from '../_auth'
+import { ensureCsrfCookie, sendJson } from '../_auth'
+import { requireMethod } from '../_middleware'
 import { loadPrelaunchGateConfig, readPrelaunchGateCookie } from '../_prelaunchGate'
+import { enforceApiRateLimit } from '../_security'
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'GET') {
-    sendJson(res, 405, { error: { code: 'AUTH_INVALID_REQUEST', message: 'Method not allowed' } })
+  if (!requireMethod(req, res, ['GET'])) {
+    return
+  }
+
+  if (!enforceApiRateLimit(req, res, 'auth_session_read')) {
     return
   }
 
@@ -18,6 +23,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     })
     return
   }
+
+  ensureCsrfCookie(req, res, Math.floor(config.gateTtlMs / 1000))
 
   if (!readPrelaunchGateCookie(req, config)) {
     sendJson(res, 401, {

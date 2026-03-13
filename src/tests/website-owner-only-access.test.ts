@@ -17,7 +17,7 @@ interface MockRequestInit {
 
 interface MockResponse {
   statusCode: number
-  headers: Record<string, string>
+  headers: Record<string, string | string[]>
   body: string
 }
 
@@ -40,7 +40,7 @@ const createMockResponse = (): { res: never; state: MockResponse } => {
       state.statusCode = code
       return this
     },
-    setHeader(name: string, value: string) {
+    setHeader(name: string, value: string | string[]) {
       state.headers[name] = value
       return this
     },
@@ -55,18 +55,25 @@ const createMockResponse = (): { res: never; state: MockResponse } => {
 
 const parseJsonBody = (body: string): unknown => JSON.parse(body)
 
-const extractCookiePair = (setCookieHeader: string | undefined): string => {
+const getSetCookieValues = (setCookieHeader: string | string[] | undefined): string[] => {
   if (!setCookieHeader) {
     throw new Error('Set-Cookie header missing')
   }
 
-  const [cookiePair] = setCookieHeader.split(';')
-  if (!cookiePair) {
-    throw new Error('Cookie pair missing')
+  return Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader]
+}
+
+const extractCookiePair = (setCookieHeader: string | string[] | undefined, cookieName: string): string => {
+  const matchingCookie = getSetCookieValues(setCookieHeader).find((cookie) => cookie.startsWith(`${cookieName}=`))
+  if (!matchingCookie) {
+    throw new Error(`Cookie pair missing for ${cookieName}`)
   }
 
+  const [cookiePair] = matchingCookie.split(';')
   return cookiePair
 }
+
+const extractCsrfTokenFromCookie = (cookiePair: string): string => cookiePair.slice('th_csrf='.length)
 
 describe('website owner-only access verification', () => {
   const originalEnv = {
@@ -122,6 +129,17 @@ describe('website owner-only access verification', () => {
     vi.restoreAllMocks()
   })
 
+  const primeCsrfCookie = (): { cookiePair: string; csrfToken: string } => {
+    const csrfBootstrap = createMockResponse()
+    gateMeHandler(createMockRequest({ method: 'GET' }), csrfBootstrap.res)
+    const cookiePair = extractCookiePair(csrfBootstrap.state.headers['Set-Cookie'], 'th_csrf')
+
+    return {
+      cookiePair,
+      csrfToken: extractCsrfTokenFromCookie(cookiePair),
+    }
+  }
+
   it('blocks auth session checks without the prelaunch gate', () => {
     const { res, state } = createMockResponse()
     authMeHandler(createMockRequest({ method: 'GET' }), res)
@@ -134,10 +152,12 @@ describe('website owner-only access verification', () => {
   })
 
   it('rejects the wrong prelaunch access key', () => {
+    const { cookiePair, csrfToken } = primeCsrfCookie()
     const { res, state } = createMockResponse()
     gateLoginHandler(
       createMockRequest({
         method: 'POST',
+        headers: { cookie: cookiePair, 'x-csrf-token': csrfToken },
         body: { accessKey: 'wrong-key' },
       }),
       res,
@@ -151,6 +171,7 @@ describe('website owner-only access verification', () => {
   })
 
   it('rate-limits repeated prelaunch gate login attempts', () => {
+    const { cookiePair, csrfToken } = primeCsrfCookie()
     const clientHeaders = { 'x-forwarded-for': '198.51.100.10', 'user-agent': 'vitest' }
     let lastState: MockResponse | null = null
 
@@ -159,7 +180,7 @@ describe('website owner-only access verification', () => {
       gateLoginHandler(
         createMockRequest({
           method: 'POST',
-          headers: clientHeaders,
+          headers: { ...clientHeaders, cookie: cookiePair, 'x-csrf-token': csrfToken },
           body: { accessKey: 'wrong-key' },
         }),
         res,
@@ -177,23 +198,25 @@ describe('website owner-only access verification', () => {
   })
 
   it('allows the correct prelaunch access key and owner login', () => {
+    const { cookiePair: csrfCookie, csrfToken } = primeCsrfCookie()
     const gateLogin = createMockResponse()
     gateLoginHandler(
       createMockRequest({
         method: 'POST',
+        headers: { cookie: csrfCookie, 'x-csrf-token': csrfToken },
         body: { accessKey: 'test-access-key' },
       }),
       gateLogin.res,
     )
 
     expect(gateLogin.state.statusCode).toBe(200)
-    const gateCookie = extractCookiePair(gateLogin.state.headers['Set-Cookie'])
+    const gateCookie = extractCookiePair(gateLogin.state.headers['Set-Cookie'], 'th_prelaunch_gate')
 
     const authLogin = createMockResponse()
     authLoginHandler(
       createMockRequest({
         method: 'POST',
-        headers: { cookie: gateCookie },
+        headers: { cookie: `${csrfCookie}; ${gateCookie}`, 'x-csrf-token': csrfToken },
         body: { username: 'owner', password: 'change-me-owner-password' },
       }),
       authLogin.res,
@@ -203,25 +226,28 @@ describe('website owner-only access verification', () => {
     expect(parseJsonBody(authLogin.state.body)).toMatchObject({
       session: { userId: 'owner', role: 'owner', email: 'owner@example.com' },
     })
-    expect(authLogin.state.headers['Set-Cookie']).toContain('th_prelaunch_session=')
+    expect(extractCookiePair(authLogin.state.headers['Set-Cookie'], 'th_prelaunch_session')).toContain('.')
+    expect(extractCookiePair(authLogin.state.headers['Set-Cookie'], 'th_csrf')).toContain('th_csrf=')
   })
 
   it('rejects wrong owner credentials even after the gate is open', () => {
+    const { cookiePair: csrfCookie, csrfToken } = primeCsrfCookie()
     const gateLogin = createMockResponse()
     gateLoginHandler(
       createMockRequest({
         method: 'POST',
+        headers: { cookie: csrfCookie, 'x-csrf-token': csrfToken },
         body: { accessKey: 'test-access-key' },
       }),
       gateLogin.res,
     )
 
-    const gateCookie = extractCookiePair(gateLogin.state.headers['Set-Cookie'])
+    const gateCookie = extractCookiePair(gateLogin.state.headers['Set-Cookie'], 'th_prelaunch_gate')
     const authLogin = createMockResponse()
     authLoginHandler(
       createMockRequest({
         method: 'POST',
-        headers: { cookie: gateCookie },
+        headers: { cookie: `${csrfCookie}; ${gateCookie}`, 'x-csrf-token': csrfToken },
         body: { username: 'owner', password: 'wrong-password' },
       }),
       authLogin.res,
@@ -234,17 +260,20 @@ describe('website owner-only access verification', () => {
   })
 
   it('rate-limits repeated owner login attempts', () => {
+    const { cookiePair: csrfCookie, csrfToken } = primeCsrfCookie()
     const gateLogin = createMockResponse()
     gateLoginHandler(
       createMockRequest({
         method: 'POST',
+        headers: { cookie: csrfCookie, 'x-csrf-token': csrfToken },
         body: { accessKey: 'test-access-key' },
       }),
       gateLogin.res,
     )
-    const gateCookie = extractCookiePair(gateLogin.state.headers['Set-Cookie'])
+    const gateCookie = extractCookiePair(gateLogin.state.headers['Set-Cookie'], 'th_prelaunch_gate')
     const clientHeaders = {
-      cookie: gateCookie,
+      cookie: `${csrfCookie}; ${gateCookie}`,
+      'x-csrf-token': csrfToken,
       'x-forwarded-for': '198.51.100.11',
       'user-agent': 'vitest',
     }
@@ -276,11 +305,13 @@ describe('website owner-only access verification', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     const secretAccessKey = 'my-very-secret-access-key'
     const secretPassword = 'my-very-secret-password'
+    const { cookiePair: csrfCookie, csrfToken } = primeCsrfCookie()
 
     const gateAttempt = createMockResponse()
     gateLoginHandler(
       createMockRequest({
         method: 'POST',
+        headers: { cookie: csrfCookie, 'x-csrf-token': csrfToken },
         body: { accessKey: secretAccessKey },
       }),
       gateAttempt.res,
@@ -290,6 +321,7 @@ describe('website owner-only access verification', () => {
     authLoginHandler(
       createMockRequest({
         method: 'POST',
+        headers: { cookie: csrfCookie, 'x-csrf-token': csrfToken },
         body: { username: 'owner', password: secretPassword },
       }),
       authAttempt.res,
@@ -326,32 +358,34 @@ describe('website owner-only access verification', () => {
   })
 
   it('returns owner session on reload only when gate cookie and owner session cookie are both present', () => {
+    const { cookiePair: csrfCookie, csrfToken } = primeCsrfCookie()
     const gateLogin = createMockResponse()
     gateLoginHandler(
       createMockRequest({
         method: 'POST',
+        headers: { cookie: csrfCookie, 'x-csrf-token': csrfToken },
         body: { accessKey: 'test-access-key' },
       }),
       gateLogin.res,
     )
-    const gateCookie = extractCookiePair(gateLogin.state.headers['Set-Cookie'])
+    const gateCookie = extractCookiePair(gateLogin.state.headers['Set-Cookie'], 'th_prelaunch_gate')
 
     const authLogin = createMockResponse()
     authLoginHandler(
       createMockRequest({
         method: 'POST',
-        headers: { cookie: gateCookie },
+        headers: { cookie: `${csrfCookie}; ${gateCookie}`, 'x-csrf-token': csrfToken },
         body: { username: 'owner', password: 'change-me-owner-password' },
       }),
       authLogin.res,
     )
-    const authCookie = extractCookiePair(authLogin.state.headers['Set-Cookie'])
+    const authCookie = extractCookiePair(authLogin.state.headers['Set-Cookie'], 'th_prelaunch_session')
 
     const meWithBothCookies = createMockResponse()
     authMeHandler(
       createMockRequest({
         method: 'GET',
-        headers: { cookie: `${gateCookie}; ${authCookie}` },
+        headers: { cookie: `${csrfCookie}; ${gateCookie}; ${authCookie}` },
       }),
       meWithBothCookies.res,
     )
@@ -360,7 +394,7 @@ describe('website owner-only access verification', () => {
     authMeHandler(
       createMockRequest({
         method: 'GET',
-        headers: { cookie: gateCookie },
+        headers: { cookie: `${csrfCookie}; ${gateCookie}` },
       }),
       meWithoutOwnerSession.res,
     )
@@ -374,38 +408,73 @@ describe('website owner-only access verification', () => {
   })
 
   it('clears owner session on logout and subsequent reload is unauthenticated', () => {
+    const { cookiePair: csrfCookie, csrfToken } = primeCsrfCookie()
     const gateLogin = createMockResponse()
     gateLoginHandler(
       createMockRequest({
         method: 'POST',
+        headers: { cookie: csrfCookie, 'x-csrf-token': csrfToken },
         body: { accessKey: 'test-access-key' },
       }),
       gateLogin.res,
     )
-    const gateCookie = extractCookiePair(gateLogin.state.headers['Set-Cookie'])
+    const gateCookie = extractCookiePair(gateLogin.state.headers['Set-Cookie'], 'th_prelaunch_gate')
+
+    const authLogin = createMockResponse()
+    authLoginHandler(
+      createMockRequest({
+        method: 'POST',
+        headers: { cookie: `${csrfCookie}; ${gateCookie}`, 'x-csrf-token': csrfToken },
+        body: { username: 'owner', password: 'change-me-owner-password' },
+      }),
+      authLogin.res,
+    )
+    const authCookie = extractCookiePair(authLogin.state.headers['Set-Cookie'], 'th_prelaunch_session')
 
     const logout = createMockResponse()
     authLogoutHandler(
       createMockRequest({
         method: 'POST',
-        headers: { cookie: gateCookie },
+        headers: { cookie: `${csrfCookie}; ${gateCookie}; ${authCookie}`, 'x-csrf-token': csrfToken },
       }),
       logout.res,
     )
 
     expect(logout.state.statusCode).toBe(200)
-    expect(logout.state.headers['Set-Cookie']).toContain('th_prelaunch_session=')
-    expect(logout.state.headers['Set-Cookie']).toContain('Max-Age=0')
+    expect(extractCookiePair(logout.state.headers['Set-Cookie'], 'th_prelaunch_session')).toContain('th_prelaunch_session=')
+    expect(getSetCookieValues(logout.state.headers['Set-Cookie']).join(';')).toContain('Max-Age=0')
 
     const meAfterLogout = createMockResponse()
     authMeHandler(
       createMockRequest({
         method: 'GET',
-        headers: { cookie: gateCookie },
+        headers: { cookie: `${csrfCookie}; ${gateCookie}` },
       }),
       meAfterLogout.res,
     )
 
     expect(meAfterLogout.state.statusCode).toBe(401)
+  })
+
+  it('applies security headers and requires csrf for mutating auth endpoints', () => {
+    const gateStatus = createMockResponse()
+    gateMeHandler(createMockRequest({ method: 'GET' }), gateStatus.res)
+
+    expect(gateStatus.state.headers['Content-Security-Policy']).toContain("default-src 'none'")
+    expect(gateStatus.state.headers['X-Frame-Options']).toBe('DENY')
+
+    const gateAttempt = createMockResponse()
+    gateLoginHandler(
+      createMockRequest({
+        method: 'POST',
+        body: { accessKey: 'test-access-key' },
+      }),
+      gateAttempt.res,
+    )
+
+    expect(gateAttempt.state.statusCode).toBe(403)
+    expect(parseJsonBody(gateAttempt.state.body)).toMatchObject({
+      error: { code: 'AUTH_CSRF_REQUIRED' },
+    })
   })
 })

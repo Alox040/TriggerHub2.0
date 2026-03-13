@@ -1,14 +1,18 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { clearSessionCookie, sendJson } from '../_auth'
-import { requirePrelaunchGate } from '../_prelaunchGate'
+import { requireAuthenticatedSession, requireMethod } from '../_middleware'
+import { enforceApiRateLimit } from '../_security'
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    sendJson(res, 405, { error: { code: 'AUTH_INVALID_REQUEST', message: 'Method not allowed' } })
+  if (!requireMethod(req, res, ['POST'])) {
     return
   }
 
-  if (!requirePrelaunchGate(req, res)) {
+  if (!enforceApiRateLimit(req, res, 'auth_logout')) {
+    return
+  }
+
+  if (!requireAuthenticatedSession(req, res, { allowedRoles: ['owner'], requireCsrf: true })) {
     return
   }
 
