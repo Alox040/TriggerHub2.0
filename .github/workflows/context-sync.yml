@@ -6,6 +6,22 @@ on:
       - main
       - master
       - develop
+    paths:
+      - 'agents/**'
+      - '.godai/agents/**'
+      - 'src/**'
+      - 'electron/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+      - 'releases/**'
+      - 'release/**'
+      - 'project-meta/**'
+      - 'project-context/**'
+      - 'docs/system/**'
+      - 'architecture-decisions.md'
+      - 'project-architecture.md'
+      - 'package.json'
+      - 'package-lock.json'
   workflow_dispatch:
 
 jobs:
@@ -39,6 +55,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/
+          git add agents/project-context/project_snapshot_deep.md
           git diff --cached --quiet || git commit -m "chore(context): auto-update AI context files"
 
       - name: Änderungen pushen

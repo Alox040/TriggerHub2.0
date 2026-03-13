@@ -32,6 +32,24 @@ jobs:
       - name: Install website dependencies
         run: npm --prefix website ci
 
+      - name: Run root typecheck
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Audit root production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Audit website production dependencies
+        run: npm --prefix website audit --omit=dev --audit-level=high
+
+      - name: Typecheck website
+        run: ./node_modules/.bin/tsc --noEmit --project website/tsconfig.json
+
+      - name: Build website
+        run: npm --prefix website run build
+
       - name: Sync website content
         run: npm run website:sync
 

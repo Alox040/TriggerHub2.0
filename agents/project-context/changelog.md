@@ -11,6 +11,6 @@
 - `electron/main.cjs`
 - `scripts/collect-desktop-artifacts.mjs`
 - `docs/WINDOWS_DESKTOP_RELEASE.md`
-- `agent/agents/project-context/active-tasks.md`
-- `agent/agents/project-context/decision-log.md`
-- `agent/agents/project-context/changelog.md`
+- `agents/project-context/active-tasks.md`
+- `agents/project-context/decision-log.md`
+- `agents/project-context/changelog.md`

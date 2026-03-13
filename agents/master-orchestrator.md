@@ -96,6 +96,32 @@ Der Orchestrator delegiert diese Aufgabe an:
 
 `agents/optional/10-snapshot.md`
 
+## Context Snapshot Agent
+
+Der Context-Snapshot-Agent erstellt einen maschinenlesbaren JSON-Snapshot des Projektzustands.
+
+Er dient fuer:
+
+- Workflow-Aktualisierung
+- KI-Kontext fuer Folgeaufgaben
+- diff-freundliche Projektzustands-Exporte
+
+Die Snapshot-Datei wird gespeichert unter:
+
+`docs/project-context-snapshot.json`
+
+### Context Snapshot Trigger
+
+Der Agent wird aktiviert wenn:
+
+- eine JSON-Kontextdatei angefordert wird
+- der Context-Sync-Workflow laeuft
+- Agenten-, Workflow-, Architektur- oder Prioritaetskontext aktualisiert werden soll
+
+Der Orchestrator delegiert diese Aufgabe an:
+
+`agents/15-context-snapshot-agent.md`
+
 Output Struktur:
 
 ## Projektanalyse
@@ -107,3 +133,32 @@ Output Struktur:
 ## Empfohlene Reihenfolge
 
 ## Naechster Schritt
+
+---
+
+## Erweiterte Spezialistenbibliothek (.godai)
+
+Fuer Aufgaben, die ueber die Kernagenten in `agents/core/` hinausgehen, steht die vollstaendige `.godai/agents`-Spezialistenbibliothek zur Verfuegung.
+
+**Index aller Spezialisten:** `agents/godai-library-index.md`
+**Maschinenlesbarer Index:** `.godai/agents/github/agent-index.json` (101 Agenten)
+**Aktivierungsprotokoll:** `.godai/agents/core/00-activation.md`
+**Router:** `.godai/agents/core/02-router.md`
+
+### Direkt einsetzbare Spezialkategorien
+
+| Domaene | Pfad | Wann einsetzen |
+|---------|------|----------------|
+| Alpha-Prozesse | `.godai/agents/alpha/` | Tester einladen, Bug-Intake, Onboarding |
+| Launch | `.godai/agents/launch/` | Beta-Rollout, Launch-Readiness, Feedback-Triage |
+| Desktop-Distribution | `.godai/agents/desktop/` | Desktop QA, EXE-Release, Installer, Updater |
+| Analytics / KPIs | `.godai/agents/analytics/` | Metriken, Telemetrie, Funnel, Insights |
+| Governance / Risk | `.godai/agents/governance/` | Change Control, Risikomanagement, Roadmap |
+| Stakeholder | `.godai/agents/stakeholder/` | Founder-Briefing, Investor-Updates, Sync |
+| Engineering (erweitert) | `.godai/agents/engineering/` | API, Backend, Platform, Performance, State |
+| Architecture (erweitert) | `.godai/agents/architecture/` | Data Architecture, Domain Model, Skalierung |
+| Automation | `.godai/agents/automation/` | GitHub-Sync, Dependabot, Workflow Dispatch |
+
+### Regel
+`agents/` bleibt primaerer Einstiegspunkt und operatives Hub.
+`.godai/agents` wird als Spezialistenbibliothek hinzugezogen — nie als Ersatz fuer bestehende Kernagenten.

@@ -1,0 +1,40 @@
+name: reusable-agent-sync
+
+on:
+  workflow_call:
+    inputs:
+      manifest_path:
+        required: false
+        type: string
+        default: agents/MANIFEST.json
+      index_path:
+        required: false
+        type: string
+        default: agents/github/agent-index.json
+
+permissions:
+  contents: read
+
+jobs:
+  validate-sync-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate metadata files exist
+        shell: bash
+        run: |
+          test -f "${{ inputs.manifest_path }}"
+          test -f "${{ inputs.index_path }}"
+      - name: Compare agent counts
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          with open("${{ inputs.manifest_path }}", "r", encoding="utf-8") as f:
+              manifest = json.load(f)
+          with open("${{ inputs.index_path }}", "r", encoding="utf-8") as f:
+              index = json.load(f)
+          if len(manifest["agents"]) != index["total_agents"]:
+              raise SystemExit("agent count mismatch")
+          print("agent sync metadata validated")
+          PY

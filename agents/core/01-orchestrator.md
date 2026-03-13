@@ -67,3 +67,25 @@ Projektaufgaben strukturieren, priorisieren und an die passenden Agenten delegie
 ### Zuständige Agenten
 
 ### Nächste Schritte
+
+---
+
+## Spezialist-Routing (.godai)
+
+Reicht die Abdeckung der 14 Kernagenten nicht aus, zieht der Orchestrator Spezialisten aus der `.godai/agents`-Bibliothek hinzu.
+
+**Router-Einstieg:** `.godai/agents/core/02-router.md`
+**Vollständiger Index:** `agents/godai-library-index.md`
+
+Typische Routing-Entscheidungen:
+
+| Situation | .godai-Spezialist |
+|-----------|------------------|
+| Alpha-Tester oder Closed-Alpha-Prozesse | `.godai/agents/alpha/tester-onboarding-agent.md` |
+| Launch-Bereitschaft oder Beta-Rollout | `.godai/agents/launch/launch-readiness-agent.md` |
+| Desktop EXE-Release oder Installer-Probleme | `.godai/agents/desktop/exe-release-agent.md` |
+| Metriken, KPIs oder Telemetrie-Fragen | `.godai/agents/analytics/metrics-agent.md` |
+| Risikobewertung oder Change-Control | `.godai/agents/governance/risk-agent.md` |
+| Investor- oder Founder-Kommunikation | `.godai/agents/stakeholder/founder-briefing-agent.md` |
+| Tiefe Engineering-Analyse (API, Backend, Performance) | `.godai/agents/engineering/` |
+| GitHub-Automation oder Dependabot | `.godai/agents/automation/github-sync-agent.md` |
