@@ -2,14 +2,14 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { ensureCsrfCookie, loadOwnerServerConfig, readSessionCookie, sendJson } from '../_auth'
 import { requireMethod } from '../_middleware'
 import { requirePrelaunchGate } from '../_prelaunchGate'
-import { enforceApiRateLimit } from '../_security'
+import { checkRateLimit } from '../_security'
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   if (!requireMethod(req, res, ['GET'])) {
     return
   }
 
-  if (!enforceApiRateLimit(req, res, 'auth_session_read')) {
+  if (!checkRateLimit(req, res, 'auth_session_read')) {
     return
   }
 

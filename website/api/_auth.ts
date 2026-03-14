@@ -193,6 +193,26 @@ const verifyJwt = (token: string | undefined, secret: string): JwtSessionClaims 
 export const readCsrfCookie = (req: Pick<VercelRequest, 'headers'>): string | null =>
   parseCookies(req)[PRELAUNCH_CSRF_COOKIE] ?? null
 
+export const matchesCsrfToken = (expectedToken: string | null, providedToken: string | undefined): boolean => {
+  if (!expectedToken || typeof providedToken !== 'string') {
+    return false
+  }
+
+  const expected = Buffer.from(expectedToken, 'utf8')
+  const provided = Buffer.from(providedToken, 'utf8')
+  if (expected.length === 0 || expected.length !== provided.length) {
+    return false
+  }
+
+  return crypto.timingSafeEqual(expected, provided)
+}
+
+export const validateCsrfToken = (req: Pick<VercelRequest, 'headers'>): boolean => {
+  const csrfCookie = readCsrfCookie(req)
+  const csrfHeader = typeof req.headers['x-csrf-token'] === 'string' ? req.headers['x-csrf-token'] : undefined
+  return matchesCsrfToken(csrfCookie, csrfHeader)
+}
+
 const createCsrfToken = (): string => crypto.randomBytes(32).toString('base64url')
 
 export const ensureCsrfCookie = (

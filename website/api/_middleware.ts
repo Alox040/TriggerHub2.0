@@ -1,10 +1,9 @@
-import crypto from 'node:crypto'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import {
   loadOwnerServerConfig,
-  readCsrfCookie,
   readSessionCookie,
   sendJson,
+  validateCsrfToken,
   type OwnerServerConfig,
   type SignedSessionPayload,
 } from './_auth'
@@ -32,20 +31,6 @@ export const requireMethod = (
 
   sendJson(res, 405, { error: { code: 'AUTH_INVALID_REQUEST', message: 'Method not allowed' } })
   return false
-}
-
-const matchesCsrfToken = (expectedToken: string | null, providedToken: string | undefined): boolean => {
-  if (!expectedToken || typeof providedToken !== 'string') {
-    return false
-  }
-
-  const expected = Buffer.from(expectedToken, 'utf8')
-  const provided = Buffer.from(providedToken, 'utf8')
-  if (expected.length === 0 || expected.length !== provided.length) {
-    return false
-  }
-
-  return crypto.timingSafeEqual(expected, provided)
 }
 
 export const requireAuthenticatedSession = (
@@ -94,9 +79,7 @@ export const requireAuthenticatedSession = (
   }
 
   if (options.requireCsrf) {
-    const csrfCookie = readCsrfCookie(req)
-    const csrfHeader = typeof req.headers['x-csrf-token'] === 'string' ? req.headers['x-csrf-token'] : undefined
-    if (!matchesCsrfToken(csrfCookie, csrfHeader)) {
+    if (!validateCsrfToken(req)) {
       sendJson(res, 403, {
         error: {
           code: 'AUTH_CSRF_REQUIRED',
