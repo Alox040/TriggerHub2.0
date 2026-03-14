@@ -5,7 +5,7 @@ interface MarketingPageProps {
 }
 
 export const MarketingPage = ({ title, description, onNavigate }: MarketingPageProps) => (
-  <main className="min-h-screen bg-[#0b0b0c] text-white p-6">
+  <main className="min-h-screen bg-background text-white p-6">
     <div className="mx-auto max-w-4xl rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
       <h1 className="text-3xl font-semibold">{title}</h1>
       <p className="mt-3 text-zinc-300">{description}</p>
@@ -24,9 +24,6 @@ export const MarketingPage = ({ title, description, onNavigate }: MarketingPageP
         </button>
         <button className="rounded-md border border-zinc-500 px-4 py-2" onClick={() => onNavigate('/login')}>
           Login
-        </button>
-        <button className="rounded-md border border-zinc-500 px-4 py-2" onClick={() => onNavigate('/signup')}>
-          Signup
         </button>
       </div>
     </div>

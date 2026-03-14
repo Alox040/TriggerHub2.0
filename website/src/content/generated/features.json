@@ -1,5 +1,23 @@
 [
   {
+    "id": "app-control",
+    "name": "App Control",
+    "status": "implemented",
+    "summary": "App-Control verwaltet den Laufzustand der Desktop-App und verbindet Hotkeys mit Fensterkommandos.",
+    "sourceOfTruth": [
+      "src/core/app-control/appController.ts",
+      "src/core/app-control/hotkeyManager.ts",
+      "src/core/app-control/windowManager.ts"
+    ],
+    "includes": [
+      "AppController mit Start-/Stop-Zustand und `isRunning`-Abfrage",
+      "Hotkey-Registrierung und Auslösung asynchroner Handler über den HotkeyManager",
+      "Standard-Hotkey `F11` zum Umschalten von Fullscreen über den WindowManager",
+      "WindowManager für die Befehle `focus`, `minimize` und `toggle-fullscreen`",
+      "In-Memory-Nachverfolgung ausgeführter Fensterkommandos"
+    ]
+  },
+  {
     "id": "automation-core",
     "name": "Automation Core",
     "status": "implemented",
@@ -15,6 +33,43 @@
       "Standard-Seeding für ein Makro und einen Trigger",
       "Runtime-Facade für UI-Lesemodelle",
       "Laufzeitmetriken für Services, Trigger und Makros"
+    ]
+  },
+  {
+    "id": "clip-export",
+    "name": "Clip Export",
+    "status": "implemented",
+    "summary": "Der Clip-Export nutzt ein gemeinsames Exporter-Interface, fällt im Browser auf einen In-Memory-Exporter zurück und delegiert in Electron über IPC an einen Node.js-Dateiexport.",
+    "sourceOfTruth": [
+      "src/services/clip-service/clipExporter.interface.ts",
+      "src/services/clip-service/clipExporter.browser.ts",
+      "src/services/clip-service/clipExporter.node.ts",
+      "electron/preload.cjs",
+      "electron/main.cjs",
+      "src/tests/services.test.ts"
+    ],
+    "notes": [
+      "Ohne verfügbare Electron-Bridge exportiert der Browser-Pfad in einen In-Memory-Zielpfad.",
+      "Der Node-Dateiexport wird in den Tests über `FileSystemClipExporter` verifiziert."
+    ]
+  },
+  {
+    "id": "event-bus",
+    "name": "Event Bus",
+    "status": "implemented",
+    "summary": "Der EventBus ist ein prozesslokales In-Memory-Pub/Sub-System mit normalen und einmaligen Subscriptions sowie Topic-Wildcards per `:*`-Präfix.",
+    "sourceOfTruth": [
+      "src/core/event-bus/inMemoryEventBus.ts",
+      "src/core/event-bus/eventBusTypes.ts"
+    ],
+    "currentBehavior": [
+      "Registriert Subscriber pro Topic mit fortlaufender Subscription-ID",
+      "Unterstützt reguläre `subscribe`- und einmalige `once`-Subscriptions",
+      "Publiziert Events an exakte Topic-Matches und an Wildcard-Subscriptions wie `obs:*`",
+      "Führt Handler beim Publish sequentiell in Subscription-Reihenfolge aus",
+      "Entfernt `once`-Subscriptions vor der Handler-Ausführung automatisch",
+      "Lässt Fehler aus Handlern aus `publish()` heraus propagieren, statt sie intern zu schlucken",
+      "Erlaubt gezieltes `unsubscribe` per Subscription sowie `unsubscribeAll` pro Topic"
     ]
   },
   {
@@ -39,6 +94,44 @@
     "notes": [
       "Makros werden aktuell nur in-memory gehalten.",
       "Abschluss-Ereignisse werden über den Event-Bus publiziert."
+    ]
+  },
+  {
+    "id": "plugin-system",
+    "name": "Plugin System",
+    "status": "implemented",
+    "summary": "Plugins werden zentral registriert, gelistet und gesammelt aktiviert oder deaktiviert; Aktivierungs- und Deaktivierungsfehler werden dabei pro Plugin isoliert geloggt.",
+    "sourceOfTruth": [
+      "src/plugins/pluginRegistry.ts",
+      "src/plugins/example-plugin/plugin.ts"
+    ],
+    "notes": [
+      "Die Registry verhindert doppelte Registrierungen über die Plugin-ID.",
+      "`activateAll` und `deactivateAll` iterieren über alle registrierten Plugins und stoppen bei Fehlern einzelner Plugins nicht den Gesamtlauf.",
+      "Das Example-Plugin implementiert ein `PluginModule` mit `id`, `name`, idempotenter Aktivierung und separater Deaktivierung.",
+      "Das Example-Plugin startet bei Aktivierung eine konfigurationsbasierte Automation über den übergebenen `PluginContext`."
+    ]
+  },
+  {
+    "id": "storage",
+    "name": "Storage",
+    "status": "implemented",
+    "summary": "Die Persistenz fuer Runtime-Daten laeuft ueber eine Renderer-seitige IPC-Bridge auf JSON-Dateien im Electron-Main-Prozess; Trigger und Makros werden versioniert geladen und gespeichert.",
+    "sourceOfTruth": [
+      "src/storage/ipcStorageBridge.ts",
+      "electron/jsonFileStorage.cjs",
+      "electron/preload.cjs",
+      "electron/main.cjs",
+      "src/app/bootstrap.ts",
+      "src/app/storageValidation.ts",
+      "src/tests/storage.test.ts",
+      "src/tests/ipc-storage-bridge.e2e.test.ts"
+    ],
+    "notes": [
+      "Die Renderer-Bridge liest und schreibt ueber `window.triggerHubElectron.storage` und faellt ohne verfuegbare API auf `null` bzw. No-Op zurueck.",
+      "Der Electron-Speicher nutzt JSON-Dateien unter `app.getPath('userData')/TriggerHub2` und legt Zielverzeichnisse rekursiv an.",
+      "Ein Electron-E2E-Test verifiziert den echten IPC-Roundtrip fuer Laden und Speichern.",
+      "Persistierte Trigger- und Makrodaten werden als versionierte Collection-Envelopes mit Migrationspfad fuer Legacy-Arrays gelesen und geschrieben."
     ]
   },
   {

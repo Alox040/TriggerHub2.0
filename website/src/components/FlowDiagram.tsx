@@ -81,8 +81,8 @@ function FlowNode({ icon, title, description, type, delay = 0, x, y, scale = 1 }
         </div>
         
         {/* Connection dots */}
-        <div className={`absolute -right-2 top-1/2 -translate-y-1/2 size-3 rounded-full ${color.glow} border-2 border-[#0b0b0c] shadow-lg z-10`} />
-        <div className={`absolute -left-2 top-1/2 -translate-y-1/2 size-3 rounded-full ${color.glow} border-2 border-[#0b0b0c] shadow-lg z-10`} />
+        <div className={`absolute -right-2 top-1/2 -translate-y-1/2 size-3 rounded-full ${color.glow} border-2 border-background shadow-lg z-10`} />
+        <div className={`absolute -left-2 top-1/2 -translate-y-1/2 size-3 rounded-full ${color.glow} border-2 border-background shadow-lg z-10`} />
       </div>
     </motion.div>
   );
@@ -178,7 +178,7 @@ function Connection({ x1, y1, x2, y2, delay = 0, color = "rgb(34, 197, 94)" }: C
 
 export function FlowDiagram() {
   return (
-    <div className="relative w-full h-[800px] rounded-2xl bg-[#0b0b0c] border border-white/10 overflow-hidden">
+    <div className="relative w-full h-[800px] rounded-2xl bg-background border border-white/10 overflow-hidden">
       {/* Grid background */}
       <div className="absolute inset-0 opacity-30" style={{
         backgroundImage: 'radial-gradient(circle, rgba(34, 197, 94, 0.05) 1px, transparent 1px)',

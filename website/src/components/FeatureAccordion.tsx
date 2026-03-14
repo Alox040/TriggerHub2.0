@@ -72,7 +72,7 @@ export function FeatureAccordion({ icon: Icon, title, description, expandedConte
                 </div>
 
                 {/* Example */}
-                <div className="p-4 rounded-xl bg-[#0b0b0c] border border-white/10">
+                <div className="p-4 rounded-xl bg-background border border-white/10">
                   <h4 className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">
                     Example
                   </h4>
