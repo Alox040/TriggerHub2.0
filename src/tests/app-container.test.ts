@@ -2,15 +2,15 @@ import { describe, expect, it } from 'vitest'
 import { createAppModuleContainer } from '../app/bootstrap'
 
 describe('createAppModuleContainer', () => {
-  it('returns dashboard state with seeded trigger and macro after start', async () => {
+  it('bootstraps seeded trigger and macro without activating runtime services', async () => {
     const container = await createAppModuleContainer()
 
     await container.start()
     const state = await container.appFacade.getDashboardState()
 
-    expect(state.connectedServices.obs).toBe(true)
-    expect(state.connectedServices.spotify).toBe(true)
-    expect(state.connectedServices.clip).toBe(true)
+    expect(state.connectedServices.obs).toBe(false)
+    expect(state.connectedServices.spotify).toBe(false)
+    expect(state.connectedServices.clip).toBe(false)
 
     expect(state.activeTriggers.some((t) => t.id === 'trigger-main-scene')).toBe(true)
     expect(state.activeMacros.some((m) => m.id === 'macro-default-scene')).toBe(true)
@@ -18,10 +18,25 @@ describe('createAppModuleContainer', () => {
     await container.stop()
   })
 
-  it('executes seeded trigger through app facade without throwing', async () => {
+  it('activates runtime services explicitly through the app facade', async () => {
     const container = await createAppModuleContainer()
 
     await container.start()
+    await container.appFacade.activateRuntime()
+
+    const state = await container.appFacade.getDashboardState()
+    expect(state.connectedServices.obs).toBe(true)
+    expect(state.connectedServices.spotify).toBe(true)
+    expect(state.connectedServices.clip).toBe(true)
+
+    await container.stop()
+  })
+
+  it('executes seeded trigger through app facade after explicit runtime activation', async () => {
+    const container = await createAppModuleContainer()
+
+    await container.start()
+    await container.appFacade.activateRuntime()
 
     await expect(container.appFacade.executeTrigger('trigger-main-scene')).resolves.toBeUndefined()
 

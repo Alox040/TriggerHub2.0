@@ -6,6 +6,7 @@ import { TriggerHubAppFacade } from '../app/facade'
 import { DashboardReadModelValidationError } from '../app/readModel'
 import { createNoopLogger } from '../utils/logger'
 import { InMemoryStorage } from '../storage/inMemoryStorage'
+import type { PluginRegistryPort } from '../types/ports'
 
 describe('TriggerHubAppFacade executeTrigger', () => {
   it('resolves without error when the trigger id is registered', async () => {
@@ -94,6 +95,76 @@ describe('TriggerHubAppFacade read model validation', () => {
 
     await expect(facade.getDashboardState()).rejects.toBeInstanceOf(DashboardReadModelValidationError)
   })
+
+  it('returns editor, plugin and settings use-case state through the facade', async () => {
+    const macroEngine = new MacroEngine(async () => undefined)
+    const triggerEngine = new TriggerEngine(
+      new InMemoryEventBus(),
+      new TriggerGraph(),
+      async () => undefined,
+      createNoopLogger(),
+    )
+    const pluginRegistry: PluginRegistryPort = {
+      register: async () => undefined,
+      unregister: async () => undefined,
+      list: async () => [{ id: 'example-plugin', name: 'Example Plugin', activate: async () => undefined, deactivate: async () => undefined }],
+    }
+
+    await triggerEngine.registerTrigger({
+      id: 'editor-trigger',
+      name: 'Editor Trigger',
+      enabled: true,
+      event: 'editor:event',
+      conditions: [],
+      actions: [{ type: 'macro.run', payload: { macroId: 'editor-macro' } }],
+    })
+    await macroEngine.registerMacro({
+      id: 'editor-macro',
+      name: 'Editor Macro',
+      enabled: true,
+      steps: [{ id: 'step-1', type: 'delay', durationMs: 0 }],
+    })
+
+    const facade = new TriggerHubAppFacade(
+      triggerEngine,
+      macroEngine,
+      { obs: true, spotify: false, clip: true },
+      pluginRegistry,
+    )
+
+    await expect(facade.getEditorState()).resolves.toEqual({
+      triggers: [
+        {
+          id: 'editor-trigger',
+          name: 'Editor Trigger',
+          enabled: true,
+          event: 'editor:event',
+          conditions: [],
+          actions: [{ type: 'macro.run', payload: { macroId: 'editor-macro' } }],
+        },
+      ],
+      macros: [
+        {
+          id: 'editor-macro',
+          name: 'Editor Macro',
+          enabled: true,
+          steps: [{ id: 'step-1', type: 'delay', durationMs: 0 }],
+        },
+      ],
+    })
+    await expect(facade.getPluginsState()).resolves.toEqual({
+      plugins: [{ id: 'example-plugin', name: 'Example Plugin' }],
+    })
+    await expect(facade.getSettingsState()).resolves.toEqual({
+      connectedServices: {
+        obs: true,
+        spotify: false,
+        clip: true,
+      },
+      triggerCount: 1,
+      macroCount: 1,
+    })
+  })
 })
 
 describe('TriggerHubAppFacade persistence integration', () => {
@@ -111,6 +182,7 @@ describe('TriggerHubAppFacade persistence integration', () => {
       triggerEngine,
       macroEngine,
       { obs: false, spotify: false, clip: false },
+      undefined,
       {
         persist: async () => {
           await storage.save('custom-triggers', triggerEngine.getAll())
@@ -156,6 +228,7 @@ describe('TriggerHubAppFacade persistence integration', () => {
       triggerEngine,
       macroEngine,
       { obs: false, spotify: false, clip: false },
+      undefined,
       { persist: persistSpy },
     )
 
@@ -211,5 +284,33 @@ describe('TriggerHubAppFacade persistence integration', () => {
       },
     ])
     expect(persistSpy).toHaveBeenCalledTimes(4)
+  })
+
+  it('delegates explicit runtime activation commands when available', async () => {
+    const activateRuntime = vi.fn(async () => undefined)
+    const deactivateRuntime = vi.fn(async () => undefined)
+    const macroEngine = new MacroEngine(async () => undefined)
+    const triggerEngine = new TriggerEngine(
+      new InMemoryEventBus(),
+      new TriggerGraph(),
+      async () => undefined,
+      createNoopLogger(),
+    )
+
+    const facade = new TriggerHubAppFacade(
+      triggerEngine,
+      macroEngine,
+      { obs: false, spotify: false, clip: false },
+      undefined,
+      undefined,
+      undefined,
+      { activateRuntime, deactivateRuntime },
+    )
+
+    await facade.activateRuntime()
+    await facade.deactivateRuntime()
+
+    expect(activateRuntime).toHaveBeenCalledTimes(1)
+    expect(deactivateRuntime).toHaveBeenCalledTimes(1)
   })
 })

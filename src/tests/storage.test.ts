@@ -3,6 +3,14 @@ import { createAppModuleContainer } from '../app/bootstrap'
 import { InMemoryStorage } from '../storage/inMemoryStorage'
 import type { RuntimeConfig } from '../app/runtimeConfig'
 
+const readPersistedItems = async (
+  storage: InMemoryStorage,
+  key: string,
+): Promise<Array<{ id: string }> | null> => {
+  const payload = await storage.load<{ items?: Array<{ id: string }> }>(key)
+  return payload?.items ?? null
+}
+
 describe('storage-backed runtime startup', () => {
   it('seeds core data on first start and persists it on stop', async () => {
     const storage = new InMemoryStorage()
@@ -14,13 +22,13 @@ describe('storage-backed runtime startup', () => {
     expect(state.activeTriggers.some((trigger) => trigger.id === 'trigger-main-scene')).toBe(true)
     expect(state.activeMacros.some((macro) => macro.id === 'macro-default-scene')).toBe(true)
 
-    const persistedDuringStart = await storage.load<Array<{ id: string }>>('triggers')
+    const persistedDuringStart = await readPersistedItems(storage, 'triggers')
     expect(persistedDuringStart?.some((trigger) => trigger.id === 'trigger-main-scene')).toBe(true)
 
     await container.stop()
 
-    const persistedTriggers = await storage.load<Array<{ id: string }>>('triggers')
-    const persistedMacros = await storage.load<Array<{ id: string }>>('macros')
+    const persistedTriggers = await readPersistedItems(storage, 'triggers')
+    const persistedMacros = await readPersistedItems(storage, 'macros')
 
     expect(persistedTriggers?.some((trigger) => trigger.id === 'trigger-main-scene')).toBe(true)
     expect(persistedMacros?.some((macro) => macro.id === 'macro-default-scene')).toBe(true)
@@ -54,8 +62,8 @@ describe('storage-backed runtime startup', () => {
       steps: [{ id: 'config-step', type: 'delay', durationMs: 0 }],
     })
 
-    const persistedTriggers = await storage.load<Array<{ id: string }>>('custom-triggers')
-    const persistedMacros = await storage.load<Array<{ id: string }>>('custom-macros')
+    const persistedTriggers = await readPersistedItems(storage, 'custom-triggers')
+    const persistedMacros = await readPersistedItems(storage, 'custom-macros')
 
     expect(persistedTriggers?.some((trigger) => trigger.id === 'config-trigger')).toBe(true)
     expect(persistedMacros?.some((macro) => macro.id === 'config-macro')).toBe(true)
@@ -90,10 +98,12 @@ describe('storage-backed runtime startup', () => {
     expect(state.activeTriggers.some((trigger) => trigger.id === 'trigger-main-scene')).toBe(true)
     expect(state.activeMacros.some((macro) => macro.id === 'macro-default-scene')).toBe(true)
 
-    const persistedTriggers = await storage.load<Array<{ id: string }>>('triggers')
-    const persistedMacros = await storage.load<Array<{ id: string }>>('macros')
-    expect(Array.isArray(persistedTriggers)).toBe(true)
-    expect(Array.isArray(persistedMacros)).toBe(true)
+    const persistedTriggers = await storage.load<{ version: number; items: Array<{ id: string }> }>('triggers')
+    const persistedMacros = await storage.load<{ version: number; items: Array<{ id: string }> }>('macros')
+    expect(persistedTriggers?.version).toBe(1)
+    expect(persistedMacros?.version).toBe(1)
+    expect(Array.isArray(persistedTriggers?.items)).toBe(true)
+    expect(Array.isArray(persistedMacros?.items)).toBe(true)
 
     await container.stop()
   })
@@ -156,6 +166,72 @@ describe('storage-backed runtime startup', () => {
     const storage = new InMemoryStorage()
     await storage.save('triggers', 'totally broken')
     await storage.save('macros', null)
+
+    const container = await createAppModuleContainer(storage)
+    await container.start()
+
+    const state = await container.appFacade.getDashboardState()
+    expect(state.activeTriggers.some((trigger) => trigger.id === 'trigger-main-scene')).toBe(true)
+    expect(state.activeMacros.some((macro) => macro.id === 'macro-default-scene')).toBe(true)
+
+    await container.stop()
+  })
+
+  it('migrates legacy array payloads into the versioned persistence envelope', async () => {
+    const storage = new InMemoryStorage()
+    await storage.save('triggers', [
+      {
+        id: 'legacy-trigger',
+        name: 'Legacy Trigger',
+        enabled: true,
+        event: 'test:legacy',
+        conditions: [],
+        actions: [],
+      },
+    ])
+    await storage.save('macros', [
+      {
+        id: 'legacy-macro',
+        name: 'Legacy Macro',
+        enabled: true,
+        steps: [{ id: 'legacy-step', type: 'delay', durationMs: 0 }],
+      },
+    ])
+
+    const container = await createAppModuleContainer(storage)
+    await container.start()
+
+    const migratedTriggers = await storage.load<{ schema: string; version: number; items: Array<{ id: string }> }>('triggers')
+    const migratedMacros = await storage.load<{ schema: string; version: number; items: Array<{ id: string }> }>('macros')
+
+    expect(migratedTriggers).toMatchObject({
+      schema: 'triggerhub.collection',
+      version: 1,
+      items: [expect.objectContaining({ id: 'legacy-trigger' })],
+    })
+    expect(migratedMacros).toMatchObject({
+      schema: 'triggerhub.collection',
+      version: 1,
+      items: [expect.objectContaining({ id: 'legacy-macro' })],
+    })
+
+    await container.stop()
+  })
+
+  it('falls back safely when persisted payload version is unsupported', async () => {
+    const storage = new InMemoryStorage()
+    await storage.save('triggers', {
+      schema: 'triggerhub.collection',
+      version: 99,
+      kind: 'triggers',
+      items: [],
+    })
+    await storage.save('macros', {
+      schema: 'triggerhub.collection',
+      version: 99,
+      kind: 'macros',
+      items: [],
+    })
 
     const container = await createAppModuleContainer(storage)
     await container.start()
@@ -235,8 +311,8 @@ describe('storage-backed runtime startup', () => {
       steps: [{ id: 'crud-step-updated', type: 'delay', durationMs: 1 }],
     })
 
-    let persistedTriggers = await storage.load<Array<{ id: string }>>('triggers')
-    let persistedMacros = await storage.load<Array<{ id: string }>>('macros')
+    let persistedTriggers = await readPersistedItems(storage, 'triggers')
+    let persistedMacros = await readPersistedItems(storage, 'macros')
 
     expect(persistedTriggers).toEqual(
       expect.arrayContaining([
@@ -261,8 +337,8 @@ describe('storage-backed runtime startup', () => {
     await container.appFacade.deleteTrigger('crud-trigger')
     await container.appFacade.deleteMacro('crud-macro')
 
-    persistedTriggers = await storage.load<Array<{ id: string }>>('triggers')
-    persistedMacros = await storage.load<Array<{ id: string }>>('macros')
+    persistedTriggers = await readPersistedItems(storage, 'triggers')
+    persistedMacros = await readPersistedItems(storage, 'macros')
 
     expect(persistedTriggers?.some((trigger) => trigger.id === 'crud-trigger')).toBe(false)
     expect(persistedMacros?.some((macro) => macro.id === 'crud-macro')).toBe(false)
