@@ -1,62 +1,11 @@
-import { useEffect, useMemo, useState, type ReactElement } from 'react'
-import { appAccessMode, isSignupEnabled } from '../../config/runtimeConfig'
+import { useEffect, useMemo } from 'react'
+import { appAccessMode } from '../../config/runtimeConfig'
 import { useAuth } from '../providers/AuthProvider'
 import { usePrelaunchGate } from '../providers/PrelaunchGateProvider'
 import { resolveRouteDecision } from './accessGuard'
-import { getResolvedRoutePolicy, normalizeRoutePath, type RoutePath } from './routeManifest'
-import { AccessPage } from '../../pages/AccessPage'
-import { LoginPage } from '../../pages/LoginPage'
-import { AppPage } from '../../pages/AppPage'
-import { DashboardPage } from '../../pages/DashboardPage'
-import { ProfilePage } from '../../pages/ProfilePage'
-import { SettingsPage } from '../../pages/SettingsPage'
-import { ForbiddenPage } from '../../pages/ForbiddenPage'
-import { WebsiteLandingPage } from '../../pages/WebsiteLandingPage'
-import { SignupPage } from '../../pages/SignupPage'
-
-const usePathname = (): string => {
-  const [pathname, setPathname] = useState(window.location.pathname)
-
-  useEffect(() => {
-    const handleLocation = () => {
-      setPathname(window.location.pathname)
-    }
-    window.addEventListener('popstate', handleLocation)
-    return () => {
-      window.removeEventListener('popstate', handleLocation)
-    }
-  }, [])
-
-  return pathname
-}
-
-const navigateTo = (path: string) => {
-  if (window.location.pathname === path) {
-    return
-  }
-
-  window.history.pushState({}, '', path)
-  window.dispatchEvent(new PopStateEvent('popstate'))
-}
-
-const replaceTo = (path: string) => {
-  window.history.replaceState({}, '', path)
-  window.dispatchEvent(new PopStateEvent('popstate'))
-}
-
-const readNextPath = (): string => {
-  const search = new URLSearchParams(window.location.search)
-  const nextValue = search.get('next')
-  return nextValue && nextValue.startsWith('/') ? nextValue : '/'
-}
-
-export const getSystemRedirectForRoute = (path: RoutePath): string | null => {
-  if (path === '/internal') {
-    return '/dashboard'
-  }
-
-  return null
-}
+import { getResolvedRoutePolicy, getSystemRedirectForRoute, normalizeRoutePath } from './routeManifest'
+import { replaceTo, usePathname } from './navigation'
+import { renderRoute } from './routeRenderer'
 
 export const AppRouter = () => {
   const currentPath = usePathname()
@@ -64,7 +13,7 @@ export const AppRouter = () => {
   const { isGateEnabled, isGateInitializing, isGateOpen } = usePrelaunchGate()
   const { identity, isInitializing, logout } = useAuth()
   const routePolicy = useMemo(
-    () => getResolvedRoutePolicy(currentPath, appAccessMode, { signupEnabled: isSignupEnabled }),
+    () => getResolvedRoutePolicy(currentPath, appAccessMode),
     [currentPath],
   )
   const decision = resolveRouteDecision(routePolicy, appAccessMode, identity, currentPath)
@@ -110,7 +59,7 @@ export const AppRouter = () => {
         return null
       }
 
-      return <AccessPage onNavigate={navigateTo} nextPath={readNextPath()} />
+      return renderRoute('/access')
     }
 
     if (normalizedPath === '/access') {
@@ -142,48 +91,5 @@ export const AppRouter = () => {
     replaceTo(systemRedirect)
     return null
   }
-
-  const rendererMap: Record<RoutePath, () => ReactElement | null> = {
-<<<<<<< HEAD
-    '/': () => <WebsiteLandingPage onNavigate={navigateTo} />,
-    '/features': () => <WebsiteLandingPage onNavigate={navigateTo} />,
-    '/pricing': () => <WebsiteLandingPage onNavigate={navigateTo} />,
-    '/about': () => <WebsiteLandingPage onNavigate={navigateTo} />,
-=======
-    '/access': () => <AccessPage onNavigate={navigateTo} nextPath={readNextPath()} />,
-    '/': () => <WebsiteLandingPage />,
-    '/features': () => (
-      <MarketingPage
-        title="Features"
-        description="Public feature overview page for the future product website."
-        onNavigate={navigateTo}
-      />
-    ),
-    '/pricing': () => (
-      <MarketingPage
-        title="Pricing"
-        description="Public pricing page prepared for product-mode rollout."
-        onNavigate={navigateTo}
-      />
-    ),
-    '/about': () => (
-      <MarketingPage
-        title="About"
-        description="Public about page prepared without affecting protected app routes."
-        onNavigate={navigateTo}
-      />
-    ),
->>>>>>> 6e1858b4 (feat: storage layer, IPC bridge, auth refactor, Twitch service skeleton)
-    '/login': () => <LoginPage onNavigate={navigateTo} nextPath={readNextPath()} />,
-    '/signup': () => <SignupPage onNavigate={navigateTo} />,
-    '/app': () => <AppPage onNavigate={navigateTo} />,
-    '/dashboard': () => <DashboardPage onNavigate={navigateTo} />,
-    '/profile': () => <ProfilePage onNavigate={navigateTo} />,
-    '/settings': () => <SettingsPage onNavigate={navigateTo} />,
-    '/forbidden': () => <ForbiddenPage onNavigate={navigateTo} />,
-    '/logout': () => null,
-    '/internal': () => null,
-  }
-
-  return rendererMap[normalizedPath]()
+  return renderRoute(normalizedPath)
 }
