@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { clearSessionCookie, sendJson } from '../_auth'
+import { clearSessionCookie, sendJson, validateCsrfToken } from '../_auth'
 import { requireAuthenticatedSession, requireMethod } from '../_middleware'
 import { enforceApiRateLimit } from '../_security'
 
@@ -12,7 +12,12 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  if (!requireAuthenticatedSession(req, res, { allowedRoles: ['owner'], requireCsrf: true })) {
+  if (!validateCsrfToken(req)) {
+    sendJson(res, 403, { error: 'CSRF validation failed' })
+    return
+  }
+
+  if (!requireAuthenticatedSession(req, res, { allowedRoles: ['owner'] })) {
     return
   }
 

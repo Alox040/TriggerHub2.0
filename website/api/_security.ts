@@ -169,6 +169,8 @@ export const enforceApiRateLimit = (
   return false
 }
 
+export const checkRateLimit = enforceApiRateLimit
+
 export const resetInMemorySecurityGuardsForTests = () => {
   inMemoryRateLimitStore.clear()
 }
