@@ -1,6 +1,14 @@
-﻿# EXE Builder
+# EXE Builder
 
-A local desktop EXE Builder that detects project type, builds the project, packages it into a Windows executable, and can optionally generate an installer.
+Ein separates Hilfstool zum lokalen Bauen und Verpacken von Projekten als Windows-Executable oder Installer.
+
+## Role In This Repository
+
+- standalone helper tool under `tools/`
+- not part of the TriggerHub desktop runtime
+- not part of the TriggerHub website runtime
+
+The tool stays separate so product code and build helpers remain clearly divided.
 
 ## Quick Start
 
@@ -14,6 +22,8 @@ A local desktop EXE Builder that detects project type, builds the project, packa
    - Select output folder
    - Choose packager and optional installer
    - Start build
+
+From the repository root, start it with `npm run tool:exe-builder:start`.
 
 ## Output
 

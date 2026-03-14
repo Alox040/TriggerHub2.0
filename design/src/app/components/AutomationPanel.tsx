@@ -1,56 +1,103 @@
-import { MoreHorizontal, Play, MicOff, AlertCircle, Plus } from "lucide-react";
+import { AlertCircle, Bot, MicOff, MoreHorizontal, Play, Plus } from "lucide-react";
+import EmptyState from "./EmptyState";
 
-export default function AutomationPanel() {
+interface AutomationStep {
+  id: string;
+  label: string;
+  icon: typeof Play;
+}
+
+interface AutomationItem {
+  id: string;
+  name: string;
+  statusDotClassName: string;
+  steps?: AutomationStep[];
+  pendingLabel?: string;
+  pendingDetail?: string;
+}
+
+interface AutomationPanelProps {
+  automations?: AutomationItem[];
+}
+
+const DEFAULT_AUTOMATIONS: AutomationItem[] = [
+  {
+    id: "brb-sequence",
+    name: "BRB Sequence",
+    statusDotClassName: "bg-th-accent",
+    steps: [
+      { id: "switch-brb", label: "Switch to BRB", icon: Play },
+      { id: "mute-audio", label: "Mute Audio", icon: MicOff },
+    ],
+  },
+  {
+    id: "twitch-api",
+    name: "Twitch API",
+    statusDotClassName: "bg-th-status-inactive",
+    pendingLabel: "Awaiting Raid",
+    pendingDetail: "Confetti + Sound",
+  },
+];
+
+export default function AutomationPanel({ automations = DEFAULT_AUTOMATIONS }: AutomationPanelProps) {
   return (
-    <div className="flex flex-col h-full bg-[#0E0E11] w-full">
+    <div className="flex h-full w-full flex-col bg-[var(--th-bg-shell)]">
       <div className="px-5 py-6">
-        <h2 className="text-sm font-semibold text-zinc-100 tracking-tight">Active Automations</h2>
+        <h2 className="text-sm font-semibold tracking-tight text-[var(--th-text-primary)]">Active Automations</h2>
       </div>
 
-      <div className="px-4 flex flex-col gap-6 overflow-y-auto pb-32">
-        
-        {/* Workflow 1 */}
-        <div className="relative">
-          <div className="absolute left-3.5 top-8 bottom-4 w-[1px] bg-white/[0.04]"></div>
-          
-          <div className="flex items-center gap-2.5 mb-3 px-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-teal-400 z-10"></div>
-            <span className="text-[12px] font-medium text-zinc-400">BRB Sequence</span>
-          </div>
-          
-          <div className="pl-7 flex flex-col gap-2">
-            <div className="bg-[#18181b] border border-white/[0.02] p-2.5 rounded-lg flex items-center gap-3 hover:bg-white/[0.02] transition-colors cursor-pointer">
-              <Play size={14} className="text-zinc-500" />
-              <span className="text-[12px] text-zinc-300">Switch to BRB</span>
-            </div>
-            
-            <div className="bg-[#18181b] border border-white/[0.02] p-2.5 rounded-lg flex items-center gap-3 hover:bg-white/[0.02] transition-colors cursor-pointer">
-              <MicOff size={14} className="text-zinc-500" />
-              <span className="text-[12px] text-zinc-300">Mute Audio</span>
-            </div>
-          </div>
-        </div>
+      <div className="px-4 flex flex-col gap-6 overflow-y-auto pb-4">
+        {automations.length === 0 ? (
+          <EmptyState
+            icon={Bot}
+            title="No automations yet"
+            description="Create an automation to orchestrate multi-step actions."
+            ctaLabel="Add Automation"
+          />
+        ) : (
+          automations.map((automation) => (
+            <div key={automation.id} className="relative">
+              {automation.steps?.length ? (
+                <div className="absolute bottom-4 left-3.5 top-8 w-[1px] bg-[var(--th-border-subtle)]"></div>
+              ) : null}
 
-        {/* Workflow 2 */}
-        <div className="relative">
-           <div className="flex items-center justify-between px-1 mb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-zinc-600 z-10"></div>
-              <span className="text-[12px] font-medium text-zinc-400">Twitch API</span>
+              <div className="mb-3 flex items-center justify-between px-1">
+                <div className="flex items-center gap-2.5">
+                  <div className={`z-10 h-1.5 w-1.5 rounded-full ${automation.statusDotClassName}`}></div>
+                  <span className="text-[12px] font-medium text-[var(--th-text-secondary)]">{automation.name}</span>
+                </div>
+                {!automation.steps?.length ? (
+                  <MoreHorizontal size={14} className="cursor-pointer text-[var(--th-text-muted)] transition-colors hover:text-[var(--th-text-secondary)]" />
+                ) : null}
+              </div>
+
+              {automation.steps?.length ? (
+                <div className="flex flex-col gap-2 pl-7">
+                  {automation.steps.map((step) => {
+                    const StepIcon = step.icon;
+
+                    return (
+                      <div key={step.id} className="flex cursor-pointer items-center gap-3 rounded-lg border border-[var(--th-border-subtle)] bg-[var(--th-bg-panel)] p-2.5 transition-colors hover:bg-th-overlay-subtle">
+                        <StepIcon size={14} className="text-[var(--th-text-muted)]" />
+                        <span className="text-[12px] text-[var(--th-text-secondary)]">{step.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="ml-7 flex items-start gap-2.5 rounded-lg border border-[var(--th-border-subtle)] bg-[var(--th-bg-main)] p-3 opacity-80">
+                  <AlertCircle size={14} className="mt-0.5 shrink-0 text-[var(--th-text-muted)]" />
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[12px] text-[var(--th-text-secondary)]">{automation.pendingLabel}</span>
+                    <span className="text-[11px] text-[var(--th-text-muted)]">{automation.pendingDetail}</span>
+                  </div>
+                </div>
+              )}
             </div>
-            <MoreHorizontal size={14} className="text-zinc-600 hover:text-zinc-300 cursor-pointer transition-colors" />
-          </div>
-          
-          <div className="ml-7 bg-[#121214] border border-white/[0.04] p-3 rounded-lg flex items-start gap-2.5 opacity-80">
-             <AlertCircle size={14} className="text-zinc-500 mt-0.5 shrink-0" />
-             <div className="flex flex-col gap-0.5">
-               <span className="text-[12px] text-zinc-300">Awaiting Raid</span>
-               <span className="text-[11px] text-zinc-500">Confetti + Sound</span>
-             </div>
-          </div>
-        </div>
-        
-        <button className="mx-2 mt-2 flex items-center justify-center gap-2 p-2.5 rounded-lg bg-transparent text-zinc-500 text-[12px] font-medium border border-dashed border-white/10 hover:border-white/20 hover:text-zinc-300 transition-colors">
+          ))
+        )}
+
+        <button className="mx-2 mt-2 flex items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--th-border-weak)] bg-transparent p-2.5 text-[12px] font-medium text-[var(--th-text-muted)] transition-colors hover:border-white/20 hover:text-[var(--th-text-secondary)]">
           <Plus size={14} />
           Add Trigger
         </button>

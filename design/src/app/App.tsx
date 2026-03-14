@@ -24,9 +24,9 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex h-screen w-full bg-[#0E0E11] text-zinc-100 overflow-hidden font-sans selection:bg-teal-500/30">
+    <div className="flex h-screen w-full overflow-hidden bg-[var(--th-bg-shell)] font-sans text-[var(--th-text-primary)] selection:bg-th-accent/30">
       {updateManifest ? (
-        <div className="absolute top-4 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-teal-400/30 bg-[#14161a] px-4 py-3 text-sm shadow-lg">
+        <div className="absolute top-4 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-th-accent-hover/30 bg-th-bg-shell px-4 py-3 text-sm shadow-lg">
           <div className="flex items-center gap-4">
             <span>
               Neues Update verfuegbar ({getCurrentVersion()} {"->"} {updateManifest.version})
@@ -34,7 +34,7 @@ export default function App() {
             <button
               type="button"
               onClick={applyUpdate}
-              className="rounded bg-teal-500 px-3 py-1 font-medium text-[#0f1318] hover:bg-teal-400"
+              className="rounded bg-th-accent px-3 py-1 font-medium text-primary-foreground hover:bg-th-accent-hover"
             >
               Jetzt laden
             </button>
@@ -43,30 +43,28 @@ export default function App() {
       ) : null}
       {!isFocusMode && <Sidebar />}
       
-      <div className="flex-1 flex flex-col min-w-0 h-full relative">
+      <div className="flex min-w-0 flex-1">
+        <div className="flex min-w-0 flex-1 flex-col">
         <DashboardHeader 
           layout={layout} 
           setLayout={setLayout} 
           isFocusMode={isFocusMode}
           setIsFocusMode={setIsFocusMode} 
         />
-        
-        <div className="flex-1 flex overflow-hidden">
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-y-auto p-6 relative bg-[#121214] shadow-[inset_0_4px_24px_rgba(0,0,0,0.2)]">
+
+          <main className="flex-1 overflow-auto bg-[var(--th-bg-main)] p-6 shadow-[inset_0_4px_24px_rgba(0,0,0,0.2)]">
             <TriggerGrid layout={layout} />
-            
-            {/* Status Bar now lives cleanly INSIDE the main area, not bleeding over sidebars */}
-            <StatusBar />
           </main>
-          
-          {!isFocusMode && (
-            <aside className="w-[300px] bg-[#0E0E11] overflow-y-auto shrink-0 z-10 border-l border-white/[0.04]">
-              <AutomationPanel />
-            </aside>
-          )}
+
+          <StatusBar />
         </div>
-      </div>
+
+        {!isFocusMode && (
+          <aside className="z-10 w-[300px] shrink-0 overflow-y-auto border-l border-[var(--th-border-subtle)] bg-[var(--th-bg-shell)]">
+            <AutomationPanel />
+          </aside>
+        )}
+        </div>
     </div>
   );
 }

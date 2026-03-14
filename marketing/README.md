@@ -3,6 +3,14 @@
 ## Purpose
 This folder is the operating layer for TriggerHub marketing work. It translates the current product reality into reusable messaging, campaigns, content, waitlist operations, analytics, and automation assets.
 
+## Repository Role
+
+- Reference and operations workspace only
+- No runtime, build, test, or import dependency for the desktop app or website
+- Content here must not overrule executable code, tests, or `project-meta/`
+
+Use this folder as reviewed reference material for messaging and GTM preparation, not as product source of truth.
+
 ## Current Product Stage
 TriggerHub should currently be marketed as an early-stage Windows desktop automation product for creators and streamers:
 - core trigger and macro logic exists
