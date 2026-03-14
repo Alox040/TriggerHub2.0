@@ -23,6 +23,7 @@ export class ResponseValidationError extends Error {
 export interface HttpClientOptions {
   baseUrl: string
   fetchImpl?: typeof fetch
+  headers?: Record<string, string>
 }
 
 export class HttpClient {
@@ -30,6 +31,20 @@ export class HttpClient {
 
   public constructor(private readonly options: HttpClientOptions) {
     this.fetchImpl = options.fetchImpl ?? fetch
+  }
+
+  public async get<TResponse>(
+    path: string,
+    validate?: (value: unknown) => value is TResponse,
+  ): Promise<TResponse> {
+    const url = `${this.options.baseUrl}${path}`
+
+    const response = await this.fetchImpl(url, {
+      method: 'GET',
+      headers: this.options.headers,
+    })
+
+    return this.handleResponse('GET', url, response, validate)
   }
 
   public async post<TResponse>(
@@ -42,14 +57,24 @@ export class HttpClient {
     const response = await this.fetchImpl(url, {
       method: 'POST',
       headers: {
+        ...(this.options.headers ?? {}),
         'Content-Type': 'application/json',
       },
       body: body ? JSON.stringify(body) : undefined,
     })
 
+    return this.handleResponse('POST', url, response, validate)
+  }
+
+  private async handleResponse<TResponse>(
+    method: 'GET' | 'POST',
+    url: string,
+    response: Response,
+    validate?: (value: unknown) => value is TResponse,
+  ): Promise<TResponse> {
     if (!response.ok) {
       const responseBody = await response.text()
-      throw new HttpRequestError('POST', url, response.status, responseBody)
+      throw new HttpRequestError(method, url, response.status, responseBody)
     }
 
     if (response.status === 204) {
@@ -64,7 +89,7 @@ export class HttpClient {
     const parsed = JSON.parse(text) as unknown
 
     if (validate && !validate(parsed)) {
-      throw new ResponseValidationError('POST', url, 'payload does not match expected schema', parsed)
+      throw new ResponseValidationError(method, url, 'payload does not match expected schema', parsed)
     }
 
     return parsed as TResponse

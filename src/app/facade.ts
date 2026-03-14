@@ -1,4 +1,4 @@
-import type { DashboardState } from '../types'
+import type { DashboardState, EditorState, PluginsState, SettingsState } from '../types'
 import { MacroEngine } from '../core/macro-system'
 import type { MacroDefinition } from '../core/macro-system/macroTypes'
 import { TriggerEngine } from '../core/trigger-engine'
@@ -6,9 +6,15 @@ import type { GraphTrigger } from '../core/trigger-engine/triggerGraphTypes'
 import { DashboardReadModelValidationError, isDashboardState } from './readModel'
 import type { RuntimeConfig } from './runtimeConfig'
 import { stripMacroRecord, stripTriggerRecord } from './storageHelpers'
+import type { PluginRegistryPort } from '../types/ports'
 
 export interface AppFacadePersistence {
   persist(): Promise<void>
+}
+
+export interface AppFacadeRuntimeCommands {
+  activateRuntime(): Promise<void>
+  deactivateRuntime(): Promise<void>
 }
 
 export class TriggerHubAppFacade {
@@ -16,8 +22,10 @@ export class TriggerHubAppFacade {
     private readonly triggerEngine: TriggerEngine,
     private readonly macroEngine: MacroEngine,
     private readonly serviceState: { obs: boolean; spotify: boolean; clip: boolean },
+    private readonly pluginRegistry?: PluginRegistryPort,
     private readonly persistence?: AppFacadePersistence,
     private readonly runtimeConfig?: RuntimeConfig,
+    private readonly runtimeCommands?: AppFacadeRuntimeCommands,
   ) {}
 
   public async getDashboardState(): Promise<DashboardState> {
@@ -49,6 +57,38 @@ export class TriggerHubAppFacade {
 
   public async listTriggers(): Promise<GraphTrigger[]> {
     return this.triggerEngine.getAll().map((trigger) => stripTriggerRecord(trigger))
+  }
+
+  public async getEditorState(): Promise<EditorState> {
+    return {
+      triggers: await this.listTriggers(),
+      macros: await this.listMacros(),
+    }
+  }
+
+  public async getPluginsState(): Promise<PluginsState> {
+    const plugins = await this.pluginRegistry?.list()
+
+    return {
+      plugins: (plugins ?? []).map((plugin) => ({
+        id: plugin.id,
+        name: plugin.name,
+      })),
+    }
+  }
+
+  public async getSettingsState(): Promise<SettingsState> {
+    const editorState = await this.getEditorState()
+
+    return {
+      connectedServices: {
+        obs: this.serviceState.obs,
+        spotify: this.serviceState.spotify,
+        clip: this.serviceState.clip,
+      },
+      triggerCount: editorState.triggers.length,
+      macroCount: editorState.macros.length,
+    }
   }
 
   public async getTrigger(triggerId: string): Promise<GraphTrigger | undefined> {
@@ -101,6 +141,22 @@ export class TriggerHubAppFacade {
   public async deleteMacro(macroId: string): Promise<void> {
     await this.macroEngine.removeMacro(macroId)
     await this.persistIfAvailable()
+  }
+
+  public async activateRuntime(): Promise<void> {
+    if (!this.runtimeCommands) {
+      return
+    }
+
+    await this.runtimeCommands.activateRuntime()
+  }
+
+  public async deactivateRuntime(): Promise<void> {
+    if (!this.runtimeCommands) {
+      return
+    }
+
+    await this.runtimeCommands.deactivateRuntime()
   }
 
   private async persistIfAvailable(): Promise<void> {

@@ -1,5 +1,4 @@
 import type { EventBusPort } from '../../types'
-import { defaultOperationPolicy, runWithPolicy, type OperationPolicy } from '../shared'
 import type { TwitchTransport } from './twitchClient'
 import {
   normalizeTwitchChannelName,
@@ -9,16 +8,16 @@ import {
 } from './contracts'
 
 export const TwitchActionTypes = {
-  ON_STREAM_LIVE: 'twitch.onStreamLive',
-  ON_STREAM_OFFLINE: 'twitch.onStreamOffline',
+  ON_STREAM_LIVE: 'twitch:stream-live',
+  ON_STREAM_OFFLINE: 'twitch:stream-offline',
 } as const satisfies Record<string, TwitchEvent>
 
 export class TwitchService implements TwitchServicePort {
-  private static readonly DEFAULT_POLL_INTERVAL_MS = 30_000
+  private static readonly DEFAULT_POLL_INTERVAL_MS = 60_000
 
   private connected = false
-  private readonly policy: OperationPolicy
   private readonly pollIntervalMs: number
+  private channelName: string | null = null
   private currentStatus: StreamStatus | null = null
   private pollTimer: ReturnType<typeof setInterval> | null = null
   private pollInFlight = false
@@ -26,24 +25,18 @@ export class TwitchService implements TwitchServicePort {
   public constructor(
     private readonly transport: TwitchTransport,
     private readonly eventBus: EventBusPort,
-    policy?: Partial<OperationPolicy>,
     pollIntervalMs = TwitchService.DEFAULT_POLL_INTERVAL_MS,
   ) {
-    this.policy = {
-      ...defaultOperationPolicy,
-      ...policy,
-    }
     this.pollIntervalMs = pollIntervalMs
   }
 
   public async connect(channelName: string): Promise<void> {
     const normalizedChannelName = normalizeTwitchChannelName(channelName)
 
-    await runWithPolicy('twitch.connect', this.policy, async () => {
-      await this.transport.connect(normalizedChannelName)
-    })
+    await this.transport.connect(normalizedChannelName)
 
     this.connected = true
+    this.channelName = normalizedChannelName
     this.currentStatus = await this.loadStreamStatus(false)
     this.startPolling()
   }
@@ -52,15 +45,15 @@ export class TwitchService implements TwitchServicePort {
     this.stopPolling()
 
     if (!this.connected) {
+      this.channelName = null
       this.currentStatus = null
       return
     }
 
-    await runWithPolicy('twitch.disconnect', this.policy, async () => {
-      await this.transport.disconnect()
-    })
+    await this.transport.disconnect()
 
     this.connected = false
+    this.channelName = null
     this.currentStatus = null
   }
 
@@ -100,9 +93,11 @@ export class TwitchService implements TwitchServicePort {
   }
 
   private async loadStreamStatus(emitTransition: boolean): Promise<StreamStatus> {
-    const nextStatus = await runWithPolicy('twitch.getStreamStatus', this.policy, async () => {
-      return this.transport.getStreamStatus()
-    })
+    if (this.channelName === null) {
+      throw new Error('Twitch service must be connected before reading stream status')
+    }
+
+    const nextStatus = await this.transport.getStreamStatus(this.channelName)
 
     const previousStatus = this.currentStatus
     this.currentStatus = nextStatus

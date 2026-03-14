@@ -1,4 +1,4 @@
-import type { DashboardState, Macro } from './domain'
+import type { DashboardState, EditorState, Macro, PluginsState, SettingsState } from './domain'
 import type { ActionRegistryPort } from '../core/trigger-engine'
 import type { GraphTrigger, GraphTriggerRecord } from '../core/trigger-engine/triggerGraphTypes'
 import type { MacroDefinition, MacroRunOptions } from '../core/macro-system/macroTypes'
@@ -126,6 +126,9 @@ export interface PluginRegistryPort {
 
 export interface AppFacadePort {
   getDashboardState(): Promise<DashboardState>
+  getEditorState(): Promise<EditorState>
+  getPluginsState(): Promise<PluginsState>
+  getSettingsState(): Promise<SettingsState>
   listTriggers(): Promise<GraphTrigger[]>
   getTrigger(triggerId: string): Promise<GraphTrigger | undefined>
   executeTrigger(triggerId: string): Promise<void>
@@ -138,4 +141,6 @@ export interface AppFacadePort {
   createMacro(macro: MacroDefinition): Promise<void>
   updateMacro(macro: MacroDefinition): Promise<void>
   deleteMacro(macroId: string): Promise<void>
+  activateRuntime(): Promise<void>
+  deactivateRuntime(): Promise<void>
 }

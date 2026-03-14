@@ -2,6 +2,7 @@ import type { MacroEnginePort, Macro, EventBusPort } from '../../types'
 import { EventTopics } from '../../types'
 import {
   MacroInvariantError,
+  MacroRecursionLimitError,
   type MacroRecord,
   type MacroExecutionResult,
   type MacroRunOptions,
@@ -60,7 +61,7 @@ export class MacroEngine implements MacroEnginePort {
 
   public async runMacro(macroId: string, options: MacroRunOptions = {}): Promise<void> {
     const result = await this.runMacroWithResult(macroId, options)
-    if (!result.skipped) {
+    if (!result.skipped && result.success !== false) {
       await this.eventBus.publish(EventTopics.MACRO_COMPLETED, {
         macroId: result.macroId,
         stepCount: result.executedStepCount,
@@ -86,6 +87,8 @@ export class MacroEngine implements MacroEnginePort {
         macroId,
         executedStepCount: 0,
         executedAt: Date.now(),
+        success: true,
+        depth,
         skipped: true,
       }
     }
@@ -102,6 +105,29 @@ export class MacroEngine implements MacroEnginePort {
       })
       return result
     } catch (error) {
+      if (error instanceof MacroRecursionLimitError) {
+        const finishedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
+        recordRuntimeMetric('macro_execution_time', Math.max(0, Number((finishedAt - startedAt).toFixed(3))), {
+          macroId,
+          depth,
+          skipped: false,
+          success: false,
+        })
+
+        if (depth > 0) {
+          throw error
+        }
+
+        return {
+          macroId,
+          executedStepCount: 0,
+          executedAt: Date.now(),
+          success: false,
+          error: 'MAX_RECURSION_DEPTH_EXCEEDED',
+          depth: error.depth,
+        }
+      }
+
       const finishedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
       recordRuntimeMetric('macro_execution_time', Math.max(0, Number((finishedAt - startedAt).toFixed(3))), {
         macroId,
