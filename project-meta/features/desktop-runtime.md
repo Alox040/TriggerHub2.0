@@ -17,24 +17,24 @@ Die Desktop-Runtime ist der Composition Root der App. Sie verdrahtet Kernsysteme
 ## Aktueller Umsetzungsstand
 - `createAppModuleContainer()` erstellt Event-Bus, Trigger-Engine, MacroEngine, Service-Adapter, AppController, Plugin-Registry und App-Facade.
 - Beim Start werden vorhandene Trigger- und Makrodaten geladen oder Standarddaten fuer ein OBS-Szenenwechsel-Makro und den dazugehoerigen Trigger gesaet.
-- Der Startpfad verbindet OBS, startet Spotify-Wiedergabe, startet Clip-Capture und aktiviert Plugins.
-- Der Stop-Pfad persistiert Trigger und Makros bei vorhandenem Storage, deinitialisiert Trigger-Subscriptions, deaktiviert Plugins und stoppt bzw. pausiert Services.
-- `TriggerHubAppFacade` stellt Dashboard-Lesemodelle sowie Create/Delete/Execute-Operationen fuer Trigger und Makros bereit.
+- Der Startpfad bootstrappt nur Kernzustand, Persistenz und Runtime-Konfiguration; aktive Service-Seiteneffekte laufen erst ueber explizite Runtime-Kommandos.
+- Die Runtime-Aktivierung erfolgt separat ueber `appFacade.activateRuntime()`, die Deaktivierung ueber `appFacade.deactivateRuntime()`.
+- Der Stop-Pfad persistiert Trigger und Makros bei vorhandenem Storage, deaktiviert die Runtime bei Bedarf und zerlegt danach die Trigger-Subscriptions.
+- `TriggerHubAppFacade` stellt Dashboard-Lesemodelle sowie Create/Delete/Execute-Operationen fuer Trigger und Makros sowie Runtime-Use-Cases fuer Editor, Plugins und Settings bereit.
 
 ## Verifizierte Staerken
 - Die Runtime verdrahtet die Kernmodule zentral und nachvollziehbar in einem Container statt verteilt ueber UI-Code.
 - Seed-Daten fuer Makro und Trigger sind vorhanden und ueber `app-container.test.ts` verifiziert.
-- Die App-Facade validiert ihr Dashboard-Read-Model und kapselt Trigger-/Makro-Operationen fuer die UI.
+- Die App-Facade kapselt Trigger-, Makro- und Runtime-Operationen fuer die UI.
 - Persistenz ist optional; ohne Storage kann die Runtime trotzdem starten und faellt auf Seed-Daten zurueck.
-- Ungueltige gespeicherte Trigger- und Makropayloads werden defensiv uebersprungen und nur geloggt.
+- Persistierte Trigger- und Makrodaten sind versioniert und koennen Legacy-Arrays beim Laden migrieren.
 
 ## Verifizierte Luecken
-- Laut `agents/project-context/known-issues.md` ist die IPC-Bruecke zwischen Electron Main und Renderer fuer Storage noch nicht vollstaendig verifiziert.
-- Der Startpfad startet OBS, Spotify und Clip-Service fest mit; eine differenziertere servicebezogene Startstrategie ist in den geprueften Quellen nicht belegt.
-- `deleteMacro()` in der Facade greift ueber einen Cast direkt auf die interne `macroMap` der Engine zu.
-- Der Root-Build ist aktuell durch den Clip-Export-Boundary-Fehler blockiert; damit ist die Runtime zwar implementiert, aber nicht releasebereit.
+- `deleteMacro()` in der Facade greift weiterhin ueber einen Cast direkt auf die interne `macroMap` der Engine zu.
+- `activateRuntime()` startet weiterhin mehrere Services gesammelt; eine feinere servicebezogene Aktivierungsstrategie ist im aktuellen Code nicht modelliert.
+- Desktop-Packaging und reale Windows-Release-Verifikation sind weiterhin getrennt vom reinen Repo-Typecheck zu betrachten.
 
 ## Naechste sinnvolle Entwicklungsschritte
-- Storage-Pfad zwischen Renderer und Electron Main Ende-zu-Ende verifizieren.
-- Den Clip-Export-Build-Blocker beheben, damit die Runtime wieder releasefaehig gebaut werden kann.
+- Feinere Runtime-Commands fuer einzelne Services modellieren, falls die UI differenzierte Aktivierung braucht.
 - Interne Facade-Abhaengigkeit von `macroMap` durch eine offizielle Engine-API ersetzen.
+- Release-Artefakte auf Windows gesondert verifizieren.

@@ -1,20 +1,16 @@
-# Projektziel
+# Project Context Index
 
-Dieses Projekt ist ein modulares Stream-Control-System namens "TriggerHub".
+This file is a stable pointer for the role of `project-context/`.
 
-Ziel der Software:
+## Current Role
 
-- Steuerung von Streaming-Software (OBS, Spotify, etc.)
-- Automatisierung über Trigger und Makros
-- Erweiterbarkeit durch Plugins
-- einfache Bedienung während eines Livestreams
+- product-independent reference context
+- website status source via `project-context/website-status.json`
+- security and release evidence via `project-context/security-reports/`
+- historical planning material that should not outrank code or tests
 
-Das Programm soll besonders geeignet sein für:
+## Source Of Truth Rules
 
-- Streamer
-- Content Creator
-- Gaming Streams
-- automatisierte Szenensteuerung
-
-Langfristiges Ziel:
-Ein flexibles Control-Center ähnlich StreamDeck-Software, jedoch vollständig erweiterbar durch Plugins.
+1. Code, tests, and verified build output outrank context notes.
+2. `project-meta/` and generated artifacts outrank historical plans.
+3. Dated planning files in this folder are reference only unless a script explicitly consumes them.

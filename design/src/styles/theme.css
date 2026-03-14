@@ -1,81 +1,148 @@
 @custom-variant dark (&:is(.dark *));
 
+/**
+ * TriggerHub Design System — Dark-first theme
+ * Primary accent: Sky (#0EA5E9) / Cyan (#22D3EE)
+ * Background: Deep navy-black (#0b0b0c)
+ *
+ * Source of truth: website/src/styles/theme.css
+ * Extended with --th-* surface tokens for design mockups.
+ */
 :root {
   --font-size: 16px;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
+
+  --background: #0b0b0c;
+  --foreground: #f4f4f5;
+
+  --card: #111827;
+  --card-foreground: #f4f4f5;
+
+  --popover: #111827;
+  --popover-foreground: #f4f4f5;
+
+  /* Primary — Sky blue brand accent */
+  --primary: #0EA5E9;
+  --primary-foreground: #0b0b0c;
+
+  --secondary: #1a1f2e;
+  --secondary-foreground: #d1d5db;
+
+  --muted: #1a1f2e;
+  --muted-foreground: #9ca3af;
+
+  /* Accent — Cyan highlight */
+  --accent: #22D3EE;
+  --accent-foreground: #0b0b0c;
+
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
-  --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --input: #1a1f2e;
+  --input-background: #0f1419;
+  --switch-background: #2d3548;
+
+  --ring: #0EA5E9;
+
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  --radius: 0.75rem;
+
+  --chart-1: #0EA5E9;
+  --chart-2: #22D3EE;
+  --chart-3: #38BDF8;
+  --chart-4: #0284C7;
+  --chart-5: #06B6D4;
+
+  --sidebar: #0f1419;
+  --sidebar-foreground: #f4f4f5;
+  --sidebar-primary: #0EA5E9;
+  --sidebar-primary-foreground: #0b0b0c;
+  --sidebar-accent: #1a1f2e;
+  --sidebar-accent-foreground: #d1d5db;
+  --sidebar-border: rgba(255, 255, 255, 0.04);
+  --sidebar-ring: #0EA5E9;
+
+  /* TriggerHub surface scale — for Electron UI mockups */
+  --th-bg-shell: #0e0e11;
+  --th-bg-main: #121214;
+  --th-bg-panel: #18181b;
+  --th-bg-hover: #222225;
+  --th-bg-active: #27272a;
+  --th-border-subtle: rgba(255, 255, 255, 0.04);
+  --th-border-weak: rgba(255, 255, 255, 0.1);
+  --th-text-primary: #f4f4f5;
+  --th-text-secondary: #a1a1aa;
+  --th-text-muted: #71717a;
+  --th-accent: #0EA5E9;
+  --th-accent-hover: #38BDF8;        /* sky-400 — primary hover state */
+  --th-danger: #fb7185;
+  --th-radius-md: 10px;
+  --th-radius-lg: 16px;
+
+  /* Service / integration colors */
+  --th-service-obs: #38BDF8;         /* sky-400 — OBS connection indicator */
+  --th-service-twitch: #c084fc;      /* purple-400 — Twitch connection indicator */
+
+  /* Status dot colors */
+  --th-status-live: #fb7185;         /* rose-400 — live / on-air indicator */
+  --th-status-inactive: #52525b;     /* zinc-600 — idle / pending state */
+
+  /* White overlay scale — for hover/focus layers on dark surfaces */
+  --th-overlay-subtle: rgba(255, 255, 255, 0.02);
+  --th-overlay-weak: rgba(255, 255, 255, 0.05);
+  --th-overlay-mid: rgba(255, 255, 255, 0.10);
+
+  /* Inverse button — high-contrast active state on dark backgrounds */
+  --th-btn-inverse-bg: #f4f4f5;      /* zinc-100 */
+  --th-btn-inverse-fg: #09090b;      /* zinc-950 */
+
+  /* Status colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: var(--destructive);
+  --color-info: var(--primary);
 }
 
+/* .dark mirrors :root — kept for compatibility with next-themes */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
+  --background: #0b0b0c;
+  --foreground: #f4f4f5;
+  --card: #111827;
+  --card-foreground: #f4f4f5;
+  --popover: #111827;
+  --popover-foreground: #f4f4f5;
+  --primary: #0EA5E9;
+  --primary-foreground: #0b0b0c;
+  --secondary: #1a1f2e;
+  --secondary-foreground: #d1d5db;
+  --muted: #1a1f2e;
+  --muted-foreground: #9ca3af;
+  --accent: #22D3EE;
+  --accent-foreground: #0b0b0c;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: #1a1f2e;
+  --input-background: #0f1419;
+  --switch-background: #2d3548;
+  --ring: #0EA5E9;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --chart-1: #0EA5E9;
+  --chart-2: #22D3EE;
+  --chart-3: #38BDF8;
+  --chart-4: #0284C7;
+  --chart-5: #06B6D4;
+  --sidebar: #0f1419;
+  --sidebar-foreground: #f4f4f5;
+  --sidebar-primary: #0EA5E9;
+  --sidebar-primary-foreground: #0b0b0c;
+  --sidebar-accent: #1a1f2e;
+  --sidebar-accent-foreground: #d1d5db;
+  --sidebar-border: rgba(255, 255, 255, 0.04);
+  --sidebar-ring: #0EA5E9;
 }
 
 @theme inline {
@@ -117,6 +184,42 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* TriggerHub surface scale → Tailwind utilities: bg-th-bg-shell, bg-th-bg-panel, etc. */
+  --color-th-bg-shell: var(--th-bg-shell);
+  --color-th-bg-main: var(--th-bg-main);
+  --color-th-bg-panel: var(--th-bg-panel);
+  --color-th-bg-hover: var(--th-bg-hover);
+  --color-th-bg-active: var(--th-bg-active);
+  --color-th-text-primary: var(--th-text-primary);
+  --color-th-text-secondary: var(--th-text-secondary);
+  --color-th-text-muted: var(--th-text-muted);
+  --color-th-border-subtle: var(--th-border-subtle);
+  --color-th-border-weak: var(--th-border-weak);
+  --color-th-accent: var(--th-accent);
+  --color-th-accent-hover: var(--th-accent-hover);
+  --color-th-danger: var(--th-danger);
+
+  /* Service / integration */
+  --color-th-service-obs: var(--th-service-obs);
+  --color-th-service-twitch: var(--th-service-twitch);
+
+  /* Status dots */
+  --color-th-status-live: var(--th-status-live);
+  --color-th-status-inactive: var(--th-status-inactive);
+
+  /* Overlay layers */
+  --color-th-overlay-subtle: var(--th-overlay-subtle);
+  --color-th-overlay-weak: var(--th-overlay-weak);
+  --color-th-overlay-mid: var(--th-overlay-mid);
+
+  /* Inverse button */
+  --color-th-btn-inverse-bg: var(--th-btn-inverse-bg);
+  --color-th-btn-inverse-fg: var(--th-btn-inverse-fg);
+
+  /* Status */
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
 }
 
 @layer base {
@@ -126,12 +229,8 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: Inter, 'Segoe UI', system-ui, sans-serif;
   }
-
-  /**
-  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
-  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
-  */
 
   html {
     font-size: var(--font-size);
