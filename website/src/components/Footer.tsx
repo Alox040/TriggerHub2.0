@@ -1,4 +1,4 @@
-import { Github, MessageCircle, Twitter, Youtube } from "lucide-react";
+import { Github } from "lucide-react";
 import logoImage from "../assets/41208bd857a758438641cb275dc7de957fd9fa9f.png";
 import { projectStatus } from "../data/projectStatus";
 
@@ -16,48 +16,50 @@ export function Footer() {
               status contract.
             </p>
             <div className="flex items-center gap-3">
-              <a href="#" className="rounded-lg border border-white/10 bg-white/5 p-2 transition-all hover:border-sky-500/30 hover:bg-white/10">
-                <Twitter className="size-4 text-gray-400 transition-colors hover:text-white" />
-              </a>
-              <a href="#" className="rounded-lg border border-white/10 bg-white/5 p-2 transition-all hover:border-sky-500/30 hover:bg-white/10">
-                <Youtube className="size-4 text-gray-400 transition-colors hover:text-white" />
-              </a>
-              <a href="#" className="rounded-lg border border-white/10 bg-white/5 p-2 transition-all hover:border-sky-500/30 hover:bg-white/10">
-                <MessageCircle className="size-4 text-gray-400 transition-colors hover:text-white" />
-              </a>
-              <a href="#" className="rounded-lg border border-white/10 bg-white/5 p-2 transition-all hover:border-sky-500/30 hover:bg-white/10">
+              <a
+                href="https://github.com/Alox040/Triggerhub"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="TriggerHub GitHub repository"
+                className="rounded-lg border border-white/10 bg-white/5 p-2 transition-all hover:border-sky-500/30 hover:bg-white/10"
+              >
                 <Github className="size-4 text-gray-400 transition-colors hover:text-white" />
               </a>
             </div>
           </div>
 
           <div>
-            <h3 className="mb-4 font-semibold text-white">Status</h3>
+            <h3 className="mb-4 font-semibold text-white">Pages</h3>
             <ul className="space-y-3">
-              <li><a href="#status" className="text-sm text-gray-400 transition-colors hover:text-white">Available Now</a></li>
-              <li><a href="#status" className="text-sm text-gray-400 transition-colors hover:text-white">In Progress</a></li>
-              <li><a href="#status" className="text-sm text-gray-400 transition-colors hover:text-white">Planned</a></li>
-              <li><a href="#status" className="text-sm text-gray-400 transition-colors hover:text-white">Limitations</a></li>
+              <li><a href="/" className="text-sm text-gray-400 transition-colors hover:text-white">Home</a></li>
+              <li><a href="/access" className="text-sm text-gray-400 transition-colors hover:text-white">Access</a></li>
+              <li><a href="/login" className="text-sm text-gray-400 transition-colors hover:text-white">Login</a></li>
+              <li><a href="/signup" className="text-sm text-gray-400 transition-colors hover:text-white">Signup</a></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="mb-4 font-semibold text-white">Evidence</h3>
+            <h3 className="mb-4 font-semibold text-white">Product</h3>
             <ul className="space-y-3">
-              <li><a href="#evidence" className="text-sm text-gray-400 transition-colors hover:text-white">Proof Points</a></li>
-              <li><a href="#" className="text-sm text-gray-400 transition-colors hover:text-white">Architecture</a></li>
-              <li><a href="#" className="text-sm text-gray-400 transition-colors hover:text-white">Changelog</a></li>
-              <li><a href="#" className="text-sm text-gray-400 transition-colors hover:text-white">Roadmap</a></li>
+              <li><a href="/dashboard" className="text-sm text-gray-400 transition-colors hover:text-white">Dashboard</a></li>
+              <li><a href="/profile" className="text-sm text-gray-400 transition-colors hover:text-white">Profile</a></li>
+              <li><a href="/forbidden" className="text-sm text-gray-400 transition-colors hover:text-white">Forbidden</a></li>
             </ul>
           </div>
 
           <div>
             <h3 className="mb-4 font-semibold text-white">Community</h3>
             <ul className="space-y-3">
-              <li><a href="#" className="text-sm text-gray-400 transition-colors hover:text-white">GitHub</a></li>
-              <li><a href="#" className="text-sm text-gray-400 transition-colors hover:text-white">Discussions</a></li>
-              <li><a href="#" className="text-sm text-gray-400 transition-colors hover:text-white">Updates</a></li>
-              <li><a href="#" className="text-sm text-gray-400 transition-colors hover:text-white">Release Notes</a></li>
+              <li>
+                <a
+                  href="https://github.com/Alox040/Triggerhub"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-gray-400 transition-colors hover:text-white"
+                >
+                  GitHub
+                </a>
+              </li>
             </ul>
           </div>
         </div>
@@ -65,9 +67,9 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-8 md:flex-row">
           <p className="text-sm text-gray-400">Status updated: {projectStatus.updatedAt}</p>
           <div className="flex gap-6">
-            <a href="#" className="text-sm text-gray-400 transition-colors hover:text-white">Privacy Policy</a>
-            <a href="#" className="text-sm text-gray-400 transition-colors hover:text-white">Terms of Service</a>
-            <a href="#" className="text-sm text-gray-400 transition-colors hover:text-white">Cookie Policy</a>
+            <a href="/" className="text-sm text-gray-400 transition-colors hover:text-white">Home</a>
+            <a href="/access" className="text-sm text-gray-400 transition-colors hover:text-white">Access</a>
+            <a href="/login" className="text-sm text-gray-400 transition-colors hover:text-white">Login</a>
           </div>
         </div>
       </div>

@@ -35,10 +35,10 @@ export const LoginPage = ({ onNavigate, nextPath }: LoginPageProps) => {
   }
 
   return (
-    <main className="min-h-screen bg-[#0b0b0c] text-white flex items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
+    <main className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card p-6">
         <h1 className="text-2xl font-semibold">Owner Login</h1>
-        <p className="text-sm text-zinc-300 mt-2">
+        <p className="text-sm text-muted-foreground mt-2">
           Access mode is <span className="font-mono">{appAccessMode}</span>. Public registration is currently
           disabled.
         </p>
@@ -54,7 +54,7 @@ export const LoginPage = ({ onNavigate, nextPath }: LoginPageProps) => {
           <label className="block text-sm">
             Username
             <input
-              className="mt-1 w-full rounded-md border border-zinc-600 bg-zinc-950 px-3 py-2"
+              className="mt-1 w-full rounded-md border border-border bg-input-background px-3 py-2"
               autoComplete="username"
               value={username}
               onChange={(event) => setUsername(event.target.value)}
@@ -63,7 +63,7 @@ export const LoginPage = ({ onNavigate, nextPath }: LoginPageProps) => {
           <label className="block text-sm">
             Password
             <input
-              className="mt-1 w-full rounded-md border border-zinc-600 bg-zinc-950 px-3 py-2"
+              className="mt-1 w-full rounded-md border border-border bg-input-background px-3 py-2"
               type="password"
               autoComplete="current-password"
               value={password}
@@ -74,7 +74,7 @@ export const LoginPage = ({ onNavigate, nextPath }: LoginPageProps) => {
           {error ? <p className="text-sm text-red-300">{error}</p> : null}
 
           <button
-            className="w-full rounded-md bg-cyan-500 px-4 py-2 text-black font-semibold disabled:opacity-60"
+            className="w-full rounded-md bg-primary px-4 py-2 text-primary-foreground font-semibold disabled:opacity-60"
             type="submit"
             disabled={isSubmitting || !isAuthAvailable}
           >

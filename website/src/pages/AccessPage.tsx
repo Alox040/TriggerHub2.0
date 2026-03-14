@@ -31,10 +31,10 @@ export const AccessPage = ({ onNavigate, nextPath }: AccessPageProps) => {
   }
 
   return (
-    <main className="min-h-screen bg-[#0b0b0c] text-white flex items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
+    <main className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card p-6">
         <h1 className="text-2xl font-semibold">Prelaunch Access Gate</h1>
-        <p className="text-sm text-zinc-300 mt-2">
+        <p className="text-sm text-muted-foreground mt-2">
           Access mode is <span className="font-mono">{appAccessMode}</span>. A separate prelaunch access key is required
           before the owner login becomes reachable.
         </p>
@@ -49,7 +49,7 @@ export const AccessPage = ({ onNavigate, nextPath }: AccessPageProps) => {
           <label className="block text-sm">
             Access Key
             <input
-              className="mt-1 w-full rounded-md border border-zinc-600 bg-zinc-950 px-3 py-2"
+              className="mt-1 w-full rounded-md border border-border bg-input-background px-3 py-2"
               autoComplete="off"
               value={accessKey}
               onChange={(event) => setAccessKey(event.target.value)}
@@ -59,7 +59,7 @@ export const AccessPage = ({ onNavigate, nextPath }: AccessPageProps) => {
           {error ? <p className="text-sm text-red-300">{error}</p> : null}
 
           <button
-            className="w-full rounded-md bg-cyan-500 px-4 py-2 text-black font-semibold disabled:opacity-60"
+            className="w-full rounded-md bg-primary px-4 py-2 text-primary-foreground font-semibold disabled:opacity-60"
             type="submit"
             disabled={isSubmitting}
           >

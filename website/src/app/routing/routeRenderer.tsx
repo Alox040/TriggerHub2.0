@@ -15,7 +15,7 @@ import { navigateTo, readNextPath } from './navigation'
 export const renderRoute = (path: RoutePath): ReactElement | null => {
   const rendererMap: Record<RoutePath, () => ReactElement | null> = {
     '/access': () => <AccessPage onNavigate={navigateTo} nextPath={readNextPath()} />,
-    '/': () => <WebsiteLandingPage />,
+    '/': () => <WebsiteLandingPage onNavigate={navigateTo} />,
     '/features': () => (
       <MarketingPage
         title="Features"

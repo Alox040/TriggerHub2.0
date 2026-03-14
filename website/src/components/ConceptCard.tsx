@@ -50,7 +50,7 @@ export function ConceptCard({
         <p className="text-gray-400 leading-relaxed mb-6">{description}</p>
         
         {/* Mockup */}
-        <div className="rounded-xl bg-[#0b0b0c] border border-white/5 p-4 overflow-hidden">
+        <div className="rounded-xl bg-background border border-white/5 p-4 overflow-hidden">
           {mockup}
         </div>
       </div>

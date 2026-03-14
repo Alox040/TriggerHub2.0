@@ -106,7 +106,7 @@ export function PlatformVision() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.4 }}
-                      className="flex items-start gap-4 p-4 rounded-xl bg-[#0b0b0c] border border-white/10"
+                      className="flex items-start gap-4 p-4 rounded-xl bg-background border border-white/10"
                     >
                       <Package className="size-6 text-sky-400 flex-shrink-0 mt-1" />
                       <div>
@@ -121,7 +121,7 @@ export function PlatformVision() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.5 }}
-                      className="flex items-start gap-4 p-4 rounded-xl bg-[#0b0b0c] border border-white/10"
+                      className="flex items-start gap-4 p-4 rounded-xl bg-background border border-white/10"
                     >
                       <Globe className="size-6 text-sky-400 flex-shrink-0 mt-1" />
                       <div>
@@ -136,7 +136,7 @@ export function PlatformVision() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.6 }}
-                      className="flex items-start gap-4 p-4 rounded-xl bg-[#0b0b0c] border border-white/10"
+                      className="flex items-start gap-4 p-4 rounded-xl bg-background border border-white/10"
                     >
                       <Store className="size-6 text-sky-400 flex-shrink-0 mt-1" />
                       <div>

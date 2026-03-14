@@ -40,7 +40,7 @@ export function EditorMockup() {
         </div>
         
         {/* Canvas */}
-        <div className="p-8 bg-[#0b0b0c] min-h-[400px] relative">
+        <div className="p-8 bg-background min-h-[400px] relative">
           {/* Grid pattern */}
           <div className="absolute inset-0 opacity-20" style={{
             backgroundImage: 'radial-gradient(circle, rgba(14, 165, 233, 0.05) 1px, transparent 1px)',

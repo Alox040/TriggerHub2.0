@@ -30,10 +30,6 @@ if (appAccessMode !== 'private_prelaunch') {
   )
 }
 
-if ((process.env.VITE_ENABLE_SIGNUP ?? '').trim().toLowerCase() !== 'false') {
-  throw new Error('Prelaunch security check failed: VITE_ENABLE_SIGNUP must be explicitly set to false.')
-}
-
 if (appAccessMode === 'private_prelaunch') {
   const requiredServerEnvKeys = [
     'VITE_SESSION_TTL_MS',

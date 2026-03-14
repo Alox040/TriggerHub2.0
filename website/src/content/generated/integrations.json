@@ -35,6 +35,27 @@
     ]
   },
   {
+    "id": "spotify",
+    "name": "Spotify",
+    "status": "implemented",
+    "summary": "Spotify ist als Desktop-Service mit In-Memory- und HTTP-Transport sowie den Aktionen `spotify.play`, `spotify.pause` und `spotify.nextTrack` angebunden.",
+    "sourceOfTruth": [
+      "src/services/spotify-service/index.ts",
+      "src/services/spotify-service/spotifyClient.ts",
+      "src/services/spotify-service/spotifyActions.ts",
+      "src/tests/services.test.ts"
+    ],
+    "capabilities": [
+      "play",
+      "pause",
+      "nextTrack"
+    ],
+    "notes": [
+      "HTTP-Nutzung erfordert `http.baseUrl`.",
+      "Die Servicelogik läuft über die Operation-Policy und wird auf Timeout-, HTTP- und Response-Validierungsfehler getestet."
+    ]
+  },
+  {
     "id": "twitch",
     "name": "Twitch",
     "status": "not_implemented",

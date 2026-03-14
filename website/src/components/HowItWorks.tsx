@@ -41,7 +41,7 @@ export function HowItWorks() {
                     from your connected tools and kick off your workflow when conditions are met.
                   </p>
                   
-                  <div className="rounded-xl bg-[#0b0b0c] border border-white/5 p-4">
+                  <div className="rounded-xl bg-background border border-white/5 p-4">
                     <div className="text-xs text-gray-500 font-semibold mb-3 uppercase tracking-wide">
                       Available Triggers
                     </div>
@@ -100,7 +100,7 @@ export function HowItWorks() {
                     before allowing actions to execute, giving you precise control over your automations.
                   </p>
                   
-                  <div className="rounded-xl bg-[#0b0b0c] border border-white/5 p-4">
+                  <div className="rounded-xl bg-background border border-white/5 p-4">
                     <div className="text-xs text-gray-500 font-semibold mb-3 uppercase tracking-wide">
                       Condition Builder
                     </div>
@@ -158,7 +158,7 @@ export function HowItWorks() {
                     across your connected tools, from controlling OBS to managing audio playback.
                   </p>
                   
-                  <div className="rounded-xl bg-[#0b0b0c] border border-white/5 p-4">
+                  <div className="rounded-xl bg-background border border-white/5 p-4">
                     <div className="text-xs text-gray-500 font-semibold mb-3 uppercase tracking-wide">
                       Popular Actions
                     </div>

@@ -9,10 +9,16 @@
       ]
     },
     "macos": {
-      "status": "not_configured"
+      "status": "not_configured",
+      "sourceOfTruth": [
+        "package.json"
+      ]
     },
     "linux": {
-      "status": "not_configured"
+      "status": "not_configured",
+      "sourceOfTruth": [
+        "package.json"
+      ]
     }
   },
   "website": {
@@ -20,7 +26,8 @@
     "runtime": "Vite React application",
     "sourceOfTruth": [
       "website/package.json",
-      "website/src/App.tsx"
+      "website/src/App.tsx",
+      "website/src/main.tsx"
     ]
   }
 }
