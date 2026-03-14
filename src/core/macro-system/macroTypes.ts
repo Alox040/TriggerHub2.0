@@ -1,6 +1,8 @@
 //  Variable Map
 export type MacroVariableMap = Record<string, unknown>
 
+export const MAX_MACRO_DEPTH = 10
+
 //  Condition
 export type MacroConditionOperator =
   | 'equals'
@@ -122,6 +124,9 @@ export interface MacroExecutionResult {
   macroId: string
   executedStepCount: number
   executedAt: number
+  success?: boolean
+  error?: 'MAX_RECURSION_DEPTH_EXCEEDED'
+  depth?: number
   skipped?: boolean
 }
 
@@ -137,5 +142,15 @@ export class MacroInvariantError extends Error {
   public constructor(message: string) {
     super(message)
     this.name = 'MacroInvariantError'
+  }
+}
+
+export class MacroRecursionLimitError extends Error {
+  public readonly depth: number
+
+  public constructor(depth: number) {
+    super(`Macro recursion depth limit exceeded at depth ${depth}`)
+    this.name = 'MacroRecursionLimitError'
+    this.depth = depth
   }
 }

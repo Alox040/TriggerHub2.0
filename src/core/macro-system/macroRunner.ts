@@ -1,4 +1,4 @@
-import { MacroInvariantError } from './macroTypes'
+import { MAX_MACRO_DEPTH, MacroInvariantError, MacroRecursionLimitError } from './macroTypes'
 import type {
   MacroExecutionContext,
   MacroExecutionResult,
@@ -14,6 +14,10 @@ export const runMacro = async (
   depth = 0,
   triggerPayload?: Record<string, unknown>,
 ): Promise<MacroExecutionResult> => {
+  if (depth > MAX_MACRO_DEPTH) {
+    throw new MacroRecursionLimitError(depth)
+  }
+
   const maxDepth = options.maxDepth ?? 5
   if (depth > maxDepth) {
     throw new MacroInvariantError(
@@ -48,5 +52,7 @@ export const runMacro = async (
     macroId: macro.id,
     executedStepCount,
     executedAt: Date.now(),
+    success: true,
+    depth,
   }
 }

@@ -14,7 +14,7 @@ export * from './twitchClient'
 export interface CreateTwitchServiceOptions {
   eventBus: EventBusPort
   transport?: 'memory' | 'http'
-  http?: TwitchApiTransportOptions
+  http?: Omit<TwitchApiTransportOptions, 'policy'>
   policy?: Partial<OperationPolicy>
   pollIntervalMs?: number
 }
@@ -28,9 +28,11 @@ export const createTwitchService = (options: CreateTwitchServiceOptions): Twitch
     }
 
     return new TwitchService(
-      new TwitchApiTransport(options.http),
+      new TwitchApiTransport({
+        ...options.http,
+        policy: options.policy,
+      }),
       options.eventBus,
-      options.policy,
       options.pollIntervalMs,
     )
   }
@@ -38,7 +40,6 @@ export const createTwitchService = (options: CreateTwitchServiceOptions): Twitch
   return new TwitchService(
     new InMemoryTwitchTransport(),
     options.eventBus,
-    options.policy,
     options.pollIntervalMs,
   )
 }
