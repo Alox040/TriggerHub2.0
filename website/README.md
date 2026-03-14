@@ -39,7 +39,8 @@ Main files:
 
 Target route model:
 
-- Public: `/access`, `/`, `/features`, `/pricing`, `/about`, `/login`, `/signup`
+- Public: `/access`, `/`, `/features`, `/pricing`, `/about`, `/login`
+- Legacy redirect: `/signup` -> `/login`
 - Protected: `/app`, `/dashboard`, `/profile`, `/settings`
 
 Configuration:
@@ -56,7 +57,6 @@ Configuration:
    - `PRELAUNCH_ACCESS_KEY`
 3. Set client/runtime flags explicitly:
    - `VITE_ACCESS_MODE=private_prelaunch`
-   - `VITE_ENABLE_SIGNUP=false`
    - `VITE_SESSION_TTL_MS` to a positive integer
 4. Set `PRELAUNCH_GATE_TTL_MS` to a positive integer.
 
