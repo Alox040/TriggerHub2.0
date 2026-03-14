@@ -1,12 +1,15 @@
+import type { AppViewId } from '../navigation'
+
 interface SidebarItem {
-  id: string
+  id: AppViewId
   label: string
+  description?: string
 }
 
 interface SidebarProps {
   items: SidebarItem[]
-  activeId: string
-  onSelect: (id: string) => void
+  activeId: AppViewId
+  onSelect: (id: AppViewId) => void
 }
 
 export const Sidebar = ({ items, activeId, onSelect }: SidebarProps): JSX.Element => {
@@ -29,8 +32,15 @@ export const Sidebar = ({ items, activeId, onSelect }: SidebarProps): JSX.Elemen
                 padding: '10px 12px',
                 cursor: 'pointer',
               }}
+              type="button"
+              aria-current={active ? 'page' : undefined}
             >
-              {item.label}
+              <div>{item.label}</div>
+              {item.description ? (
+                <div style={{ fontSize: 11, color: 'var(--th-text-muted)', marginTop: 4 }}>
+                  {item.description}
+                </div>
+              ) : null}
             </button>
           )
         })}
