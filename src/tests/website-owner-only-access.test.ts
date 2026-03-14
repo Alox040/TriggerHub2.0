@@ -78,7 +78,6 @@ const extractCsrfTokenFromCookie = (cookiePair: string): string => cookiePair.sl
 describe('website owner-only access verification', () => {
   const originalEnv = {
     accessMode: process.env.VITE_ACCESS_MODE,
-    enableSignup: process.env.VITE_ENABLE_SIGNUP,
     sessionTtlMs: process.env.VITE_SESSION_TTL_MS,
     ownerUserId: process.env.OWNER_USER_ID,
     ownerEmail: process.env.OWNER_EMAIL,
@@ -98,7 +97,6 @@ describe('website owner-only access verification', () => {
     const hash = crypto.pbkdf2Sync(password, Buffer.from(salt, 'base64'), iterations, 32, 'sha256').toString('base64')
 
     process.env.VITE_ACCESS_MODE = 'private_prelaunch'
-    process.env.VITE_ENABLE_SIGNUP = 'false'
     process.env.VITE_SESSION_TTL_MS = '28800000'
     process.env.OWNER_USER_ID = 'owner'
     process.env.OWNER_EMAIL = 'owner@example.com'
@@ -114,7 +112,6 @@ describe('website owner-only access verification', () => {
 
   afterEach(() => {
     process.env.VITE_ACCESS_MODE = originalEnv.accessMode
-    process.env.VITE_ENABLE_SIGNUP = originalEnv.enableSignup
     process.env.VITE_SESSION_TTL_MS = originalEnv.sessionTtlMs
     process.env.OWNER_USER_ID = originalEnv.ownerUserId
     process.env.OWNER_EMAIL = originalEnv.ownerEmail
@@ -333,7 +330,7 @@ describe('website owner-only access verification', () => {
   })
 
   it('treats direct protected routes as inaccessible without authenticated owner identity', () => {
-    const dashboardPolicy = getResolvedRoutePolicy('/dashboard', 'private_prelaunch', { signupEnabled: false })
+    const dashboardPolicy = getResolvedRoutePolicy('/dashboard', 'private_prelaunch')
     const unauthenticated = evaluateRouteAccess(dashboardPolicy, { mode: 'private_prelaunch', identity: null }, '/dashboard')
     const nonOwner = evaluateRouteAccess(
       dashboardPolicy,

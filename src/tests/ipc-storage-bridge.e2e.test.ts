@@ -87,6 +87,11 @@ const { bootMainProcess } = require(${JSON.stringify(mainModulePath)})
       env: {
         ...process.env,
         ELECTRON_DISABLE_SECURITY_WARNINGS: 'true',
+        // ELECTRON_RUN_AS_NODE=1 (set by the VSCode/Vitest host) must be unset so
+        // the spawned Electron binary initialises as a real Electron process and
+        // exposes require('electron') as the Electron API rather than the npm shim.
+        ELECTRON_RUN_AS_NODE: undefined,
+        NODE_PATH: join(repoRoot, 'node_modules'),
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     })

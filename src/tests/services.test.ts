@@ -9,6 +9,7 @@ import {
   createClipService,
   createObsService,
   createSpotifyService,
+  createTwitchService,
   HttpRequestError,
   InMemoryObsTransport,
   InMemoryTwitchTransport,
@@ -289,7 +290,7 @@ describe('Services', () => {
     try {
       const eventBus = new InMemoryEventBus()
       const transport = new InMemoryTwitchTransport()
-      const twitch = new TwitchService(transport, eventBus, undefined, 30_000)
+      const twitch = new TwitchService(transport, eventBus, 30_000)
       const streamEvents: Array<{ topic: string; isLive: boolean }> = []
 
       eventBus.subscribe<StreamStatus>(TwitchActionTypes.ON_STREAM_LIVE, async (payload: StreamStatus) => {
@@ -328,6 +329,60 @@ describe('Services', () => {
     } finally {
       vi.useRealTimers()
     }
+  })
+
+  it('calls twitch helix endpoints through the http client', async () => {
+    const fetchImpl = vi.fn(async (input: string | URL | Request) => {
+      const url = String(input)
+
+      if (url.includes('/users?login=streamer')) {
+        return jsonResponse(200, { data: [{ id: '42', login: 'streamer' }] })
+      }
+
+      if (url.includes('/channels?broadcaster_id=42')) {
+        return jsonResponse(200, {
+          data: [{ broadcaster_login: 'streamer', title: 'Going Live', game_name: 'Gaming' }],
+        })
+      }
+
+      if (url.includes('/streams?user_login=streamer')) {
+        return jsonResponse(200, {
+          data: [
+            {
+              user_login: 'streamer',
+              title: 'Going Live',
+              game_name: 'Gaming',
+              viewer_count: 42,
+              started_at: '2026-03-13T10:00:00.000Z',
+            },
+          ],
+        })
+      }
+
+      return jsonResponse(404, { error: 'not found' })
+    })
+
+    const twitch = createTwitchService({
+      eventBus: new InMemoryEventBus(),
+      transport: 'http',
+      http: { baseUrl: 'https://api.twitch.tv/helix', fetchImpl },
+      policy: { retries: 0, timeoutMs: 100, retryDelayMs: 1 },
+    })
+
+    await twitch.connect('Streamer')
+
+    await expect(twitch.getStreamStatus()).resolves.toMatchObject({
+      channelName: 'streamer',
+      isLive: true,
+      title: 'Going Live',
+      categoryName: 'Gaming',
+      viewerCount: 42,
+    })
+
+    const urls = (fetchImpl.mock.calls as unknown[][]).map((call) => String(call[0] ?? ''))
+    expect(urls.some((url) => url.includes('/users?login=streamer'))).toBe(true)
+    expect(urls.some((url) => url.includes('/channels?broadcaster_id=42'))).toBe(true)
+    expect(urls.some((url) => url.includes('/streams?user_login=streamer'))).toBe(true)
   })
 })
 
