@@ -14,6 +14,12 @@ export interface ProfileStore {
   writeAll(profiles: ProfileRecord[]): void
 }
 
+export interface ProfileCacheStore {
+  read(userId: string): UserProfileView | null
+  write(profile: UserProfileView): void
+  clear(userId: string): void
+}
+
 export interface ProfileInput {
   display_name: string
   avatar_url: string
@@ -26,4 +32,9 @@ export interface UserProfileView {
   avatar_url: string
   bio: string
   role: UserRole
+}
+
+export interface BackendProfileApi {
+  getCurrentProfile(): Promise<UserProfileView>
+  updateCurrentProfile(input: ProfileInput): Promise<UserProfileView>
 }

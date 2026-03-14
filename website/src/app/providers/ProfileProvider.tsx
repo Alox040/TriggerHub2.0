@@ -5,35 +5,42 @@ import type { ProfileInput, UserProfileView } from '../../modules/profile/types'
 
 interface ProfileContextValue {
   profile: UserProfileView | null
-  refreshProfile: () => void
-  updateProfile: (input: ProfileInput) => UserProfileView
+  isProfileLoading: boolean
+  profileError: string | null
+  refreshProfile: () => Promise<void>
+  updateProfile: (input: ProfileInput) => Promise<UserProfileView>
 }
 
 const ProfileContext = createContext<ProfileContextValue | null>(null)
 
-const defaultDisplayNameForRole = (role: 'owner' | 'user'): string =>
-  role === 'owner' ? 'Owner' : 'User'
-
 export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const { identity } = useAuth()
   const [profile, setProfile] = useState<UserProfileView | null>(null)
+  const [isProfileLoading, setIsProfileLoading] = useState(false)
+  const [profileError, setProfileError] = useState<string | null>(null)
 
-  const refreshProfile = () => {
+  const refreshProfile = async (): Promise<void> => {
     if (!identity) {
       setProfile(null)
+      setProfileError(null)
       return
     }
 
-    websiteProfileRuntime.identityService.ensureUser(identity.userId, identity.role)
-    const ensuredProfile = websiteProfileRuntime.profileService.ensureProfileForUser(
-      identity.userId,
-      defaultDisplayNameForRole(identity.role),
-    )
-    setProfile(ensuredProfile)
+    setIsProfileLoading(true)
+    try {
+      const nextProfile = await websiteProfileRuntime.profileService.getCurrentProfile(identity.userId)
+      setProfile(nextProfile)
+      setProfileError(null)
+    } catch (error) {
+      setProfile(null)
+      setProfileError(error instanceof Error ? error.message : 'Failed to load profile')
+    } finally {
+      setIsProfileLoading(false)
+    }
   }
 
   useEffect(() => {
-    refreshProfile()
+    void refreshProfile()
     // identity is a small immutable object from auth provider; stable dependency is sufficient.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [identity?.userId, identity?.role])
@@ -41,18 +48,21 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const value = useMemo<ProfileContextValue>(
     () => ({
       profile,
+      isProfileLoading,
+      profileError,
       refreshProfile,
-      updateProfile: (input) => {
+      updateProfile: async (input) => {
         if (!identity) {
           throw new Error('Cannot update profile without authenticated identity')
         }
 
-        const updated = websiteProfileRuntime.profileService.updateProfile(identity.userId, input)
+        const updated = await websiteProfileRuntime.profileService.updateCurrentProfile(identity.userId, input)
         setProfile(updated)
+        setProfileError(null)
         return updated
       },
     }),
-    [identity, profile],
+    [identity, isProfileLoading, profile, profileError],
   )
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>

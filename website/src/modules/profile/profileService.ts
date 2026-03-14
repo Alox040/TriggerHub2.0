@@ -1,92 +1,121 @@
-import { IdentityService } from '../identity/identityService'
-import type { ProfileInput, ProfileRecord, ProfileStore, UserProfileView } from './types'
-import { validateProfileInput } from './validation'
+import type { BackendProfileApi, ProfileCacheStore, ProfileInput, UserProfileView } from './types'
+import { ProfileValidationError, validateProfileInput } from './validation'
 
-const toProfileView = (record: ProfileRecord, role: 'owner' | 'user'): UserProfileView => ({
-  user_id: record.userId,
-  display_name: record.displayName,
-  avatar_url: record.avatarUrl,
-  bio: record.bio,
-  role,
+export class ProfileServiceError extends Error {
+  public constructor(message: string) {
+    super(message)
+    this.name = 'ProfileServiceError'
+  }
+}
+
+const parseErrorMessage = async (response: Response, fallbackMessage: string): Promise<string> => {
+  try {
+    const payload = (await response.json()) as { error?: { message?: string } }
+    return payload.error?.message ?? fallbackMessage
+  } catch {
+    return fallbackMessage
+  }
+}
+
+const readCookieValue = (cookieName: string): string | null => {
+  if (typeof document === 'undefined') {
+    return null
+  }
+
+  const encodedName = `${cookieName}=`
+  const cookie = document.cookie
+    .split(';')
+    .map((entry) => entry.trim())
+    .find((entry) => entry.startsWith(encodedName))
+
+  return cookie ? cookie.slice(encodedName.length) : null
+}
+
+export const createBackendProfileApi = (): BackendProfileApi => ({
+  getCurrentProfile: async () => {
+    const response = await fetch('/api/profile/me', {
+      method: 'GET',
+      credentials: 'same-origin',
+    })
+
+    if (response.status === 401) {
+      throw new ProfileServiceError('No authenticated profile session')
+    }
+
+    if (!response.ok) {
+      throw new ProfileServiceError(await parseErrorMessage(response, 'Failed to load profile'))
+    }
+
+    const payload = (await response.json()) as { profile?: UserProfileView }
+    if (!payload.profile) {
+      throw new ProfileServiceError('Profile response did not include a profile payload')
+    }
+
+    return payload.profile
+  },
+  updateCurrentProfile: async (input) => {
+    const csrfToken = readCookieValue('th_csrf')
+    const response = await fetch('/api/profile/me', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify(input),
+    })
+
+    if (response.status === 400) {
+      throw new ProfileValidationError(await parseErrorMessage(response, 'Profile input is invalid'))
+    }
+
+    if (!response.ok) {
+      throw new ProfileServiceError(await parseErrorMessage(response, 'Failed to update profile'))
+    }
+
+    const payload = (await response.json()) as { profile?: UserProfileView }
+    if (!payload.profile) {
+      throw new ProfileServiceError('Profile response did not include a profile payload')
+    }
+
+    return payload.profile
+  },
 })
 
 export class ProfileService {
-  constructor(
-    private readonly identityService: IdentityService,
-    private readonly profileStore: ProfileStore,
+  public constructor(
+    private readonly backendApi: BackendProfileApi,
+    private readonly cacheStore?: ProfileCacheStore,
   ) {}
 
-  getProfileViewByUserId(userId: string): UserProfileView | null {
-    const user = this.identityService.getUserById(userId)
-    if (!user) {
-      return null
-    }
+  public async getCurrentProfile(userId: string): Promise<UserProfileView> {
+    try {
+      const profile = await this.backendApi.getCurrentProfile()
+      this.cacheStore?.write(profile)
+      return profile
+    } catch (error) {
+      const cachedProfile = this.cacheStore?.read(userId)
+      if (cachedProfile) {
+        return cachedProfile
+      }
 
-    const profile = this.profileStore.readAll().find((record) => record.userId === userId)
-    return profile ? toProfileView(profile, user.role) : null
+      throw error
+    }
   }
 
-  ensureProfileForUser(userId: string, defaultDisplayName: string): UserProfileView {
-    const user = this.identityService.getUserById(userId)
-    if (!user) {
-      throw new Error(`Cannot create profile for unknown user: ${userId}`)
-    }
-
-    const profiles = this.profileStore.readAll()
-    const existing = profiles.find((record) => record.userId === userId)
-    if (existing) {
-      return toProfileView(existing, user.role)
-    }
-
-    const now = Date.now()
-    const created: ProfileRecord = {
-      userId,
-      displayName: defaultDisplayName.trim(),
-      avatarUrl: '',
-      bio: '',
-      createdAt: now,
-      updatedAt: now,
-    }
-
-    this.profileStore.writeAll([...profiles, created])
-    return toProfileView(created, user.role)
-  }
-
-  updateProfile(userId: string, input: ProfileInput): UserProfileView {
-    const user = this.identityService.getUserById(userId)
-    if (!user) {
-      throw new Error(`Cannot update profile for unknown user: ${userId}`)
-    }
-
+  public async updateCurrentProfile(userId: string, input: ProfileInput): Promise<UserProfileView> {
     const validated = validateProfileInput(input)
-    const profiles = this.profileStore.readAll()
-    const existing = profiles.find((record) => record.userId === userId)
-    const now = Date.now()
+    const profile = await this.backendApi.updateCurrentProfile(validated)
 
-    const baseRecord: ProfileRecord =
-      existing ??
-      ({
-        userId,
-        displayName: validated.display_name,
-        avatarUrl: validated.avatar_url,
-        bio: validated.bio,
-        createdAt: now,
-        updatedAt: now,
-      } as ProfileRecord)
-
-    const updatedRecord: ProfileRecord = {
-      ...baseRecord,
-      displayName: validated.display_name,
-      avatarUrl: validated.avatar_url,
-      bio: validated.bio,
-      updatedAt: now,
+    if (profile.user_id !== userId) {
+      throw new ProfileServiceError('Updated profile does not match the authenticated user')
     }
 
-    const nextProfiles = existing
-      ? profiles.map((record) => (record.userId === userId ? updatedRecord : record))
-      : [...profiles, updatedRecord]
-    this.profileStore.writeAll(nextProfiles)
+    this.cacheStore?.write(profile)
+    return profile
+  }
 
-    return toProfileView(updatedRecord, user.role)
+  public clearCachedProfile(userId: string): void {
+    this.cacheStore?.clear(userId)
   }
 }

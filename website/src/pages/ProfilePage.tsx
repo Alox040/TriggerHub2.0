@@ -1,13 +1,14 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { useProfile } from '../app/providers/ProfileProvider'
 import { ProfileValidationError } from '../modules/profile/validation'
+import { ProfileServiceError } from '../modules/profile/profileService'
 
 interface ProfilePageProps {
   onNavigate: (path: string) => void
 }
 
 export const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
-  const { profile, updateProfile } = useProfile()
+  const { profile, updateProfile, isProfileLoading, profileError } = useProfile()
   const [displayName, setDisplayName] = useState('')
   const [avatarUrl, setAvatarUrl] = useState('')
   const [bio, setBio] = useState('')
@@ -24,13 +25,13 @@ export const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
     setBio(profile.bio)
   }, [profile])
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError(null)
     setSuccess(null)
 
     try {
-      const updated = updateProfile({
+      const updated = await updateProfile({
         display_name: displayName,
         avatar_url: avatarUrl,
         bio,
@@ -43,6 +44,8 @@ export const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
     } catch (unknownError) {
       if (unknownError instanceof ProfileValidationError) {
         setError(unknownError.message)
+      } else if (unknownError instanceof ProfileServiceError) {
+        setError(unknownError.message)
       } else {
         setError('Failed to update profile')
       }
@@ -50,19 +53,21 @@ export const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
   }
 
   return (
-    <main className="min-h-screen bg-[#0b0b0c] text-white p-6">
-      <div className="mx-auto max-w-3xl rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
+    <main className="min-h-screen bg-background text-foreground p-6">
+      <div className="mx-auto max-w-3xl rounded-xl border border-border bg-card p-6">
         <h1 className="text-2xl font-semibold">Profile</h1>
-        <p className="mt-2 text-zinc-300">
+        <p className="mt-2 text-muted-foreground">
           Identity is managed separately from auth/session. Current role:{' '}
           <span className="font-mono">{profile?.role ?? 'unknown'}</span>
         </p>
+        {isProfileLoading ? <p className="mt-4 text-sm text-muted-foreground">Loading profile...</p> : null}
+        {!isProfileLoading && profileError ? <p className="mt-4 text-sm text-red-300">{profileError}</p> : null}
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <label className="block text-sm">
             Display name
             <input
-              className="mt-1 w-full rounded-md border border-zinc-600 bg-zinc-950 px-3 py-2"
+              className="mt-1 w-full rounded-md border border-border bg-input-background px-3 py-2"
               value={displayName}
               onChange={(event) => setDisplayName(event.target.value)}
             />
@@ -71,7 +76,7 @@ export const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
           <label className="block text-sm">
             Avatar URL
             <input
-              className="mt-1 w-full rounded-md border border-zinc-600 bg-zinc-950 px-3 py-2"
+              className="mt-1 w-full rounded-md border border-border bg-input-background px-3 py-2"
               value={avatarUrl}
               onChange={(event) => setAvatarUrl(event.target.value)}
               placeholder="https://..."
@@ -81,7 +86,7 @@ export const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
           <label className="block text-sm">
             Bio
             <textarea
-              className="mt-1 w-full rounded-md border border-zinc-600 bg-zinc-950 px-3 py-2 min-h-28"
+              className="mt-1 w-full rounded-md border border-border bg-input-background px-3 py-2 min-h-28"
               value={bio}
               onChange={(event) => setBio(event.target.value)}
             />
@@ -91,11 +96,11 @@ export const ProfilePage = ({ onNavigate }: ProfilePageProps) => {
           {success ? <p className="text-sm text-emerald-300">{success}</p> : null}
 
           <div className="flex gap-3">
-            <button className="rounded-md bg-cyan-500 px-4 py-2 text-black font-semibold" type="submit">
+            <button className="rounded-md bg-primary px-4 py-2 text-primary-foreground font-semibold" type="submit">
               Save profile
             </button>
             <button
-              className="rounded-md border border-zinc-500 px-4 py-2"
+              className="rounded-md border border-border px-4 py-2"
               type="button"
               onClick={() => onNavigate('/internal')}
             >
