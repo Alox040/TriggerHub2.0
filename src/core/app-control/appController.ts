@@ -4,6 +4,7 @@ import { WindowManager } from './windowManager'
 
 export class AppController implements AppControllerPort {
   private running = false
+  private hotkeysRegistered = false
 
   public constructor(
     private readonly hotkeyManager: HotkeyManager,
@@ -11,19 +12,33 @@ export class AppController implements AppControllerPort {
   ) {}
 
   public async start(): Promise<void> {
+    if (this.running) {
+      return
+    }
+
     this.running = true
 
-    this.hotkeyManager.register({
-      key: 'F11',
-      description: 'Toggle fullscreen',
-      handler: async () => {
-        await this.windowManager.execute({ type: 'toggle-fullscreen' })
-      },
-    })
+    if (!this.hotkeysRegistered) {
+      this.hotkeyManager.register({
+        key: 'F11',
+        description: 'Toggle fullscreen',
+        handler: async () => {
+          await this.windowManager.execute({ type: 'toggle-fullscreen' })
+        },
+      })
+      this.hotkeysRegistered = true
+    }
+
+    this.hotkeyManager.start()
   }
 
   public async stop(): Promise<void> {
+    if (!this.running) {
+      return
+    }
+
     this.running = false
+    this.hotkeyManager.stop()
   }
 
   public isRunning(): boolean {

@@ -4,6 +4,7 @@ const { exportClipToFile } = require('./clipExporter.node.cjs')
 const { readJsonFile, writeJsonFile } = require('./jsonFileStorage.cjs')
 let storageHandlersRegistered = false
 let clipExportHandlerRegistered = false
+let windowCommandHandlerRegistered = false
 
 function assertValidStorageKey(key) {
   if (typeof key !== 'string' || !/^[A-Za-z0-9._-]+$/.test(key)) {
@@ -43,9 +44,55 @@ function registerClipExportHandler(targetApp = app) {
   clipExportHandlerRegistered = true
 }
 
+function assertValidWindowCommand(command) {
+  if (!command || typeof command !== 'object') {
+    throw new Error('Invalid window command')
+  }
+
+  if (!['focus', 'minimize', 'toggle-fullscreen'].includes(command.type)) {
+    throw new Error('Invalid window command')
+  }
+}
+
+async function executeWindowCommand(targetWindow, command) {
+  assertValidWindowCommand(command)
+
+  if (!targetWindow) {
+    throw new Error('Window command requires a target window')
+  }
+
+  switch (command.type) {
+    case 'focus':
+      targetWindow.focus()
+      return
+    case 'minimize':
+      targetWindow.minimize()
+      return
+    case 'toggle-fullscreen':
+      targetWindow.setFullScreen(!targetWindow.isFullScreen())
+      return
+    default:
+      throw new Error('Invalid window command')
+  }
+}
+
+function registerWindowCommandHandler(targetIpcMain = ipcMain) {
+  if (windowCommandHandlerRegistered) {
+    return
+  }
+
+  targetIpcMain.handle('window:command', async (event, command) => {
+    const targetWindow = BrowserWindow.fromWebContents(event.sender)
+    await executeWindowCommand(targetWindow, command)
+  })
+
+  windowCommandHandlerRegistered = true
+}
+
 function registerIpcHandlers(targetApp = app) {
   registerStorageHandlers()
   registerClipExportHandler(targetApp)
+  registerWindowCommandHandler()
 }
 
 async function createMainWindow(options = {}) {
@@ -93,20 +140,27 @@ async function bootMainProcess(options = {}) {
 if (require.main === module) {
   bootMainProcess().catch((error) => {
     console.error(error)
-    app.quit()
+    if (app?.quit) {
+      app.quit()
+    }
   })
 }
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+if (app?.on) {
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
+}
 
 module.exports = {
   assertValidStorageKey,
+  assertValidWindowCommand,
   bootMainProcess,
   createMainWindow,
+  executeWindowCommand,
   getStorageFilePath,
   registerIpcHandlers,
+  registerWindowCommandHandler,
 }
