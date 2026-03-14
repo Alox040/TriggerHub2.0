@@ -22,6 +22,7 @@ export interface RouteDefinition {
   path: RoutePath
   group: RouteGroup
   basePolicy: RoutePolicy
+  systemRedirectTo?: RoutePath
   modeOverrides?: Partial<Record<AccessMode, RoutePolicy>>
 }
 
@@ -95,11 +96,9 @@ const ROUTE_MANIFEST: Record<RoutePath, RouteDefinition> = {
   },
   '/signup': {
     path: '/signup',
-    group: 'public_auth',
-    basePolicy: publicRoute({
-      visibility: 'public',
-      allowInModes: ['invite_only', 'public_product'],
-    }),
+    group: 'system',
+    basePolicy: publicRoute(),
+    systemRedirectTo: '/login',
     modeOverrides: {
       private_prelaunch: ownerOnlyRoute(),
     },
@@ -177,6 +176,7 @@ const ROUTE_MANIFEST: Record<RoutePath, RouteDefinition> = {
     path: '/internal',
     group: 'system',
     basePolicy: protectedRoute(),
+    systemRedirectTo: '/dashboard',
     modeOverrides: {
       private_prelaunch: ownerOnlyRoute(),
     },
@@ -194,15 +194,10 @@ export const normalizeRoutePath = (path: string): RoutePath =>
 export const getResolvedRoutePolicy = (
   path: string,
   mode: AccessMode,
-  options?: { signupEnabled?: boolean },
 ): RoutePolicy => {
-  if (path === '/signup' && options?.signupEnabled === false) {
-    return {
-      visibility: 'protected',
-      allowInModes: [],
-    }
-  }
-
   const definition = getRouteDefinition(path)
   return definition.modeOverrides?.[mode] ?? definition.basePolicy
 }
+
+export const getSystemRedirectForRoute = (path: RoutePath): RoutePath | null =>
+  getRouteDefinition(path).systemRedirectTo ?? null
