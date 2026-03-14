@@ -21,3 +21,9 @@ export interface DashboardViewModel {
     spotifyConnected: boolean
   }
 }
+
+export interface RuntimeStatusViewModel {
+  obsConnected: boolean
+  spotifyConnected: boolean
+  clipConnected: boolean
+}
