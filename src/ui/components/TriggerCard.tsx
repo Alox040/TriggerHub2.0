@@ -7,7 +7,7 @@ interface TriggerCardProps {
 
 export const TriggerCard = ({ trigger, onToggle }: TriggerCardProps): JSX.Element => {
   const borderColor = trigger.active ? 'var(--th-accent)' : 'var(--th-border-subtle)'
-  const background = trigger.active ? 'rgba(45,212,191,0.1)' : 'var(--th-bg-panel)'
+  const background = trigger.active ? 'var(--th-accent-subtle)' : 'var(--th-bg-panel)'
 
   return (
     <button
