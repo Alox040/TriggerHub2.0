@@ -1,19 +1,19 @@
 {
-  "name": "@figma/my-make-file",
+  "name": "@triggerhub/website",
   "private": true,
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite",
-    "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
-  },
+  "prebuild": "node --env-file-if-exists=.env.local scripts/verify-prelaunch-security.mjs",
+  "build": "vite build",
+  "dev": "vite",
+  "preview": "vite preview",
+
+  "website:sync": "tsx scripts/generate-website-content.ts",
+  "watch:features": "tsx scripts/feature-change-watcher.ts",
+  "release:validate": "tsx scripts/release-orchestrator.ts"
+},
   "dependencies": {
-    "@emotion/react": "11.14.0",
-    "@emotion/styled": "11.14.1",
-    "@mui/icons-material": "7.3.5",
-    "@mui/material": "7.3.5",
     "@popperjs/core": "2.11.8",
     "@radix-ui/react-accordion": "1.2.3",
     "@radix-ui/react-alert-dialog": "1.1.6",
@@ -66,9 +66,11 @@
     "vaul": "1.1.2"
   },
   "devDependencies": {
+    "@types/node": "^24.5.2",
     "@tailwindcss/vite": "4.1.12",
     "@vitejs/plugin-react": "4.7.0",
     "tailwindcss": "4.1.12",
+    "typescript": "^5.9.2",
     "vite": "6.3.5"
   },
   "peerDependencies": {

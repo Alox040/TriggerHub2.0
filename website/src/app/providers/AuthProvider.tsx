@@ -1,28 +1,20 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { AuthService, AuthError } from '../../modules/auth/authService'
-import { OwnerAuthProvider } from '../../modules/auth/ownerAuthProvider'
-import { createLocalSessionStore } from '../../modules/auth/sessionStore'
+import { AuthError } from '../../modules/auth/errors'
+import { createServerBackedSession } from '../../modules/auth/backendSession'
 import type { AuthSession, LoginRequest } from '../../modules/auth/types'
-import { authConfig, ownerAuthConfigStatus, ownerProviderConfig } from '../../config/runtimeConfig'
 import type { AuthIdentity } from '../../modules/access-control/types'
+import type { BackendAuthApi } from '../../modules/auth/backendAuthContract'
 
 interface AuthContextValue {
   session: AuthSession | null
   identity: AuthIdentity | null
   isAuthenticated: boolean
+  isInitializing: boolean
   isAuthAvailable: boolean
   authUnavailableReason: string | null
   login: (request: LoginRequest) => Promise<void>
   logout: () => void
 }
-
-const authService = authConfig && ownerProviderConfig
-  ? new AuthService(
-      authConfig,
-      createLocalSessionStore(),
-      new OwnerAuthProvider(ownerProviderConfig),
-    )
-  : null
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
@@ -36,16 +28,127 @@ const toIdentity = (session: AuthSession | null): AuthIdentity | null =>
       }
     : null
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [session, setSession] = useState<AuthSession | null>(null)
+const parseErrorMessage = async (response: Response, fallbackMessage: string): Promise<string> => {
+  try {
+    const payload = (await response.json()) as { error?: { message?: string } }
+    return payload.error?.message ?? fallbackMessage
+  } catch {
+    return fallbackMessage
+  }
+}
 
-  useEffect(() => {
-    if (!authService) {
-      setSession(null)
-      return
+const readCookieValue = (cookieName: string): string | null => {
+  if (typeof document === 'undefined') {
+    return null
+  }
+
+  const encodedName = `${cookieName}=`
+  const cookie = document.cookie
+    .split(';')
+    .map((entry) => entry.trim())
+    .find((entry) => entry.startsWith(encodedName))
+
+  return cookie ? cookie.slice(encodedName.length) : null
+}
+
+const backendAuthApi: BackendAuthApi = {
+  login: async (request) => {
+    const csrfToken = readCookieValue('th_csrf')
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify(request),
+    })
+
+    if (!response.ok) {
+      throw new AuthError(await parseErrorMessage(response, 'Invalid username or password'))
     }
 
-    setSession(authService.hydrateSession())
+    return (await response.json()) as Awaited<ReturnType<BackendAuthApi['login']>>
+  },
+  logout: async () => {
+    const csrfToken = readCookieValue('th_csrf')
+    const response = await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: csrfToken
+        ? {
+            'X-CSRF-Token': csrfToken,
+          }
+        : {},
+      credentials: 'same-origin',
+    })
+
+    if (!response.ok) {
+      throw new AuthError(await parseErrorMessage(response, 'Logout failed'))
+    }
+  },
+  getCurrentSession: async () => {
+    const response = await fetch('/api/auth/me', {
+      method: 'GET',
+      credentials: 'same-origin',
+    })
+
+    if (response.status === 401) {
+      return {
+        authenticated: false,
+      }
+    }
+
+    if (!response.ok) {
+      throw new AuthError(await parseErrorMessage(response, 'Failed to validate owner session'))
+    }
+
+    return (await response.json()) as Awaited<ReturnType<BackendAuthApi['getCurrentSession']>>
+  },
+  refresh: async () => {
+    throw new AuthError('Session refresh is not implemented in prelaunch auth mode')
+  },
+}
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [session, setSession] = useState<AuthSession | null>(null)
+  const [isInitializing, setIsInitializing] = useState(true)
+  const [authUnavailableReason, setAuthUnavailableReason] = useState<string | null>(null)
+
+  useEffect(() => {
+    let isActive = true
+
+    setIsInitializing(true)
+    backendAuthApi
+      .getCurrentSession()
+      .then((response) => {
+        if (!isActive) {
+          return
+        }
+
+        if (!response.authenticated || !response.session) {
+          setSession(null)
+          setAuthUnavailableReason(null)
+          setIsInitializing(false)
+          return
+        }
+
+        setSession(createServerBackedSession(response.session))
+        setAuthUnavailableReason(null)
+        setIsInitializing(false)
+      })
+      .catch((error: unknown) => {
+        if (isActive) {
+          setSession(null)
+          setAuthUnavailableReason(
+            error instanceof AuthError ? error.message : 'Owner authentication is unavailable',
+          )
+          setIsInitializing(false)
+        }
+      })
+
+    return () => {
+      isActive = false
+    }
   }, [])
 
   const value = useMemo<AuthContextValue>(
@@ -53,23 +156,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       session,
       identity: toIdentity(session),
       isAuthenticated: Boolean(session),
-      isAuthAvailable: Boolean(authService),
-      authUnavailableReason: authService ? null : ownerAuthConfigStatus.reasons.join('; '),
+      isInitializing,
+      isAuthAvailable: authUnavailableReason === null,
+      authUnavailableReason,
       login: async (request) => {
-        if (!authService) {
-          throw new AuthError('Owner authentication is unavailable due to missing runtime configuration')
+        const response = await backendAuthApi.login(request)
+        if (!response.session) {
+          throw new AuthError('Backend login response did not include a session snapshot')
         }
-        const nextSession = await authService.login(request)
-        setSession(nextSession)
+        setSession(createServerBackedSession(response.session))
+        setAuthUnavailableReason(null)
       },
       logout: () => {
-        if (authService) {
-          authService.logout()
-        }
-        setSession(null)
+        void backendAuthApi.logout().finally(() => {
+          setSession(null)
+          setAuthUnavailableReason(null)
+        })
       },
     }),
-    [session],
+    [authUnavailableReason, isInitializing, session],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

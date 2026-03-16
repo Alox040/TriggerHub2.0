@@ -1,12 +1,16 @@
+import type { AppViewId } from '../navigation'
+
 interface SidebarItem {
-  id: string
+  id: AppViewId
   label: string
+  description?: string
+  icon?: (props: { size?: number }) => JSX.Element
 }
 
 interface SidebarProps {
   items: SidebarItem[]
-  activeId: string
-  onSelect: (id: string) => void
+  activeId: AppViewId
+  onSelect: (id: AppViewId) => void
 }
 
 export const Sidebar = ({ items, activeId, onSelect }: SidebarProps): JSX.Element => {
@@ -16,10 +20,12 @@ export const Sidebar = ({ items, activeId, onSelect }: SidebarProps): JSX.Elemen
       <nav style={{ display: 'grid', gap: 6 }}>
         {items.map((item) => {
           const active = item.id === activeId
+          const Icon = item.icon
           return (
             <button
               key={item.id}
               onClick={() => onSelect(item.id)}
+              title={item.description}
               style={{
                 border: `1px solid ${active ? 'var(--th-border-weak)' : 'transparent'}`,
                 borderRadius: 'var(--th-radius-md)',
@@ -29,8 +35,27 @@ export const Sidebar = ({ items, activeId, onSelect }: SidebarProps): JSX.Elemen
                 padding: '10px 12px',
                 cursor: 'pointer',
               }}
+              type="button"
+              aria-current={active ? 'page' : undefined}
             >
-              {item.label}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                {Icon ? (
+                  <span
+                    style={{
+                      width: 18,
+                      height: 18,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: active ? 'var(--th-accent)' : 'currentColor',
+                      flex: '0 0 auto',
+                    }}
+                  >
+                    <Icon size={16} />
+                  </span>
+                ) : null}
+                <span>{item.label}</span>
+              </div>
             </button>
           )
         })}

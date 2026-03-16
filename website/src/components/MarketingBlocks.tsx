@@ -4,7 +4,6 @@ import {
   ArrowRight,
   CheckCircle2,
   ChevronRight,
-  Download,
   FolderGit2,
   ShieldCheck,
   Sparkles,
@@ -12,12 +11,12 @@ import {
 } from 'lucide-react';
 
 const GITHUB_REPO_URL = 'https://github.com/Alox040/TriggerHub';
-const GITHUB_RELEASES_URL = 'https://github.com/Alox040/TriggerHub/releases';
 
 const sectionLinks = [
   { id: 'benefits', label: 'Benefits' },
   { id: 'features', label: 'Features' },
   { id: 'workflow', label: 'How it works' },
+  { id: 'extensions', label: 'Extensions' },
   { id: 'faq', label: 'FAQ' },
 ] as const;
 
@@ -39,14 +38,6 @@ const openSection = (sectionId: string, onNavigate: (path: string) => void) => {
   const target = document.getElementById(sectionId);
   target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   window.history.replaceState({}, '', `/#${sectionId}`);
-};
-
-const openDownload = () => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  window.open(GITHUB_RELEASES_URL, '_blank', 'noopener,noreferrer');
 };
 
 export const useHashSectionSync = () => {
@@ -96,19 +87,11 @@ export const MarketingShell = ({ children, onNavigate }: MarketingShellProps) =>
 
         <div className="flex items-center gap-3">
           <button
-            className="hidden rounded-full border border-white/14 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/8 md:inline-flex"
+            className="rounded-full border border-white/14 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/8"
             onClick={() => onNavigate('/login')}
             type="button"
           >
-            Login
-          </button>
-          <button
-            className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-100"
-            onClick={openDownload}
-            type="button"
-          >
-            <Download className="size-4" />
-            Download
+            Protected access
           </button>
         </div>
       </div>
@@ -144,9 +127,6 @@ export const MarketingShell = ({ children, onNavigate }: MarketingShellProps) =>
         <div>
           <h3 className="text-sm font-semibold text-slate-900">Links</h3>
           <div className="mt-4 space-y-3 text-sm text-slate-600">
-            <a className="block transition hover:text-slate-900" href={GITHUB_RELEASES_URL} rel="noreferrer" target="_blank">
-              Windows build
-            </a>
             <a className="block transition hover:text-slate-900" href={GITHUB_REPO_URL} rel="noreferrer" target="_blank">
               GitHub repository
             </a>
@@ -182,10 +162,10 @@ export const MarketingHero = ({ title, description, proofPoints, onNavigate }: M
         <div className="mt-8 flex flex-wrap gap-3">
           <button
             className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-100"
-            onClick={openDownload}
+            onClick={() => onNavigate('/login')}
             type="button"
           >
-            Download Windows build
+            Request access
             <ArrowRight className="size-4" />
           </button>
           <button
@@ -417,9 +397,10 @@ export const FaqSection = ({ items }: FaqSectionProps) => (
 type MarketingCtaProps = {
   title: string;
   description: string;
+  onNavigate: (path: string) => void;
 };
 
-export const MarketingCta = ({ title, description }: MarketingCtaProps) => (
+export const MarketingCta = ({ title, description, onNavigate }: MarketingCtaProps) => (
   <section className="px-6 pb-24 pt-8">
     <div className="mx-auto max-w-7xl">
       <div className="rounded-[2rem] bg-[linear-gradient(135deg,#08111f_0%,#0d2438_55%,#12314d_100%)] p-8 text-white shadow-[0_35px_90px_rgba(2,6,23,0.35)] md:p-12">
@@ -431,11 +412,10 @@ export const MarketingCta = ({ title, description }: MarketingCtaProps) => (
         <div className="mt-8 flex flex-wrap gap-3">
           <button
             className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-100"
-            onClick={openDownload}
+            onClick={() => onNavigate('/login')}
             type="button"
           >
-            <Download className="size-4" />
-            Download Windows build
+            Request protected access
           </button>
           <a
             className="inline-flex items-center gap-2 rounded-full border border-white/14 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/8"
