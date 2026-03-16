@@ -10,10 +10,8 @@ import {
   WorkflowSteps,
   useHashSectionSync,
 } from '../components/MarketingBlocks';
+import { navigateTo } from '../app/routing/navigation';
 
-interface WebsiteLandingPageProps {
-  onNavigate: (path: string) => void;
-}
 const heroProofPoints = [
   'Runs as a Windows desktop product',
   'Focused on local workflow execution',
@@ -131,17 +129,17 @@ const faqItems = [
   },
 ];
 
-export const WebsiteLandingPage = ({ onNavigate }: WebsiteLandingPageProps) => {
+export const WebsiteLandingPage = () => {
   useHashSectionSync();
 
   return (
-    <MarketingShell onNavigate={onNavigate}>
+    <MarketingShell onNavigate={navigateTo}>
       <main>
         <MarketingHero
           title="Automate repetitive creator workflows from one desktop hub."
           description="TriggerHub is a Windows desktop automation app for creators who want triggers, macros, and tool actions to work together locally. The current repository supports a focused product scope with core automation modules, OBS and Spotify adapters, plugin scaffolding, and a documented Windows release path."
           proofPoints={heroProofPoints}
-          onNavigate={onNavigate}
+          onNavigate={navigateTo}
         />
 
         <MarketingSection
