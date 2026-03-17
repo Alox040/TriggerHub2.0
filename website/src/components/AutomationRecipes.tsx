@@ -1,60 +1,54 @@
 import { motion } from "motion/react";
-import { Radio, Clapperboard, Music, MessageSquare, Lightbulb, Video, ArrowRight, Copy, Eye } from "lucide-react";
+import { Radio, Clapperboard, Music, MessageSquare, Lightbulb, Video, ArrowRight } from "lucide-react";
 
 const recipes = [
   {
     title: "Stream Start Intro",
-    description: "Automatically play intro music and switch scenes when your stream goes live",
+    description: "A possible start-of-stream routine using OBS and Spotify once the full flow is configured.",
     slug: "stream-start-intro",
     trigger: { icon: Radio, label: "Stream Started", color: "sky" },
     condition: { icon: Clapperboard, label: "Scene = Starting Soon", color: "cyan" },
     action: { icon: Music, label: "Play Spotify Intro", color: "blue" },
-    used: "2.3k creators",
   },
   {
     title: "Chat Command Clips",
-    description: "Let viewers create clips with a simple chat command for instant highlights",
+    description: "Conceptual clip workflow based on chat commands; wiring to real chat platforms is not part of the current alpha.",
     slug: "chat-command-clips",
     trigger: { icon: MessageSquare, label: "!clip command", color: "sky" },
     condition: { icon: Clapperboard, label: "User is moderator", color: "cyan" },
     action: { icon: Video, label: "Create & Save Clip", color: "blue" },
-    used: "1.8k creators",
   },
   {
     title: "Scene Light Control",
-    description: "Sync your smart lights with OBS scenes for immersive stream environments",
+    description: "Concept idea for connecting OBS scene changes to external devices such as smart lights.",
     slug: "scene-light-control",
     trigger: { icon: Clapperboard, label: "Scene Changed", color: "sky" },
     condition: { icon: Clapperboard, label: "Scene = Gaming", color: "cyan" },
     action: { icon: Lightbulb, label: "Set Hue Lights Blue", color: "blue" },
-    used: "980 creators",
   },
   {
     title: "Follower Thank You",
-    description: "Send personalized Discord messages when someone follows your channel",
+    description: "Illustrative example for reacting to follower events with notifications; external messaging integrations are not shipped today.",
     slug: "follower-thank-you",
     trigger: { icon: Radio, label: "New Follower", color: "sky" },
     condition: { icon: Clapperboard, label: "First-time follower", color: "cyan" },
     action: { icon: MessageSquare, label: "Send Discord DM", color: "blue" },
-    used: "3.1k creators",
   },
   {
     title: "Auto Stream End",
-    description: "Gracefully end your stream with music fade and outro scene transition",
+    description: "A possible end-of-stream routine combining OBS scene changes and Spotify playback.",
     slug: "auto-stream-end",
     trigger: { icon: Radio, label: "End Stream Button", color: "sky" },
     condition: { icon: Clapperboard, label: "Stream > 1 hour", color: "cyan" },
     action: { icon: Music, label: "Fade Music & Switch", color: "blue" },
-    used: "1.5k creators",
   },
   {
     title: "Raid Party Mode",
-    description: "Trigger celebration effects when raiding another streamer's channel",
+    description: "Future-focused idea for reacting to raid events with coordinated visuals and audio.",
     slug: "raid-party-mode",
     trigger: { icon: Radio, label: "Raid Started", color: "sky" },
     condition: { icon: Clapperboard, label: "Raiders > 50", color: "cyan" },
     action: { icon: Lightbulb, label: "Party Lights + Music", color: "blue" },
-    used: "720 creators",
   },
 ];
 
@@ -69,12 +63,15 @@ export function AutomationRecipes() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-sm text-sky-500 font-semibold mb-3 uppercase tracking-wider">Automation Recipes</p>
+          <p className="text-sm text-sky-500 font-semibold mb-3 uppercase tracking-wider">
+            Concept recipes (not yet shipped)
+          </p>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Ready-to-use workflow templates
+            Example workflows for the TriggerHub model
           </h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Copy proven automations from thousands of creators. One click to install.
+            These recipes show what is possible with the trigger, condition, and action system. They are not
+            one-click templates or a live gallery in the current alpha.
           </p>
         </motion.div>
 
@@ -124,19 +121,11 @@ export function AutomationRecipes() {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-between pt-4 border-t border-white/5">
+              <div className="pt-4 border-t border-white/5">
                 <span className="text-xs text-gray-500">
-                  Used by <span className="text-sky-400 font-medium">{recipe.used}</span>
+                  Concept-only example. These flows illustrate how creators might combine triggers, conditions, and
+                  actions once the full runtime and integrations are configured.
                 </span>
-                <div className="flex items-center gap-2">
-                  <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/30 transition-all group/btn">
-                    <Eye className="size-4 text-gray-400 group-hover/btn:text-sky-400 transition-colors" />
-                  </button>
-                  <button className="px-3 py-2 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 hover:border-sky-500/40 text-sky-400 text-xs font-medium transition-all flex items-center gap-1.5 group/btn">
-                    <Copy className="size-3" />
-                    <span className="group-hover/btn:translate-x-0.5 transition-transform">Copy</span>
-                  </button>
-                </div>
               </div>
             </motion.div>
           ))}
@@ -149,10 +138,10 @@ export function AutomationRecipes() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-12 text-center"
         >
-          <button className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/30 text-white font-medium transition-all flex items-center gap-2 mx-auto group">
-            Browse All Recipes
-            <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
-          </button>
+          <div className="text-sm text-gray-500 max-w-2xl mx-auto">
+            Recipes and preset galleries are part of a later roadmap phase. The current alpha focuses on the
+            underlying trigger, macro, and service modules rather than a public template library.
+          </div>
         </motion.div>
       </div>
     </section>

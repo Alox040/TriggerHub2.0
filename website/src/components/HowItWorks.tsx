@@ -13,12 +13,13 @@ export function HowItWorks() {
           transition={{ duration: 0.6 }}
           className="text-center mb-20"
         >
-          <p className="text-sm text-sky-500 font-semibold mb-3 uppercase tracking-wider">Core Concepts</p>
+          <p className="text-sm text-sky-500 font-semibold mb-3 uppercase tracking-wider">Core concepts (today)</p>
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">
-            How TriggerHub Works
+            How TriggerHub is wired in the alpha
           </h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Three simple building blocks create powerful automation workflows
+            Three building blocks already exist in the codebase: triggers, conditions, and actions, with real desktop
+            modules behind them and external integrations still in different stages of completion.
           </p>
         </motion.div>
         
@@ -32,18 +33,18 @@ export function HowItWorks() {
             <ExpandableCard
               icon={<Zap className="size-7 text-white" />}
               title="Triggers"
-              description="Events from your streaming tools, apps and platform that start automation workflows."
+              description="Events from your setup that start automation workflows. In the current alpha that includes internal events and early OBS/Twitch examples."
               color="green"
               expandedContent={
                 <div className="space-y-4">
                   <p className="text-sm text-gray-300 leading-relaxed">
-                    Triggers are the starting point of any automation. They listen for specific events 
-                    from your connected tools and kick off your workflow when conditions are met.
-                  </p>
+                    Triggers are the starting point of any automation. The engine and trigger graph are implemented and
+                    tested; wiring to real external services (such as chat platforms or lighting) depends on additional
+                    configuration outside this repository.
                   
                   <div className="rounded-xl bg-[#0b0b0c] border border-white/5 p-4">
                     <div className="text-xs text-gray-500 font-semibold mb-3 uppercase tracking-wide">
-                      Available Triggers
+                      Example trigger shapes
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
@@ -54,17 +55,10 @@ export function HowItWorks() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                        <Bell className="size-4 text-green-400" />
-                        <div className="flex-1">
-                          <div className="text-sm text-white font-medium">New Follower</div>
-                          <div className="text-xs text-gray-500">Twitch</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
                         <Clapperboard className="size-4 text-green-400" />
                         <div className="flex-1">
                           <div className="text-sm text-white font-medium">Scene Changed</div>
-                          <div className="text-xs text-gray-500">OBS</div>
+                          <div className="text-xs text-gray-500">OBS (alpha adapter)</div>
                         </div>
                       </div>
                     </div>
@@ -73,9 +67,9 @@ export function HowItWorks() {
                   <div className="p-4 rounded-xl bg-green-500/5 border border-green-500/20">
                     <div className="text-xs text-green-400 font-semibold mb-1">Example Flow</div>
                     <div className="text-sm text-gray-300">
-                      When <span className="text-white font-medium">Stream Started</span> → 
-                      Then <span className="text-white font-medium">Execute Actions</span>
-                    </div>
+                      When <span className="text-white font-medium">Stream Started</span> →
+                      Then <span className="text-white font-medium">Execute Actions</span> using the runtime and
+                      configured services.
                   </div>
                 </div>
               }

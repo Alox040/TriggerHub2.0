@@ -1,10 +1,10 @@
 import { motion } from "motion/react";
-import { Radio, Clapperboard, Music, MessageSquare, Clock, ArrowRight } from "lucide-react";
+import { Radio, Clapperboard, Music, Clock, ArrowRight } from "lucide-react";
 
 const workflows = [
   {
-    title: "Stream Start Automation",
-    description: "Complete setup that runs every time you go live",
+    title: "Stream start (concept example)",
+    description: "An example of how an OBS- and Spotify-based workflow could look once fully wired.",
     trigger: {
       icon: Radio,
       title: "OBS Stream Started",
@@ -25,18 +25,13 @@ const workflows = [
     actions: [
       {
         icon: Music,
-        title: "Play Spotify Playlist",
-        description: "Start 'Stream Intro' playlist",
-      },
-      {
-        icon: MessageSquare,
-        title: "Send Discord Notification",
-        description: "Alert community in #live-now",
+        title: "Play Spotify playlist (alpha)",
+        description: "Start a curated intro playlist using the experimental Spotify adapter.",
       },
       {
         icon: Clapperboard,
         title: "Switch Scene after 30s",
-        description: "Auto-transition to main scene",
+        description: "Transition to the main scene after the intro window, assuming the trigger and conditions pass.",
       },
     ],
   },
@@ -53,12 +48,15 @@ export function WorkflowDemo() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-sm text-sky-500 font-semibold mb-3 uppercase tracking-wider">Real Workflows</p>
+          <p className="text-sm text-sky-500 font-semibold mb-3 uppercase tracking-wider">
+            Example workflow sketch
+          </p>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            See automation in action
+            Visualizing an alpha-level stream flow
           </h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Real workflows created by professional streamers
+            This mockup illustrates the trigger → conditions → actions model used in TriggerHub; it is not a
+            gallery of live, production presets.
           </p>
         </motion.div>
 
@@ -102,9 +100,7 @@ export function WorkflowDemo() {
 
               {/* Conditions */}
               <div>
-                <div className="text-xs text-cyan-400 font-semibold uppercase tracking-wider mb-4">
-                  Conditions ({workflow.conditions.length})
-                </div>
+                <div className="text-xs text-cyan-400 font-semibold uppercase tracking-wider mb-4">Conditions</div>
                 <div className="grid md:grid-cols-2 gap-4">
                   {workflow.conditions.map((condition, idx) => (
                     <div
@@ -132,9 +128,7 @@ export function WorkflowDemo() {
 
               {/* Actions */}
               <div>
-                <div className="text-xs text-blue-400 font-semibold uppercase tracking-wider mb-4">
-                  Actions ({workflow.actions.length})
-                </div>
+                <div className="text-xs text-blue-400 font-semibold uppercase tracking-wider mb-4">Actions</div>
                 <div className="space-y-3">
                   {workflow.actions.map((action, idx) => (
                     <div
@@ -159,14 +153,10 @@ export function WorkflowDemo() {
               </div>
             </div>
 
-            <div className="mt-8 flex items-center gap-4">
-              <button className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-600 hover:to-cyan-700 text-white font-semibold transition-all hover:scale-105">
-                Use This Template
-              </button>
-              <button className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/30 text-white font-medium transition-all">
-                View Workflow
-              </button>
-            </div>
+            <p className="mt-8 text-sm text-gray-500">
+              This workflow is an illustrative example only. It reflects how triggers, conditions, and actions can
+              be composed once the full desktop runtime and external integrations are configured.
+            </p>
           </motion.div>
         ))}
       </div>

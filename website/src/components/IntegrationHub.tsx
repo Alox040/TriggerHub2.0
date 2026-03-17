@@ -1,13 +1,12 @@
 import { motion } from "motion/react";
-import { Monitor, Music, MessageSquare, Gamepad2, Zap, Scissors } from "lucide-react";
+import { Monitor, Music, Radio, Zap, Scissors } from "lucide-react";
 
 const integrations = [
-  { icon: Monitor, name: "OBS", color: "from-red-500 to-orange-500", angle: 0 },
-  { icon: Music, name: "Spotify", color: "from-sky-500 to-cyan-500", angle: 60 },
-  { icon: MessageSquare, name: "Discord", color: "from-indigo-500 to-blue-500", angle: 120 },
-  { icon: Gamepad2, name: "Stream Deck", color: "from-purple-500 to-pink-500", angle: 180 },
-  { icon: Scissors, name: "Clipper", color: "from-yellow-500 to-orange-500", angle: 240 },
-  { icon: Zap, name: "Plugins", color: "from-cyan-500 to-blue-500", angle: 300 },
+  { icon: Monitor, name: "OBS (alpha adapter)", color: "from-red-500 to-orange-500", angle: 0 },
+  { icon: Music, name: "Spotify (alpha adapter)", color: "from-sky-500 to-cyan-500", angle: 60 },
+  { icon: Radio, name: "Twitch status (polling)", color: "from-indigo-500 to-blue-500", angle: 120 },
+  { icon: Scissors, name: "Clip modules (local)", color: "from-yellow-500 to-orange-500", angle: 180 },
+  { icon: Zap, name: "Plugin runtime (experimental)", color: "from-cyan-500 to-blue-500", angle: 240 },
 ];
 
 export function IntegrationHub() {
@@ -23,12 +22,15 @@ export function IntegrationHub() {
           transition={{ duration: 0.6 }}
           className="text-center mb-20"
         >
-          <p className="text-sm text-sky-500 font-semibold mb-3 uppercase tracking-wider">Integrations</p>
+          <p className="text-sm text-sky-500 font-semibold mb-3 uppercase tracking-wider">
+            Current alpha modules
+          </p>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Connect your entire setup
+            Built on real, present adapters
           </h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            TriggerHub integrates with all your favorite creator tools
+            These are the desktop modules and service layers that exist in the repository today; some remain
+            experimental, and live-service authentication is still being hardened.
           </p>
         </motion.div>
         
