@@ -1,9 +1,18 @@
 interface StatusBarProps {
   obsConnected: boolean
   spotifyConnected: boolean
+  clipConnected: boolean
+  twitchConnected: boolean
 }
 
-export const StatusBar = ({ obsConnected, spotifyConnected }: StatusBarProps): JSX.Element => {
+const getStatusColor = (connected: boolean): string => (connected ? 'var(--th-accent)' : 'var(--th-danger)')
+
+export const StatusBar = ({
+  obsConnected,
+  spotifyConnected,
+  clipConnected,
+  twitchConnected,
+}: StatusBarProps): JSX.Element => {
   return (
     <div
       style={{
@@ -18,11 +27,17 @@ export const StatusBar = ({ obsConnected, spotifyConnected }: StatusBarProps): J
         color: 'var(--th-text-secondary)',
       }}
     >
-      <span style={{ color: obsConnected ? 'var(--th-accent)' : 'var(--th-danger)' }}>
+      <span style={{ color: getStatusColor(obsConnected) }}>
         OBS {obsConnected ? 'connected' : 'not connected'}
       </span>
-      <span style={{ color: spotifyConnected ? 'var(--th-accent)' : 'var(--th-danger)' }}>
+      <span style={{ color: getStatusColor(spotifyConnected) }}>
         Spotify {spotifyConnected ? 'connected' : 'not connected'}
+      </span>
+      <span style={{ color: getStatusColor(clipConnected) }}>
+        Clip {clipConnected ? 'connected' : 'not connected'}
+      </span>
+      <span style={{ color: getStatusColor(twitchConnected) }}>
+        Twitch {twitchConnected ? 'connected' : 'not connected'}
       </span>
     </div>
   )

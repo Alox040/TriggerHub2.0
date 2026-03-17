@@ -8,6 +8,7 @@ import { SettingsPage } from '../../pages/SettingsPage'
 import { ForbiddenPage } from '../../pages/ForbiddenPage'
 import { WebsiteLandingPage } from '../../pages/WebsiteLandingPage'
 import { SignupPage } from '../../pages/SignupPage'
+import { InternalPage } from '../../pages/InternalPage'
 import { navigateTo, readNextPath } from './navigation'
 
 export const renderRoute = (path: RoutePath): ReactElement | null => {
@@ -25,7 +26,7 @@ export const renderRoute = (path: RoutePath): ReactElement | null => {
     '/settings': () => <SettingsPage onNavigate={navigateTo} />,
     '/forbidden': () => <ForbiddenPage onNavigate={navigateTo} />,
     '/logout': () => null,
-    '/internal': () => null,
+    '/internal': () => <InternalPage onNavigate={navigateTo} />,
   }
 
   return rendererMap[path]()

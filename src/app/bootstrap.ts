@@ -1,234 +1,227 @@
 import { AppController, HotkeyManager, WindowManager } from '../core/app-control'
 import { InMemoryEventBus } from '../core/event-bus'
 import { MacroEngine } from '../core/macro-system'
-import type { MacroExecutionContext, MacroStep } from '../core/macro-system'
-import {
-  TriggerEngine,
-  TriggerExecutor,
-  TriggerExecutorError,
-  TriggerGraph,
-} from '../core/trigger-engine'
-import type { Macro } from '../types'
-import { EventTopics } from '../types'
-import type { AppModuleContainer } from './container'
-import { createClipService, createObsService, createSpotifyService } from '../services'
+import { TriggerEngine, TriggerGraph } from '../core/trigger-engine'
 import { createPluginRegistryWithDefaults, PluginRegistry } from '../plugins'
+import { createClipService, createObsService, createSpotifyService, createTwitchService } from '../services'
+import type { StoragePort } from '../storage/storagePort'
 import { TriggerHubAppFacade } from './facade'
+import { createActionDispatcher } from './actionDispatcher'
+import type { AppModuleContainer } from './container'
+import { DEFAULT_RUNTIME_CONFIG } from './runtimeConfig'
+import { createRuntimeActivation } from './serviceActivation'
+import {
+  DEFAULT_DESKTOP_PREFERENCES,
+  loadDesktopPreferences,
+  persistDesktopPreferences,
+  RUNTIME_CONFIG_STORAGE_KEY,
+  isRuntimeConfig,
+  loadOrSeedCoreData,
+  persistCoreData,
+} from './storageBridge'
 import { createConsoleLogger } from '../utils/logger'
 
-const seedDefaultCoreData = async (
-  triggerEngine: TriggerEngine,
-  macroEngine: MacroEngine,
-): Promise<void> => {
-  const defaultMacro: Macro = {
-    id: 'macro-default-scene',
-    name: 'Default Scene Macro',
-    enabled: true,
-    steps: [
-      {
-        id: 'step-obs-scene',
-        type: 'service_call',
-        service: 'obs',
-        action: 'switchScene',
-        params: { sceneName: 'Main' },
-      },
-    ],
-  }
-
-  await macroEngine.registerMacro(defaultMacro)
-
-  await triggerEngine.registerTrigger({
-    id: 'trigger-main-scene',
-    name: 'Switch To Main Scene',
-    enabled: true,
-    event: EventTopics.OBS_CONNECTED,
-    conditions: [],
-    actions: [
-      {
-        type: 'macro.run',
-        payload: { macroId: defaultMacro.id },
-      },
-    ],
-  })
-}
+const runtimeLogger = createConsoleLogger('DesktopRuntime')
 
 export interface RuntimeContainer extends AppModuleContainer {
   start(): Promise<void>
   stop(): Promise<void>
 }
 
-export const createAppModuleContainer = async (): Promise<RuntimeContainer> => {
+export const createAppModuleContainer = async (storage?: StoragePort): Promise<RuntimeContainer> => {
   const serviceState = {
     obs: false,
     spotify: false,
     clip: false,
+    twitch: false,
   }
+  let runtimeActivated = false
+  let runtimeStarted = false
+  let runtimeConfig = DEFAULT_RUNTIME_CONFIG
+  let desktopPreferences = DEFAULT_DESKTOP_PREFERENCES
 
   const eventBus = new InMemoryEventBus()
 
   const obsService = createObsService()
   const spotifyService = createSpotifyService()
-  const clipService = createClipService({ exporter: 'filesystem' })
-  const executor = new TriggerExecutor()
-
-  let macroEngine!: MacroEngine
-  const executeMacroStep = async (step: MacroStep, ctx: MacroExecutionContext): Promise<void> => {
-    switch (step.type) {
-      case 'delay':
-        await new Promise((resolve) => {
-          setTimeout(resolve, step.durationMs)
-        })
-        break
-      case 'service_call':
-        await executor.execute(
-          {
-            type: `${step.service}.${step.action}`,
-            payload: step.params,
-          },
-          {},
-        )
-        break
-      case 'plugin_action':
-        await executor.execute(
-          {
-            type: `${step.plugin}.${step.action}`,
-            payload: step.params,
-          },
-          {},
-        )
-        break
-      case 'macro_call': {
-        const mergedOptions = {
-          ...(step.options ?? {}),
-          variables: {
-            ...ctx.variables,
-            ...(step.options?.variables ?? {}),
-          },
-        }
-        await macroEngine.runMacroWithResult(
-          step.macroId,
-          mergedOptions,
-          ctx.depth + 1,
-          ctx.triggerPayload,
-        )
-        break
-      }
-      case 'conditional': {
-        const variableValue = ctx.variables[step.condition.variable]
-        const conditionResult = (() => {
-          switch (step.condition.operator) {
-            case 'equals':
-              return variableValue === step.condition.value
-            case 'not_equals':
-              return variableValue !== step.condition.value
-            case 'greater_than':
-              return (
-                typeof variableValue === 'number' &&
-                typeof step.condition.value === 'number' &&
-                variableValue > step.condition.value
-              )
-            case 'less_than':
-              return (
-                typeof variableValue === 'number' &&
-                typeof step.condition.value === 'number' &&
-                variableValue < step.condition.value
-              )
-            case 'contains':
-              return Array.isArray(variableValue)
-                ? variableValue.includes(step.condition.value)
-                : typeof variableValue === 'string' && typeof step.condition.value === 'string'
-                  ? variableValue.includes(step.condition.value)
-                  : false
-            case 'exists':
-              return variableValue !== undefined
-          }
-        })()
-
-        const selectedSteps = conditionResult ? step.then : (step.else ?? [])
-        for (const nestedStep of selectedSteps) {
-          await executeMacroStep(nestedStep, ctx)
-        }
-        break
-      }
-      case 'parallel':
-        await Promise.all(step.steps.map((nestedStep) => executeMacroStep(nestedStep, ctx)))
-        break
-      case 'sequence':
-        for (const nestedStep of step.steps) {
-          await executeMacroStep(nestedStep, ctx)
-        }
-        break
-    }
-  }
-  macroEngine = new MacroEngine(executeMacroStep, eventBus)
-
-  executor.register('obs.switchScene', async (action) => {
-    const sceneName = action.payload?.sceneName
-    if (typeof sceneName !== 'string' || sceneName.length === 0) {
-      throw new Error('obs.switchScene requires payload.sceneName')
-    }
-
-    await obsService.switchScene(sceneName)
-  })
-
-  executor.register('spotify.play', async () => {
-    await spotifyService.play()
-  })
-
-  executor.register('spotify.pause', async () => {
-    await spotifyService.pause()
-  })
-
-  executor.register('spotify.nextTrack', async () => {
-    await spotifyService.nextTrack()
-  })
-
-  executor.register('clip.startCapture', async () => {
-    await clipService.startCapture()
-  })
-
-  executor.register('clip.saveClip', async () => {
-    await clipService.saveClip()
-  })
-
-  executor.register('macro.run', async (action) => {
-    const macroId = action.payload?.macroId
-    if (typeof macroId !== 'string' || macroId.length === 0) {
-      throw new Error('macro.run requires payload.macroId')
-    }
-
-    await macroEngine.runMacro(macroId)
-  })
-
-  executor.register('macro', async (action) => {
-    const name = action.payload?.name
-    if (typeof name !== 'string' || name.length === 0) {
-      throw new Error('macro requires payload.name')
-    }
-
-    const foundMacro = macroEngine.getAllMacros().find((macro) => macro.name === name)
-    if (!foundMacro) {
-      throw new TriggerExecutorError(`Macro not found by name: "${name}"`)
-    }
-
-    await macroEngine.runMacro(foundMacro.id)
-  })
+  const clipService = createClipService()
+  const twitchService = createTwitchService({ eventBus, defaultChannelName: 'triggerhubchannel' })
+  let executeMacroStep!: ReturnType<typeof createActionDispatcher>['executeMacroStep']
+  const macroEngine = new MacroEngine((step, ctx) => executeMacroStep(step, ctx), eventBus)
+  const { executor: actionRegistry, executeMacroStep: actionDispatcherExecuteMacroStep } = createActionDispatcher({
+    obsService,
+    spotifyService,
+    clipService,
+    twitchService,
+  }, macroEngine)
+  executeMacroStep = actionDispatcherExecuteMacroStep
 
   const triggerGraph = new TriggerGraph()
 
   const triggerEngine = new TriggerEngine(
     eventBus,
     triggerGraph,
-    executor.toDispatcher(),
+    actionRegistry.toDispatcher(),
     createConsoleLogger('TriggerEngine'),
   )
-
-  await seedDefaultCoreData(triggerEngine, macroEngine)
 
   const appController = new AppController(new HotkeyManager(), new WindowManager())
   const pluginRegistry: PluginRegistry = await createPluginRegistryWithDefaults()
 
-  const appFacade = new TriggerHubAppFacade(triggerEngine, macroEngine, serviceState)
+  const { activateRuntime, deactivateRuntime } = createRuntimeActivation({
+    appController,
+    triggerEngine,
+    macroEngine,
+    eventBus,
+    actionRegistry,
+    pluginRegistry,
+    obsService,
+    spotifyService,
+    clipService,
+    twitchService,
+    serviceState,
+    isRuntimeStarted: () => runtimeStarted,
+    isRuntimeActivated: () => runtimeActivated,
+    setRuntimeActivated: (value) => {
+      runtimeActivated = value
+    },
+  })
+
+  const persist = async (): Promise<void> => {
+    await persistCoreData(triggerEngine, macroEngine, storage, runtimeConfig)
+    await persistDesktopPreferences(storage, desktopPreferences)
+  }
+
+  const appFacade = new TriggerHubAppFacade(
+    triggerEngine,
+    macroEngine,
+    serviceState,
+    pluginRegistry,
+    { persist },
+    runtimeConfig,
+    {
+      activateRuntime: async () => {
+        await activateRuntime()
+        desktopPreferences = {
+          ...desktopPreferences,
+          restoreRuntimeOnLaunch: true,
+          restoreTwitchConnection: true,
+        }
+      },
+      deactivateRuntime: async () => {
+        await deactivateRuntime()
+        desktopPreferences = {
+          ...desktopPreferences,
+          restoreRuntimeOnLaunch: false,
+          restoreTwitchConnection: false,
+        }
+      },
+      connectTwitch: async (channelName?: string) => {
+        await twitchService.connect(channelName)
+        serviceState.twitch = twitchService.isConnected()
+        desktopPreferences = {
+          ...desktopPreferences,
+          restoreTwitchConnection: serviceState.twitch,
+        }
+      },
+      disconnectTwitch: async () => {
+        await twitchService.disconnect()
+        serviceState.twitch = twitchService.isConnected()
+        desktopPreferences = {
+          ...desktopPreferences,
+          restoreTwitchConnection: false,
+        }
+      },
+    },
+  )
+
+  const start = async (): Promise<void> => {
+    if (runtimeStarted) {
+      return
+    }
+
+    runtimeLogger.info('Desktop runtime start requested')
+    try {
+      const storedRuntimeConfig = await storage?.load<unknown>(RUNTIME_CONFIG_STORAGE_KEY)
+      runtimeConfig = isRuntimeConfig(storedRuntimeConfig) ? storedRuntimeConfig : DEFAULT_RUNTIME_CONFIG
+      desktopPreferences = await loadDesktopPreferences(storage)
+
+      const coreDataInitialization = await loadOrSeedCoreData(
+        triggerEngine,
+        macroEngine,
+        storage,
+        runtimeConfig,
+      )
+      if ((coreDataInitialization.seededFallback || coreDataInitialization.migrated) && storage) {
+        await persist()
+      }
+
+      runtimeStarted = true
+
+      if (desktopPreferences.restoreRuntimeOnLaunch) {
+        try {
+          await activateRuntime()
+        } catch (error) {
+          runtimeStarted = false
+          desktopPreferences = DEFAULT_DESKTOP_PREFERENCES
+          await persist()
+          throw error
+        }
+      } else if (desktopPreferences.restoreTwitchConnection) {
+        try {
+          await twitchService.connect()
+          serviceState.twitch = twitchService.isConnected()
+        } catch (error) {
+          runtimeStarted = false
+          desktopPreferences = {
+            ...desktopPreferences,
+            restoreTwitchConnection: false,
+          }
+          await persist()
+          throw error
+        }
+      }
+
+      runtimeLogger.info('Desktop runtime bootstrapped', {
+        services: { ...serviceState },
+        desktopPreferences,
+      })
+    } catch (error) {
+      runtimeStarted = false
+      runtimeLogger.error('Desktop runtime start failed', {
+        error,
+        services: { ...serviceState },
+        desktopPreferences,
+      })
+      throw error
+    }
+  }
+
+  const stop = async (): Promise<void> => {
+    runtimeLogger.info('Desktop runtime stop requested')
+    try {
+      await deactivateRuntime()
+      if (twitchService.isConnected()) {
+        await twitchService.disconnect()
+        serviceState.twitch = twitchService.isConnected()
+      }
+      await persist()
+
+      triggerEngine.destroy()
+      runtimeStarted = false
+      runtimeLogger.info('Desktop runtime stopped', {
+        services: { ...serviceState },
+        desktopPreferences,
+      })
+    } catch (error) {
+      runtimeLogger.error('Desktop runtime stop failed', {
+        error,
+        services: { ...serviceState },
+        desktopPreferences,
+      })
+      throw error
+    }
+  }
 
   return {
     appController,
@@ -237,37 +230,11 @@ export const createAppModuleContainer = async (): Promise<RuntimeContainer> => {
     obsService,
     spotifyService,
     clipService,
+    twitchService,
     pluginRegistry,
     appFacade,
     eventBus,
-    start: async () => {
-      await appController.start()
-      await obsService.connect()
-      await spotifyService.play()
-      await clipService.startCapture()
-
-      serviceState.obs = true
-      serviceState.spotify = true
-      serviceState.clip = true
-
-      await pluginRegistry.activateAll({
-        appController,
-        triggerEngine,
-        macroEngine,
-        eventBus,
-        actionRegistry: executor,
-      })
-    },
-    stop: async () => {
-      triggerEngine.destroy()
-      await pluginRegistry.deactivateAll()
-      await obsService.disconnect()
-      await spotifyService.pause()
-      await appController.stop()
-
-      serviceState.obs = false
-      serviceState.spotify = false
-      serviceState.clip = false
-    },
+    start,
+    stop,
   }
 }

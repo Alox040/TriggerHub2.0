@@ -60,6 +60,7 @@ export const isDashboardState = (value: unknown): value is DashboardState => {
     isBoolean(connectedServices.obs) &&
     isBoolean(connectedServices.spotify) &&
     isBoolean(connectedServices.clip) &&
+    isBoolean(connectedServices.twitch) &&
     Array.isArray(candidate.activeTriggers) &&
     candidate.activeTriggers.every((trigger) => isTrigger(trigger)) &&
     Array.isArray(candidate.activeMacros) &&

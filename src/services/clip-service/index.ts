@@ -1,15 +1,11 @@
 import type { ClipServicePort } from '../../types'
 import { defaultOperationPolicy, runWithPolicy, type OperationPolicy } from '../shared'
-import {
-  BrowserClipExporter,
-  exportClip,
-  InMemoryClipExporter,
-  type ClipExporter,
-  type ClipExportRequest,
-} from './clipExporter.browser'
+import { exportClip, InMemoryClipExporter } from './clipExporter.browser'
+import type { ClipExporter } from './clipExporter.interface'
 import { buildClipBuffer } from './clipProcessor'
 
 export class ClipService implements ClipServicePort {
+  private connected = false
   private active = false
   private readonly policy: OperationPolicy
 
@@ -23,11 +19,32 @@ export class ClipService implements ClipServicePort {
     }
   }
 
+  public async connect(): Promise<void> {
+    this.connected = true
+  }
+
+  public async disconnect(): Promise<void> {
+    this.connected = false
+    this.active = false
+  }
+
+  public isConnected(): boolean {
+    return this.connected
+  }
+
   public async startCapture(): Promise<void> {
+    if (!this.connected) {
+      throw new Error('Clip service must be connected before starting capture')
+    }
+
     this.active = true
   }
 
   public async saveClip(): Promise<string> {
+    if (!this.connected) {
+      throw new Error('Clip service must be connected before saving clips')
+    }
+
     if (!this.active) {
       throw new Error('Clip capture is not active')
     }
@@ -45,26 +62,14 @@ export class ClipService implements ClipServicePort {
 }
 
 export interface CreateClipServiceOptions {
-  exporter?: 'memory' | 'filesystem'
-  outputDir?: string
+  exporter?: ClipExporter
   policy?: Partial<OperationPolicy>
 }
 
 export const createClipService = (options: CreateClipServiceOptions = {}): ClipService => {
-  const exporterKind = options.exporter ?? 'memory'
-
-  if (exporterKind === 'filesystem') {
-    const request: ClipExportRequest = {}
-    if (options.outputDir) {
-      request.outputDir = options.outputDir
-    }
-
-    return new ClipService(new BrowserClipExporter(request), options.policy)
-  }
-
-  return new ClipService(new InMemoryClipExporter(), options.policy)
+  return new ClipService(options.exporter ?? new InMemoryClipExporter(), options.policy)
 }
 
 export * from './clipProcessor'
 export * from './clipExporter.browser'
-export * from './contracts'
+export * from './clipExporter.interface'
