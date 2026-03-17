@@ -1,0 +1,332 @@
+{
+  "meta": {
+    "title": "TriggerHub 2.0 – Geschlossene Alpha für Stream-Automatisierung",
+    "description": "TriggerHub 2.0 ist eine geschlossene Alpha-Windows-Desktop-App für Streamer und Creator. OBS-, Spotify- und Automations-Workflows sind begrenzt, experimentell und in aktiver Entwicklung, während wir diese Vorschau stabilisieren.",
+    "ogTitle": "TriggerHub | Automatisiere deinen Stream-Workflow",
+    "ogDescription": "Eine Windows-Desktop-Automatisierung für Streamer und Creator. Verbinde OBS, Spotify und deine Tools in einem lokalen Workflow-Hub."
+  },
+  "languageSwitcher": {
+    "label": "Sprache",
+    "english": "EN",
+    "german": "DE",
+    "switchToEnglish": "Zu Englisch wechseln",
+    "switchToGerman": "Zu Deutsch wechseln"
+  },
+  "header": {
+    "logo": "TRIGGERHUB",
+    "tagline": "Geschlossene Alpha-Desktop-Automatisierung für PC-Streamer",
+    "protectedAccess": "Anmelden"
+  },
+  "nav": {
+    "benefits": "Vorteile",
+    "features": "Funktionen",
+    "howItWorks": "So funktioniert es",
+    "extensions": "Erweiterungen",
+    "faq": "FAQ"
+  },
+  "footer": {
+    "productInfo": "TriggerHub 2.0 ist eine geschlossene Alpha-Windows-Desktop-Automatisierung für Streamer und Creator. Der Zugang ist limitiert, OBS- und Spotify-Adapter bleiben experimentell, und Integrationen sowie Workflows ändern sich, während wir diese Vorschau stabilisieren.",
+    "product": "Produkt",
+    "links": "Links",
+    "githubRepository": "GitHub-Repo (für Mitwirkende und technische Tester)",
+    "protectedAccess": "Anmelden"
+  },
+  "hero": {
+    "badge": "Windows-Desktop - Early Access",
+    "requestAccess": "Auf GitHub folgen",
+    "seeCapabilities": "Sieh dir an, was gebaut ist"
+  },
+  "landing": {
+    "hero": {
+      "title": "TriggerHub 2.0 Geschlossene Alpha: Automatisiere deinen Stream. Bleib live fokussiert.",
+      "description": "TriggerHub 2.0 ist eine geschlossene Alpha-Windows-Desktop-App, die OBS, Spotify, Szenen und Overlays über Trigger und Makros verbindet, damit Startsequenzen, Clip-Erfassung und Musiksteuerung automatisch laufen; Automationen bleiben lokal, während Integrationen und Abläufe weiterentwickelt werden.",
+      "proofPoints": [
+        "Desktop-Automatisierung für Windows-Streamer",
+        "Lokale Runtime hält OBS, Musik und Clips synchron",
+        "Geschlossene Alpha mit begrenzten Plätzen"
+      ]
+    },
+    "sections": {
+      "benefits": {
+        "eyebrow": "Warum es wichtig ist",
+        "title": "Weniger manuelle Arbeit. Mehr Zeit live.",
+        "description": "TriggerHub übernimmt die wiederkehrenden Aufgaben deines Stream-Setups, damit du vor der Kamera bleiben kannst."
+      },
+      "features": {
+        "eyebrow": "Was vorhanden ist",
+        "title": "Kern-Automatisierung für Live-Setups.",
+      "description": "Aktuelle Alpha-Funktionen umfassen die Trigger-Engine (Stream-Zustände, Hotkeys und zeitgesteuerte Ereignisse) sowie das Makro-System. OBS- und Spotify-Adapter werden gehärtet, während wir weitere lokale Automations-Flows wie Clip-Erfassung und reaktive Szenen ergänzen."
+      },
+      "workflow": {
+        "eyebrow": "Wie es funktioniert",
+        "title": "Drei Schritte vom Ereignis zur Aktion.",
+        "description": "Diese Darstellung zeigt den angestrebten Ablauf; im Alpha sind manche Schritte nur teilweise umgesetzt, können instabil sein und erfordern mitunter manuelle Workarounds."
+      },
+      "extensions": {
+        "eyebrow": "Wohin es geht",
+        "title": "Die Grundlage trägt mehr als den aktuellen Umfang.",
+        "description": "Plugin-Grundgerüst, Clip-Module und lokale Runtime existieren, doch in dieser gestuften Alpha ist nur ein kleiner, kuratierter Satz experimenteller Erweiterungen verfügbar."
+      },
+      "trust": {
+        "eyebrow": "Warum du es vertrauen kannst",
+        "title": "Auf echter Umsetzung gebaut, nicht auf Mockups.",
+        "description": "Wir setzen auf Transparenz, Sicherheit und technische Sorgfalt, weisen aber darauf hin, dass sich diese frühe Alpha noch stark verändert und nicht für kritische Produktionsabläufe gedacht ist."
+      },
+      "faq": {
+        "eyebrow": "FAQ",
+        "title": "Klare Antworten zu TriggerHub.",
+        "description": "Was es heute ist, was in Entwicklung ist und was es nicht ist."
+      }
+    },
+    "benefits": {
+      "items": [
+        {
+          "title": "Kein manuelles Umschalten mehr",
+          "description": "Richte die Stream-Start-Routine einmal ein: Szenenwechsel, Overlays, Musik und Clip-Erfassung lösen automatisch aus, damit du dich live auf die Show konzentrieren kannst."
+        },
+        {
+          "title": "Läuft vollständig auf deinem Rechner",
+          "description": "TriggerHub hat kein Cloud-Backend. Alles läuft lokal mit niedriger Latenz und ohne externe Abhängigkeiten, während wir die Alpha in Zuverlässigkeit und Integrationen weiter verbessern."
+        },
+        {
+          "title": "Ein Workflow-System für dein gesamtes Setup",
+          "description": "Trigger, Bedingungen, Makros und Aktionen teilen sich ein Modell, das du heute schon in der Alpha testen kannst, damit OBS, Spotify und Clip-Tools im selben Ablauf bleiben."
+        }
+      ]
+    },
+    "featureCards": {
+      "items": [
+        {
+          "title": "Trigger-Engine (in der Alpha verfügbar)",
+          "description": "Definiere das Ereignis, das einen Workflow auslöst. Szenenwechsel, Hotkeys oder Zeitpunkte. Die Engine erkennt das Signal, ist in der Alpha live und wir iterieren gerade an zusätzlichen Ereignisquellen.",
+          "bullets": [
+            "Ereignisbasierte Weiterleitung",
+            "Bedingungsprüfungen, bevor etwas ausgeführt wird",
+            "Für wiederkehrende Creator-Routinen gemacht"
+          ]
+        },
+        {
+          "title": "Makro-System (in der Alpha verfügbar)",
+          "description": "Fasse Aktionen zu Sequenzen zusammen, die du in verschiedenen Workflows wiederverwenden kannst. Schritte laufen nacheinander, parallel oder bedingt. Dieses Makro-System ist in der Alpha aktiv, während zusätzliche Orchestrierungshilfen noch in Arbeit sind.",
+          "bullets": [
+            "Sequenzielle, parallele und bedingte Schritte",
+            "Mehrfach nutzbar in unterschiedlichen Workflows",
+            "Behält mehrstufige Automatisierungen sauber im Griff"
+          ]
+        },
+        {
+          "title": "Service-Adapter (geplant & in Entwicklung)",
+          "description": "Frühe Adapter für OBS und Spotify stecken im Code. Twitch liefert derzeit poll-basierte Statusabfragen. Alle Adapter befinden sich in aktiver Entwicklung und sind noch nicht produktionsstabil.",
+          "bullets": [
+            "OBS-Adapter in Entwicklung",
+            "Spotify-Adapter in Entwicklung",
+            "Clip-Module und Plugin-Grundgerüst inklusive"
+          ]
+        }
+      ]
+    },
+    "workflowSteps": {
+      "items": [
+        {
+          "title": "Wähle deinen Trigger",
+          "description": "Bestimme das Ereignis, das die Automation startet, zum Beispiel einen Stream, der live geht, einen Hotkey oder einen Szenenwechsel. Das Alpha-Release liefert repräsentative Beispiele, aber manche Trigger benötigen noch manuelles Nachsteuern."
+        },
+        {
+          "title": "Lege die Logik fest",
+          "description": "Füge Bedingungen hinzu, die steuern, wann die Automation weiterläuft. Kette Schritte in einem Makro, das genau so abläuft, wie du es konfiguriert hast, während wir weitere Logikhelfer für die Zukunft vorbereiten."
+        },
+        {
+          "title": "Führe die Aktion lokal aus",
+          "description": "Die Automation läuft auf deinem Rechner. OBS wechselt Szenen, Spotify spielt, deine Tools reagieren, ohne Cloud-Relay, ohne zusätzliche Latenz; in dieser Alpha bedarf es manchmal noch manueller Anpassungen, damit alles flüssig läuft."
+        }
+      ]
+    },
+    "trustItems": {
+      "items": [
+        {
+          "title": "Desktop-first, nicht cloud-first",
+          "description": "TriggerHub läuft auf deinem Rechner. Es gibt kein Cloud-Backend im Automatisierungspfad, während sich diese Alpha weiterentwickelt."
+        },
+        {
+          "title": "Kernmodule sind bereit",
+          "description": "Trigger-Engine, Makro-System und das Service-Adapter-Grundgerüst existieren im Repository und funktionieren in der Alpha, aber wir verfeinern sie weiter für mehr Abdeckung."
+        },
+        {
+          "title": "Lokale Ausführung",
+          "description": "Automationen verlassen deinen Rechner nicht. Keine Schlüssel an Dritte, keine Netzwerkabhängigkeit beim Auslösen einer Aktion, und Alpha-Tester können die lokale Runtime nachvollziehen."
+        },
+        {
+          "title": "Getestete Build-Pipeline",
+          "description": "Automatisierte Tests und eine Produktions-Pipeline decken Website und Desktop-Codebasis ab, und wir sammeln Alpha-Feedback, während sich die Architektur weiter entwickelt."
+        }
+      ]
+    },
+    "extensionCards": {
+      "items": [
+        {
+          "title": "Touch-orientierte Steuerflächen",
+          "description": "Die Architektur zeigt bereits in Richtung zweiter Anzeige oder Tablet-Steuerung. Soundboard-artige Oberflächen passen nahtlos zum aktuellen Desktop-Modell.",
+          "bullets": [
+            "Zielrichtung: Zweites Touch-Display oder Tablet",
+            "Soundboard-Workflows tauchen in Projektunterlagen auf",
+            "Erweitert das Desktop-Steuerungsmodell, ohne es zu verschieben"
+          ]
+        },
+        {
+          "title": "Umfangreichere Clip-Workflows",
+          "description": "Clip-Export-Module und ein Plugin-System existieren bereits. Eine stärkere Clip-Pipeline mit Auto-Save, Verarbeitung und Editor-Integration ist der nächste Schritt.",
+          "bullets": [
+            "Clip-Export ist Teil des Repository-Umfangs",
+            "Plugin-System existiert als Erweiterungspunkt",
+            "Content-Tooling-Verbesserungen stehen auf der Roadmap"
+          ]
+        },
+        {
+          "title": "KI-gestützte Postproduktion",
+          "description": "Roadmap-Hinweise nennen KI-gestützte Creator-Workflows als spätere Richtung. Ein Plugin für Clip-Veredelung, Tagging und Publishing passt zur bestehenden Architektur, als mögliche Erweiterung, nicht als aktuelles Feature.",
+          "bullets": [
+            "Zukünftige Workflows zur Clip-Nachbearbeitung und Verfeinerung",
+            "Tagging und Vorbereitung vor Export oder Veröffentlichung",
+            "Gedacht für Creator-Nachproduktionsroutinen"
+          ]
+        }
+      ]
+    },
+    "faq": {
+      "items": [
+        {
+          "question": "Was ist TriggerHub heute?",
+          "answer": "Eine Windows-Desktop-Automatisierungs-App im Early Access. Trigger-Engine und Makro-System funktionieren. OBS- und Spotify-Adapter sind im Code und werden aktiv entwickelt, und Alpha-Feedback läuft über den geschlossenen Zugangs-Anfragekanal, damit wir Prioritäten setzen können."
+        },
+        {
+          "question": "Welche Integrationen funktionieren gerade?",
+          "answer": "OBS- und Spotify-Adapter befinden sich in aktiver Entwicklung. Sie sind im Code, aber noch nicht produktionsstabil. Twitch bietet poll-basierte Statusabfragen. Diese Alpha konzentriert sich auf PC-Streaming-Automationsabläufe, daher ist die Abdeckung noch begrenzt und manuelle Workarounds sind erforderlich, bis die Adapter gefestigt sind."
+        },
+        {
+          "question": "Ist es ein Cloud-Produkt?",
+          "answer": "Nein. TriggerHub läuft vollständig auf deinem Rechner. Automationen werden lokal ausgeführt, ohne Cloud-Backend oder externes Relay, aber in dieser Alpha können Stabilitätslücken auftreten, die Alpha-Tester melden sollen."
+        },
+        {
+          "question": "Welche Plattformen werden unterstützt?",
+          "answer": "Windows x64 ist das aktuelle Ziel. Mac und Linux stehen nicht auf der kurzfristigen Roadmap."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Frühen Zugang bekommen.",
+      "description": "TriggerHub ist in aktiver Entwicklung. Der Zugang ist limitiert. Fordere ihn an, um Updates zur Veröffentlichung zu erhalten."
+    }
+  },
+  "desktopPreview": {
+    "workflowOverview": "Workflow-Übersicht",
+    "automationFlow": "Automatisierungsfluss",
+    "liveStreamStartup": "Live-Stream-Start",
+    "localRuntime": "Lokale Runtime",
+    "trigger": "Trigger",
+    "triggerDesc": "Ein Quellereignis in deinem Setup erkennen",
+    "condition": "Bedingung",
+    "conditionDesc": "Entscheiden, wann der Workflow fortgesetzt wird",
+    "macro": "Makro",
+    "macroDesc": "Wiederholte Schritte in einer nutzbaren Sequenz zusammenfassen",
+    "action": "Aktion",
+    "actionDesc": "Die verbundene Tool-Änderung lokal ausführen",
+    "connectedSurface": "Verbundene Fläche",
+    "obsControl": "OBS-Steuerung (Alpha-Vorschau, für Szenensteuerung vorgesehen)",
+    "spotifyActions": "Spotify-Aktionen (Alpha, eingeschränkter experimenteller Support)",
+    "clipExport": "Clip-Export-Module (Alpha, Stabilität wird noch gefestigt)",
+    "pluginRuntime": "Plugin-fähige Runtime (nur experimentelle Plugins in dieser Alpha)",
+    "whyItMatters": "Warum es wichtig ist",
+    "whyItMattersText": "Halte wiederkehrende Aktionen aus deinem Live-Setup. Reduziere manuelles Umschalten. Steuere alles über eine lokale Schicht."
+  },
+  "cta": {
+    "finalLabel": "Geschlossene Alpha anfragen",
+    "requestProtectedAccess": "Auf GitHub ansehen",
+    "viewRepository": "Repository anzeigen"
+  },
+  "auth": {
+    "login": {
+      "title": "Anmelden",
+      "accessModeNote": "Der Zugriffsmodus ist {{mode}}. Öffentliche Registrierung ist derzeit deaktiviert.",
+      "authUnavailable": "Login ist derzeit nicht verfügbar.",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "signingIn": "Anmeldung läuft...",
+      "submit": "Anmelden",
+      "errorUnexpected": "Login ist unerwartet fehlgeschlagen"
+    },
+    "signup": {
+      "title": "Account-Registrierung",
+      "notAvailable": "Öffentliche Registrierung ist im Modus {{mode}} nicht verfügbar.",
+      "restricted": "Der Zugriff ist derzeit auf den Website-Eigentümer beschränkt.",
+      "signInInstead": "Stattdessen anmelden"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Dein TriggerHub-Kontodashboard.",
+    "openProfile": "Profil",
+    "openSettings": "Einstellungen"
+  },
+  "profile": {
+    "title": "Profil",
+    "identityNote": "Rolle: {{role}}",
+    "unknownRole": "unbekannt",
+    "loading": "Profil wird geladen...",
+    "displayName": "Anzeigename",
+    "avatarUrl": "Avatar-URL",
+    "avatarPlaceholder": "https://...",
+    "bio": "Bio",
+    "save": "Profil speichern",
+    "back": "Zurück",
+    "saved": "Profil gespeichert",
+    "updateFailed": "Profil konnte nicht aktualisiert werden"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "description": "Verwalte dein Konto und deine Einstellungen.",
+    "backToDashboard": "Zurück zum Dashboard"
+  },
+  "forbidden": {
+    "title": "Zugriff verweigert",
+    "description": "Dein aktuelles Konto darf auf diese Seite nicht zugreifen.",
+    "backToLogin": "Zurück zum Login"
+  },
+  "appPage": {
+    "title": "App",
+    "description": "TriggerHub-App.",
+    "openDashboard": "Dashboard öffnen",
+    "settings": "Einstellungen"
+  },
+  "internal": {
+    "title": "Interner Owner-Bereich",
+    "loggedInAs": "Angemeldet als {{userId}} mit Rolle {{role}}.",
+    "openDashboard": "Dashboard öffnen",
+    "openProfile": "Profil öffnen",
+    "logout": "Abmelden"
+  },
+  "errors": {
+    "auth": {
+      "invalid_credentials": "Ungültiger Benutzername oder Passwort",
+      "logout_failed": "Abmelden fehlgeschlagen",
+      "validate_session_failed": "Owner-Session konnte nicht validiert werden",
+      "refresh_not_implemented": "Session-Aktualisierung ist im Prelaunch-Auth-Modus nicht implementiert",
+      "no_session_snapshot": "Die Backend-Login-Antwort enthielt keinen Session-Snapshot",
+      "auth_unavailable": "Owner-Authentifizierung ist nicht verfügbar"
+    },
+    "profile": {
+      "profile_load_failed": "Profil konnte nicht geladen werden",
+      "profile_update_identity": "Profil kann ohne authentifizierte Identität nicht aktualisiert werden",
+      "profile_no_session": "Keine authentifizierte Profil-Session vorhanden",
+      "profile_no_payload": "Die Profilantwort enthielt keine Profildaten",
+      "profile_input_invalid": "Profileingabe ist ungültig",
+      "profile_update_failed": "Profil konnte nicht aktualisiert werden",
+      "profile_user_mismatch": "Das aktualisierte Profil passt nicht zum authentifizierten Benutzer",
+      "validation_avatar_length": "avatar_url überschreitet die maximale Länge",
+      "validation_avatar_http": "avatar_url muss http oder https verwenden",
+      "validation_avatar_url": "avatar_url muss eine gültige absolute URL sein",
+      "validation_display_name_required": "display_name ist erforderlich",
+      "validation_display_name_length": "display_name überschreitet die maximale Länge",
+      "validation_bio_length": "bio überschreitet die maximale Länge"
+    }
+  }
+}

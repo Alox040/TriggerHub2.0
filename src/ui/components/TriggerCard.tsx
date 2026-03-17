@@ -6,24 +6,12 @@ interface TriggerCardProps {
 }
 
 export const TriggerCard = ({ trigger, onToggle }: TriggerCardProps): JSX.Element => {
-  const borderColor = trigger.active ? 'var(--th-accent)' : 'var(--th-border-subtle)'
-  const background = trigger.active ? 'rgba(45,212,191,0.1)' : 'var(--th-bg-panel)'
+  const className = ['th-trigger-card', trigger.active ? 'th-trigger-card--active' : null].filter(Boolean).join(' ')
 
   return (
-    <button
-      onClick={() => onToggle(trigger.id)}
-      style={{
-        border: `1px solid ${borderColor}`,
-        background,
-        color: 'var(--th-text-primary)',
-        borderRadius: 'var(--th-radius-lg)',
-        padding: '14px',
-        textAlign: 'left',
-        cursor: 'pointer',
-      }}
-    >
-      <div style={{ fontSize: 11, color: 'var(--th-text-muted)', marginBottom: 8 }}>{trigger.category}</div>
-      <div style={{ fontSize: 14, fontWeight: 600 }}>{trigger.title}</div>
+    <button onClick={() => onToggle(trigger.id)} className={className} type="button">
+      <div className="th-trigger-card__category">{trigger.category}</div>
+      <div className="th-trigger-card__title">{trigger.title}</div>
     </button>
   )
 }

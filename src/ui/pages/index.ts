@@ -1,4 +1,5 @@
 export * from './Dashboard'
 export * from './Settings'
 export * from './Plugins'
-export * from './Editor'
+export * from './TriggerEditor'
+export * from './MacroEditor'
