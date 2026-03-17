@@ -11,3 +11,4 @@ releases/*.zip
 .env*.local
 
 .vercel
+.aider*

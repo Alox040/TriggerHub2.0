@@ -26,6 +26,7 @@ const runElectronRoundtrip = async (): Promise<unknown> => {
   const rendererPath = join(workDir, 'renderer.html')
   const runnerPath = join(workDir, 'runner.cjs')
   const userDataPath = join(workDir, 'user-data')
+  const appDataPath = join(workDir, 'app-data')
 
   await writeFile(rendererPath, blankHtml, 'utf-8')
 
@@ -37,6 +38,7 @@ const { bootMainProcess } = require(${JSON.stringify(mainModulePath)})
 
 ;(async () => {
   app.setPath('userData', ${JSON.stringify(userDataPath)})
+  app.setPath('appData', ${JSON.stringify(appDataPath)})
   const mainWindow = await bootMainProcess({
     rendererPath: ${JSON.stringify(rendererPath)},
     show: false,

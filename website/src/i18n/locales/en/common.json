@@ -1,0 +1,405 @@
+{
+  "meta": {
+    "title": "TriggerHub 2.0 – Closed Alpha for stream automation",
+    "description": "TriggerHub 2.0 is a closed-alpha Windows desktop app for streamers and creators. OBS, Spotify, and automation workflows are limited, experimental, and in active development while we stabilize this preview release.",
+    "ogTitle": "TriggerHub | Automate your stream workflow",
+    "ogDescription": "A Windows desktop automation tool for streamers and creators. Connect OBS, Spotify, and your tools in one local workflow hub."
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "english": "EN",
+    "german": "DE",
+    "switchToEnglish": "Switch to English",
+    "switchToGerman": "Switch to German"
+  },
+  "header": {
+    "logo": "TRIGGERHUB",
+    "tagline": "Closed Alpha desktop automation for PC streamers",
+    "protectedAccess": "Follow on GitHub"
+  },
+  "nav": {
+    "benefits": "Benefits",
+    "features": "Features",
+    "howItWorks": "How it works",
+    "extensions": "Extensions",
+    "faq": "FAQ"
+  },
+  "footer": {
+    "productInfo": "TriggerHub 2.0 is a closed-alpha Windows desktop automation tool for streamers and creators. Access is limited, OBS and Spotify adapters remain experimental, and integrations plus workflows will continue to change as we stabilize the preview build.",
+    "product": "Product",
+    "links": "Links",
+    "githubRepository": "GitHub repo (for contributors & technical testers)",
+    "protectedAccess": "Follow on GitHub",
+    "imprint": "Imprint",
+    "privacy": "Privacy"
+  },
+  "hero": {
+    "badge": "Windows desktop - Early access",
+    "requestAccess": "Follow on GitHub",
+    "seeCapabilities": "See what's built"
+  },
+  "landing": {
+    "hero": {
+      "title": "TriggerHub 2.0 Closed Alpha: Automate your stream. Stay focused live.",
+      "description": "TriggerHub 2.0 wires OBS, Spotify, scenes, and overlays through triggers and macros so you can automate the stream start-to-clip workflow. Automations run locally with no cloud relay.",
+      "proofPoints": [
+        "Desktop automation tuned for Windows stream setups",
+        "Local runtime keeps OBS, music, and clips in sync",
+        "Limited seats available"
+      ]
+    },
+    "sections": {
+      "benefits": {
+        "eyebrow": "Why it matters",
+        "title": "Less manual work. More time actually streaming.",
+        "description": "TriggerHub handles the repetitive parts of your stream setup so you can stay focused on what's in front of the camera."
+      },
+      "features": {
+        "eyebrow": "What's built",
+        "title": "Core automation, built for live setups.",
+        "description": "The trigger engine (stream states, hotkeys, and timed events) and the macro system are available; OBS and Spotify adapters are being hardened while we add more local automation workflows such as clip capture and reactive scene routines."
+      },
+      "workflow": {
+        "eyebrow": "How it works",
+        "title": "Three steps from event to action.",
+        "description": "This workflow outline shows the intended flow from event to action so you can follow each stage confidently."
+      },
+      "extensions": {
+        "eyebrow": "Where it's headed",
+        "title": "The foundation supports more than the current scope.",
+        "description": "Plugin scaffolding, clip modules, and a local runtime exist, yet only a small curated set of experimental extensions is available while we roll it out gradually."
+      },
+      "trust": {
+        "eyebrow": "Why trust it",
+        "title": "Built on real implementation, not mockups.",
+        "description": "We focus on transparency, security, and engineering rigor while the product continues to evolve."
+      },
+      "faq": {
+        "eyebrow": "FAQ",
+        "title": "Straight answers about TriggerHub.",
+        "description": "What it is today, what's in development, and what it isn't."
+      }
+    },
+    "benefits": {
+      "items": [
+        {
+          "title": "No more manual switching",
+          "description": "Set up the stream-start routine once: OBS scenes, overlays, music, and clip capture trigger together so you don’t fiddle with dozens of apps during a live show."
+        },
+        {
+          "title": "Runs entirely on your machine",
+          "description": "TriggerHub has no cloud backend for automations. Everything executes locally with low latency and no external dependency, while the runtime keeps improving reliability and integration coverage."
+        },
+        {
+          "title": "One workflow system for your whole setup",
+          "description": "Triggers, conditions, macros, and actions share a single workflow model you can already explore to keep OBS, Spotify, and clip tooling coordinated even as we expand the editor."
+        }
+      ]
+    },
+    "featureCards": {
+      "items": [
+        {
+          "title": "Trigger engine",
+          "description": "Define the event that kicks off a workflow. Stream status changes, hotkeys, timed events; the engine is live while we iterate on extra event sources.",
+          "bullets": [
+            "Event-topic based dispatch",
+            "Condition checks before any action runs",
+            "Designed for repeating creator routines"
+          ]
+        },
+        {
+          "title": "Macro system",
+          "description": "Group actions into sequences you can reuse across workflows. Run steps in order, in parallel, or conditionally; this macro system is active while additional orchestration helpers are still in progress.",
+          "bullets": [
+            "Sequential, parallel, and conditional steps",
+            "Reusable across multiple workflows",
+            "Handles multi-step automations cleanly"
+          ]
+        },
+        {
+          "title": "Service adapters (planned & evolving)",
+          "description": "Early adapters for OBS and Spotify live in the codebase, with Twitch status detection also available; all of them remain in active development and are not yet production-stable.",
+          "bullets": [
+            "OBS adapter in development",
+            "Spotify adapter in development",
+            "Clip modules and plugin scaffolding included"
+          ]
+        }
+      ]
+    },
+    "workflowSteps": {
+      "items": [
+        {
+          "title": "Pick your trigger",
+          "description": "Choose the event that starts the automation, a stream going live, a hotkey, a scene change. That's your entry point."
+        },
+        {
+          "title": "Define the logic",
+          "description": "Add conditions to control when the automation should continue. Chain steps into a macro that runs exactly how you configured it."
+        },
+        {
+          "title": "Run the action locally",
+          "description": "The automation executes on your machine. OBS switches, Spotify plays, your tools respond with no cloud relay or added latency."
+        }
+      ]
+    },
+    "trustItems": {
+      "items": [
+        {
+          "title": "Desktop-first, not cloud-first",
+          "description": "TriggerHub runs on your machine. There is no cloud backend in the automation execution path, and we keep that desktop focus as the product continues to evolve."
+        },
+        {
+          "title": "Core modules are shipped",
+          "description": "The trigger engine, macro system, and service adapter scaffolding exist in the repository and function, though we keep refining them for broader coverage."
+        },
+        {
+          "title": "Local execution",
+          "description": "Automations don't leave your machine. No keys sent to third parties, no network dependency when an action fires, so you can audit that local runtime."
+        },
+        {
+          "title": "Tested build pipeline",
+          "description": "Automated tests and a production build pipeline cover both this website and the desktop codebase, yet we still welcome feedback as the system adapts."
+        }
+      ]
+    },
+    "extensionCards": {
+      "items": [
+        {
+          "title": "Touch-surface control",
+          "description": "The architecture already points toward a secondary display or tablet control surface. Soundboard-style stream control is a natural extension of the current desktop model.",
+          "bullets": [
+            "Second-screen or tablet operation is a documented target direction",
+            "Soundboard workflows are referenced in project docs",
+            "Extends the desktop control model; doesn't shift it"
+          ]
+        },
+        {
+          "title": "Richer clip workflows",
+          "description": "Clip export modules and a plugin system are already in the codebase. A more capable clip pipeline with auto-save, processing, editor integration follows naturally from there.",
+          "bullets": [
+            "Clip export is already part of the repository scope",
+            "Plugin system exists as an extension point",
+            "Content tooling improvements are on the roadmap"
+          ]
+        },
+        {
+          "title": "AI-assisted post-production",
+          "description": "The roadmap mentions AI-assisted creator workflows as a later direction. A future plugin for clip refinement, tagging, and publishing fits the existing architecture, framed as possible, not current.",
+          "bullets": [
+            "Future clip cleanup and refinement workflows",
+            "Tagging and preparation before export or publishing",
+            "Built to fit into creator post-production routines"
+          ]
+        }
+      ]
+    },
+    "faq": {
+      "items": [
+        {
+          "question": "What is TriggerHub today?",
+          "answer": "A Windows desktop automation app in early access. The trigger engine and macro system work. OBS and Spotify adapters are in the codebase and being actively developed, and alpha feedback flows through the closed-access request channel so we know what deserves more polish next."
+        },
+        {
+          "question": "Which integrations are working right now?",
+          "answer": "OBS and Spotify adapters are in active development. They are present in the codebase but not yet production-stable, and this alpha concentrates on PC streaming automation flows, so expect coverage to be limited to those adapters with manual workarounds until they are hardened."
+        },
+        {
+          "question": "Is it a cloud product?",
+          "answer": "No. TriggerHub runs entirely on your machine. Automations execute locally, no cloud backend, no external relay, though the alpha may surface stability gaps that alpha testers help us surface."
+        },
+        {
+          "question": "Which platform does it support?",
+          "answer": "Windows x64 is the current target. Mac and Linux are not on the near-term roadmap."
+        }
+      ]
+    },
+  "cta": {
+    "title": "Get early access.",
+    "description": "TriggerHub is in active development. Access is limited. Follow the release to get notified when builds are available."
+  }
+  },
+  "desktopPreview": {
+    "workflowOverview": "Workflow overview",
+    "automationFlow": "Automation flow",
+    "liveStreamStartup": "Live stream startup",
+    "localRuntime": "Local runtime",
+    "trigger": "Trigger",
+    "triggerDesc": "Detect a source event in your setup",
+    "condition": "Condition",
+    "conditionDesc": "Decide when the workflow should continue",
+    "macro": "Macro",
+    "macroDesc": "Group repeated steps into one reusable sequence",
+    "action": "Action",
+    "actionDesc": "Run the connected tool change locally",
+    "connectedSurface": "Connected surface",
+    "obsControl": "OBS control designed for scene control",
+    "spotifyActions": "Spotify actions with limited experimental support",
+    "clipExport": "Clip export modules with reliability still being solidified",
+    "pluginRuntime": "Plugin-ready runtime for experimental plugins",
+    "whyItMatters": "Why it matters",
+    "whyItMattersText": "Keep repetitive actions out of your live setup. Reduce manual switching. Run everything from one local control layer."
+  },
+  "cta": {
+    "finalLabel": "Follow the release",
+    "requestProtectedAccess": "View on GitHub",
+    "viewRepository": "View repository"
+  },
+  "legal": {
+    "label": "Legal",
+    "imprint": {
+      "title": "Imprint",
+      "description": "Information pursuant to German § 5 TMG for the TriggerHub 2.0 website offered under this domain.",
+      "sections": [
+        {
+          "heading": "Service provider responsible for this site",
+          "body": "Alexander Posdziech\nVoßort 14\n21037 Hamburg\nGermany\n\nE-mail: Triggerhub@outlook.com\n\nTriggerHub is run as a private project without a registered company and without an immediate commercial focus."
+        },
+        {
+          "heading": "Content responsibility",
+          "body": "Content on this website describing the closed-alpha TriggerHub 2.0 desktop application is the responsibility of Alexander Posdziech (address as above)."
+        },
+        {
+          "heading": "Contact",
+          "body": "For legal inquiries, please contact the operator by e-mail at Triggerhub@outlook.com.\n\nTechnical feedback about the app can also be shared via the GitHub repository at https://github.com/Alox040/TriggerHub."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy",
+      "description": "This notice explains how personal data is processed in connection with the TriggerHub 2.0 website and closed-alpha usage.",
+      "sections": [
+        {
+          "heading": "1. Controller",
+          "body": "The controller under the GDPR and other applicable data protection laws is:\n\nAlexander Posdziech\nVoßort 14\n21037 Hamburg\nGermany\n\nE-mail: Triggerhub@outlook.com"
+        },
+        {
+          "heading": "2. Components of the service",
+          "body": "TriggerHub consists of:\n\n• A Windows desktop application (Electron) that runs locally on your machine. Configuration (triggers, macros, API tokens) and third-party access tokens (e.g. Twitch, Spotify) are stored locally and are not sent to the operator.\n• A website (landing page and a closed access area with e-mail authentication) hosted on Vercel. This privacy notice primarily covers the website and its backend services."
+        },
+        {
+          "heading": "3. Hosting & server logs (Vercel)",
+          "body": "The website is hosted by Vercel Inc. (440 N Barranca Ave #4133, Covina, CA 91723, USA). When you access the site, Vercel may process server log data such as IP address, date and time of request, requested URL, HTTP status code, transferred data volume, and browser/user agent.\n\nThis processing is required to deliver and secure the service. The operator has no direct access to raw logs beyond what Vercel exposes via its tools.\n\nThe legal basis is Art. 6(1)(f) GDPR (legitimate interest in a secure and stable service). Transfers to the United States may occur on the basis of standard contractual clauses under Art. 46 GDPR. Details can be found in Vercel’s own privacy policy."
+        },
+        {
+          "heading": "4. Registration, authentication & profile",
+          "body": "Access to the closed area is restricted to selected testers. There is no public signup.\n\nWhen you use the auth area, the following data may be processed:\n\n• E-mail address\n• Credentials for the closed area (password stored only as a cryptographic hash)\n• Session information (signed session token)\n• Optional profile data (display name, avatar URL, short bio), which is stored in a profile file on the server so it can be shown again when you sign in.\n\nThe purpose is to provide and manage the closed-alpha access and your on-site profile.\n\nThe legal basis is Art. 6(1)(b) GDPR (performance of a contract or pre-contractual steps). Profile data may be retained for the duration of the closed-alpha access and will be deleted upon request unless statutory retention obligations apply."
+        },
+        {
+          "heading": "5. External APIs in the desktop app (Twitch, Spotify)",
+          "body": "The desktop app can optionally connect to external services such as Twitch and Spotify. These connections are established from your local installation; tokens and configuration remain on your device.\n\nAPI calls (e.g. Twitch EventSub, Spotify playback control) run directly between your machine and the respective provider. They are not proxied via servers operated by the TriggerHub project. The privacy policies of those third parties apply to that processing."
+        },
+        {
+          "heading": "6. Cookies and similar technologies",
+          "body": "The website uses only technically and functionally necessary cookies:\n\n• th_prelaunch_gate – HttpOnly cookie for enforcing a prelaunch access gate for the closed alpha.\n• th_prelaunch_session – HttpOnly cookie for managing the signed-in session in the closed area.\n• th_csrf – security cookie providing a CSRF token for form requests.\n• sidebar_state – preference cookie recording whether the navigation sidebar is expanded or collapsed.\n\nThese cookies are used solely for security and functional purposes. No analytics, profiling, or advertising cookies are set.\n\nThe legal bases are § 25(2) TTDSG (for technically required storage in Germany) and Art. 6(1)(f) GDPR (legitimate interest in a secure and usable website). A separate cookie banner is therefore not required."
+        },
+        {
+          "heading": "7. No analytics or tracking tools",
+          "body": "The site does not use analytics or tracking services such as Google Analytics, Plausible, Matomo, Mixpanel, or Segment. No marketing user profiles are created."
+        },
+        {
+          "heading": "8. Storage duration",
+          "body": "Technical server log data at Vercel is deleted or anonymized in line with Vercel’s retention schedules. Session-related cookies expire automatically after their respective lifetimes and are actively cleared on logout. Profile data is stored for as long as the closed-alpha access is in use and is removed upon request unless longer retention is required by law."
+        },
+        {
+          "heading": "9. Your rights",
+          "body": "Under the GDPR you have, in particular, the following rights:\n\n• Right of access (Art. 15 GDPR)\n• Right to rectification (Art. 16 GDPR)\n• Right to erasure (Art. 17 GDPR)\n• Right to restriction of processing (Art. 18 GDPR)\n• Right to data portability (Art. 20 GDPR)\n• Right to object to processing based on legitimate interests (Art. 21 GDPR)\n\nTo exercise your rights, you can contact Triggerhub@outlook.com at any time."
+        },
+        {
+          "heading": "10. Right to lodge a complaint",
+          "body": "You also have the right to lodge a complaint with a data protection supervisory authority, in particular in the EU Member State of your habitual residence, place of work, or of the alleged infringement (Art. 77 GDPR).\n\nFor Hamburg, Germany, the competent authority is the Hamburg Commissioner for Data Protection and Freedom of Information (Hamburgischer Beauftragter für Datenschutz und Informationsfreiheit)."
+        },
+        {
+          "heading": "11. Changes to this notice",
+          "body": "These privacy details may be updated as the service evolves. The date of the most recent update is shown on the website. Material changes will be communicated to signed-in testers as part of the closed alpha program."
+        }
+      ]
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "accessModeNote": "Access mode is {{mode}}. Public registration is currently disabled.",
+      "authUnavailable": "Login is currently unavailable.",
+      "username": "Username",
+      "password": "Password",
+      "signingIn": "Signing in...",
+      "submit": "Sign in",
+      "errorUnexpected": "Login failed unexpectedly"
+    },
+    "signup": {
+      "title": "Account Registration",
+      "notAvailable": "Public registration is not available in {{mode}} mode.",
+      "restricted": "Access is currently restricted to the site owner.",
+      "signInInstead": "Sign in instead"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Your TriggerHub account dashboard.",
+    "openProfile": "Profile",
+    "openSettings": "Settings"
+  },
+  "profile": {
+    "title": "Profile",
+    "identityNote": "Role: {{role}}",
+    "unknownRole": "unknown",
+    "loading": "Loading profile...",
+    "displayName": "Display name",
+    "avatarUrl": "Avatar URL",
+    "avatarPlaceholder": "https://...",
+    "bio": "Bio",
+    "save": "Save profile",
+    "back": "Back",
+    "saved": "Profile saved",
+    "updateFailed": "Failed to update profile"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account and preferences.",
+    "backToDashboard": "Back to Dashboard"
+  },
+  "forbidden": {
+    "title": "Access denied",
+    "description": "Your current account is not allowed to access this page.",
+    "backToLogin": "Back to login"
+  },
+  "appPage": {
+    "title": "App",
+    "description": "TriggerHub app.",
+    "openDashboard": "Open Dashboard",
+    "settings": "Settings"
+  },
+  "internal": {
+    "title": "Internal Owner Area",
+    "loggedInAs": "Logged in as {{userId}} with role {{role}}.",
+    "openDashboard": "Open Dashboard",
+    "openProfile": "Open Profile",
+    "logout": "Logout"
+  },
+  "errors": {
+    "auth": {
+      "invalid_credentials": "Invalid username or password",
+      "logout_failed": "Logout failed",
+      "validate_session_failed": "Failed to validate owner session",
+      "refresh_not_implemented": "Session refresh is not implemented in prelaunch auth mode",
+      "no_session_snapshot": "Backend login response did not include a session snapshot",
+      "auth_unavailable": "Owner authentication is unavailable"
+    },
+    "profile": {
+      "profile_load_failed": "Failed to load profile",
+      "profile_update_identity": "Cannot update profile without authenticated identity",
+      "profile_no_session": "No authenticated profile session",
+      "profile_no_payload": "Profile response did not include a profile payload",
+      "profile_input_invalid": "Profile input is invalid",
+      "profile_update_failed": "Failed to update profile",
+      "profile_user_mismatch": "Updated profile does not match the authenticated user",
+      "validation_avatar_length": "avatar_url exceeds maximum length",
+      "validation_avatar_http": "avatar_url must use http or https",
+      "validation_avatar_url": "avatar_url must be a valid absolute URL",
+      "validation_display_name_required": "display_name is required",
+      "validation_display_name_length": "display_name exceeds maximum length",
+      "validation_bio_length": "bio exceeds maximum length"
+    }
+  }
+}

@@ -6,6 +6,8 @@ export type RoutePath =
   | '/features'
   | '/pricing'
   | '/about'
+  | '/impressum'
+  | '/datenschutz'
   | '/login'
   | '/signup'
   | '/app'
@@ -15,6 +17,8 @@ export type RoutePath =
   | '/forbidden'
   | '/logout'
   | '/internal'
+  | '/imprint'
+  | '/privacy'
 
 type RouteGroup = 'public_marketing' | 'public_auth' | 'protected_product' | 'system'
 
@@ -32,6 +36,8 @@ export const KNOWN_ROUTE_PATHS: ReadonlySet<RoutePath> = new Set<RoutePath>([
   '/features',
   '/pricing',
   '/about',
+  '/impressum',
+  '/datenschutz',
   '/login',
   '/signup',
   '/app',
@@ -41,6 +47,8 @@ export const KNOWN_ROUTE_PATHS: ReadonlySet<RoutePath> = new Set<RoutePath>([
   '/forbidden',
   '/logout',
   '/internal',
+  '/imprint',
+  '/privacy',
 ])
 
 const publicRoute = (policy: RoutePolicy = { visibility: 'public' }): RoutePolicy => policy
@@ -54,8 +62,9 @@ const ownerOnlyRoute = (): RoutePolicy => ({
 const ROUTE_MANIFEST: Record<RoutePath, RouteDefinition> = {
   '/access': {
     path: '/access',
-    group: 'public_auth',
+    group: 'system',
     basePolicy: publicRoute(),
+    systemRedirectTo: '/',
   },
   '/': {
     path: '/',
@@ -85,6 +94,24 @@ const ROUTE_MANIFEST: Record<RoutePath, RouteDefinition> = {
     path: '/about',
     group: 'public_marketing',
     basePolicy: publicRoute(),
+    modeOverrides: {
+      private_prelaunch: ownerOnlyRoute(),
+    },
+  },
+  '/impressum': {
+    path: '/impressum',
+    group: 'public_marketing',
+    basePolicy: publicRoute(),
+    systemRedirectTo: '/imprint',
+    modeOverrides: {
+      private_prelaunch: ownerOnlyRoute(),
+    },
+  },
+  '/datenschutz': {
+    path: '/datenschutz',
+    group: 'public_marketing',
+    basePolicy: publicRoute(),
+    systemRedirectTo: '/privacy',
     modeOverrides: {
       private_prelaunch: ownerOnlyRoute(),
     },
@@ -163,6 +190,22 @@ const ROUTE_MANIFEST: Record<RoutePath, RouteDefinition> = {
     path: '/forbidden',
     group: 'system',
     basePolicy: publicRoute(),
+  },
+  '/imprint': {
+    path: '/imprint',
+    group: 'public_marketing',
+    basePolicy: publicRoute(),
+    modeOverrides: {
+      private_prelaunch: ownerOnlyRoute(),
+    },
+  },
+  '/privacy': {
+    path: '/privacy',
+    group: 'public_marketing',
+    basePolicy: publicRoute(),
+    modeOverrides: {
+      private_prelaunch: ownerOnlyRoute(),
+    },
   },
   '/logout': {
     path: '/logout',

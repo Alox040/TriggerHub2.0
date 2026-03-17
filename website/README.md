@@ -2,23 +2,23 @@
 
 This project is an isolated Vite frontend located in `website/`.
 
-## Auth v1 (Owner-Only Prelaunch)
+## Auth v1
 
-The website now includes a minimal auth/access foundation with three access modes:
+The website includes a minimal auth/access foundation with three access modes:
 
-- `private_prelaunch` (current default and active mode)
-- `invite_only` (prepared)
-- `public_product` (prepared)
+- `private_prelaunch` (legacy mode kept in the type model)
+- `invite_only`
+- `public_product` (current default and active mode)
 
 Current behavior:
 
-- A separate server-side prelaunch gate must be opened before the owner login is reachable.
+- Public marketing pages are reachable without a password.
 - Public registration is disabled.
-- Owner login is required for protected routes.
+- Owner login is still required for protected routes such as `/app`, `/dashboard`, `/profile`, and `/settings`.
 - Owner credentials are verified only on the server through `/api/auth/*`.
 - Session is carried by an HMAC-signed JWT in an HttpOnly cookie and revalidated through `GET /api/auth/me`.
 - Mutating auth endpoints require a double-submit CSRF token delivered through `th_csrf`.
-- Browser builds are blocked if sensitive auth env values would be bundled or if required prelaunch env values are missing.
+- Browser builds are blocked if sensitive auth env values would be bundled or if required public website env values are missing.
 
 Main files:
 
@@ -28,25 +28,24 @@ Main files:
 - `src/modules/identity/*` (user identity records, role source of truth)
 - `src/modules/profile/*` (profile records, validation, profile service/runtime)
 - `src/app/providers/AuthProvider.tsx`
-- `src/app/providers/PrelaunchGateProvider.tsx`
 - `src/app/providers/ProfileProvider.tsx`
 - `src/app/routing/*` (route manifest + guard + router)
-- `src/pages/AccessPage.tsx`
-- `api/_prelaunchGate.ts`
-- `api/prelaunch-gate/login.ts`
-- `api/prelaunch-gate/me.ts`
 - `src/pages/LoginPage.tsx`, `src/pages/InternalPage.tsx`, `src/pages/ProfilePage.tsx`, `src/pages/ForbiddenPage.tsx`
+- `api/auth/*.ts`
 
 Target route model:
 
-- Public: `/access`, `/`, `/features`, `/pricing`, `/about`, `/login`
-- Legacy redirect: `/signup` -> `/login`
+- Public: `/`, `/features`, `/pricing`, `/about`, `/login`
+- Legacy redirects: `/signup` -> `/login`, `/access` -> `/`
 - Protected: `/app`, `/dashboard`, `/profile`, `/settings`
 
 Configuration:
 
 1. Copy `.env.example` to `.env`.
-2. Set server-side owner auth env values:
+2. Set client/runtime flags explicitly:
+   - `VITE_ACCESS_MODE=public_product`
+   - `VITE_SESSION_TTL_MS` to a positive integer
+3. If you want protected owner routes to work, set server-side owner auth env values:
    - `OWNER_USER_ID`
    - `OWNER_EMAIL`
    - `OWNER_LOGIN_USERNAME`
@@ -54,11 +53,6 @@ Configuration:
    - `OWNER_LOGIN_PASSWORD_SALT`
    - `OWNER_LOGIN_PASSWORD_ITERATIONS`
    - `PRELAUNCH_SESSION_SECRET`
-   - `PRELAUNCH_ACCESS_KEY`
-3. Set client/runtime flags explicitly:
-   - `VITE_ACCESS_MODE=private_prelaunch`
-   - `VITE_SESSION_TTL_MS` to a positive integer
-4. Set `PRELAUNCH_GATE_TTL_MS` to a positive integer.
 
 Important setup rule:
 
@@ -68,9 +62,8 @@ Important:
 
 - There are no bundled credential fallbacks, hashes, salts, session secrets or access keys.
 - The website build fails if sensitive auth vars use a `VITE_*` prefix.
-- For `private_prelaunch`, the website build fails if required prelaunch env vars are missing or invalid.
-- Temporary prelaunch solution: Vercel API login + JWT HttpOnly cookie + CSRF cookie.
-- Additional prelaunch gate: Vercel API shared-secret gate + signed HttpOnly cookie.
+- The public website build requires `VITE_ACCESS_MODE=public_product` and a valid `VITE_SESSION_TTL_MS`.
+- Owner auth remains server-backed through the Vercel API handlers and HttpOnly cookies for protected routes.
 - Later production solution: full backend auth/session boundary with rotation, revocation and CSRF handling.
 
 ## Status Content Pipeline
@@ -126,8 +119,7 @@ Use these settings:
 
 Deployment notes:
 
-1. Add `PRELAUNCH_ACCESS_KEY` as a long random shared secret in the Vercel project env.
-2. Keep `PRELAUNCH_ACCESS_KEY` distinct from the owner login password.
-3. Keep `PRELAUNCH_SESSION_SECRET` set; it signs the owner JWT session and the prelaunch gate cookie.
-4. The new access lock is enforced in `website/api/_prelaunchGate.ts` and checked before all `/api/auth/*` handlers.
-5. The gate entry page is routed through `/access` and wired in `website/src/app/routing/AppRouter.tsx`.
+1. Set `VITE_ACCESS_MODE=public_product`.
+2. Keep `VITE_SESSION_TTL_MS` set to a positive integer.
+3. Keep owner auth env vars set only if you want protected owner routes to stay usable.
+4. Add `triggerhub.de` and `www.triggerhub.de` in the Vercel Domains settings and set `triggerhub.de` as the primary domain if you want `www` redirected to the apex domain.

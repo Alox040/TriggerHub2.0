@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { appAccessMode } from '../../config/runtimeConfig'
 import { useAuth } from '../providers/AuthProvider'
-import { usePrelaunchGate } from '../providers/PrelaunchGateProvider'
 import { resolveRouteDecision } from './accessGuard'
 import { getResolvedRoutePolicy, getSystemRedirectForRoute, normalizeRoutePath } from './routeManifest'
 import { replaceTo, usePathname } from './navigation'
@@ -10,7 +9,6 @@ import { renderRoute } from './routeRenderer'
 export const AppRouter = () => {
   const currentPath = usePathname()
   const normalizedPath = normalizeRoutePath(currentPath)
-  const { isGateEnabled, isGateInitializing, isGateOpen } = usePrelaunchGate()
   const { identity, isInitializing, logout } = useAuth()
   const routePolicy = useMemo(
     () => getResolvedRoutePolicy(currentPath, appAccessMode),
@@ -19,18 +17,12 @@ export const AppRouter = () => {
   const decision = resolveRouteDecision(routePolicy, appAccessMode, identity, currentPath)
 
   useEffect(() => {
-    if (appAccessMode === 'private_prelaunch' && isGateEnabled) {
-      if (isGateInitializing) {
-        return
-      }
-
-      if (!isGateOpen && normalizedPath !== '/access') {
-        replaceTo(`/access?next=${encodeURIComponent(currentPath)}`)
-      }
+    if (isInitializing) {
       return
     }
 
-    if (isInitializing) {
+    if (identity && normalizedPath === '/login') {
+      replaceTo('/dashboard')
       return
     }
 
@@ -38,48 +30,24 @@ export const AppRouter = () => {
       replaceTo(decision.redirectTo)
     }
   }, [
-    appAccessMode,
-    currentPath,
     decision.allow,
     decision.redirectTo,
-    isGateEnabled,
-    isGateInitializing,
-    isGateOpen,
-    isInitializing,
+    identity,
     normalizedPath,
+    isInitializing,
   ])
 
-  if (appAccessMode === 'private_prelaunch' && isGateEnabled) {
-    if (isGateInitializing) {
-      return null
-    }
-
-    if (!isGateOpen) {
-      if (normalizedPath !== '/access') {
-        return null
-      }
-
-      return renderRoute('/access')
-    }
-
-    if (normalizedPath === '/access') {
-      replaceTo('/login')
-      return null
-    }
-  }
-
   if (isInitializing) {
-    return null
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="size-6 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
+      </div>
+    )
   }
 
   if (!decision.allow) {
     return null
   }
-  if (identity && normalizedPath === '/login') {
-    replaceTo('/dashboard')
-    return null
-  }
-
   if (normalizedPath === '/logout') {
     logout()
     replaceTo('/login')

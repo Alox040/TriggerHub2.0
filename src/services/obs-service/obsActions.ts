@@ -33,6 +33,10 @@ export class ObsService implements ObsServicePort {
     this.connected = false
   }
 
+  public isConnected(): boolean {
+    return this.connected
+  }
+
   public async switchScene(sceneName: string): Promise<void> {
     if (!this.connected) {
       throw new Error('OBS service must be connected before switching scenes')

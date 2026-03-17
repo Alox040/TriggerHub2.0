@@ -15,13 +15,15 @@ export interface AppFacadePersistence {
 export interface AppFacadeRuntimeCommands {
   activateRuntime(): Promise<void>
   deactivateRuntime(): Promise<void>
+  connectTwitch(channelName?: string): Promise<void>
+  disconnectTwitch(): Promise<void>
 }
 
 export class TriggerHubAppFacade {
   public constructor(
     private readonly triggerEngine: TriggerEngine,
     private readonly macroEngine: MacroEngine,
-    private readonly serviceState: { obs: boolean; spotify: boolean; clip: boolean },
+    private readonly serviceState: { obs: boolean; spotify: boolean; clip: boolean; twitch: boolean },
     private readonly pluginRegistry?: PluginRegistryPort,
     private readonly persistence?: AppFacadePersistence,
     private readonly runtimeConfig?: RuntimeConfig,
@@ -34,6 +36,7 @@ export class TriggerHubAppFacade {
         obs: this.serviceState.obs,
         spotify: this.serviceState.spotify,
         clip: this.serviceState.clip,
+        twitch: this.serviceState.twitch,
       },
       activeTriggers: this.triggerEngine.getAll().map((trigger) => ({
         id: trigger.id,
@@ -85,9 +88,12 @@ export class TriggerHubAppFacade {
         obs: this.serviceState.obs,
         spotify: this.serviceState.spotify,
         clip: this.serviceState.clip,
+        twitch: this.serviceState.twitch,
       },
       triggerCount: editorState.triggers.length,
       macroCount: editorState.macros.length,
+      twitchConfig: this.runtimeConfig?.twitch ?? {},
+      obsConfig: this.runtimeConfig?.obs ?? {},
     }
   }
 
@@ -139,7 +145,7 @@ export class TriggerHubAppFacade {
   }
 
   public async deleteMacro(macroId: string): Promise<void> {
-    await this.macroEngine.removeMacro(macroId)
+    this.macroEngine.removeMacro(macroId)
     await this.persistIfAvailable()
   }
 
@@ -149,6 +155,7 @@ export class TriggerHubAppFacade {
     }
 
     await this.runtimeCommands.activateRuntime()
+    await this.persistIfAvailable()
   }
 
   public async deactivateRuntime(): Promise<void> {
@@ -157,6 +164,47 @@ export class TriggerHubAppFacade {
     }
 
     await this.runtimeCommands.deactivateRuntime()
+    await this.persistIfAvailable()
+  }
+
+  public async connectTwitch(channelName?: string): Promise<void> {
+    if (!this.runtimeCommands) {
+      return
+    }
+
+    await this.runtimeCommands.connectTwitch(channelName)
+    await this.persistIfAvailable()
+  }
+
+  public async disconnectTwitch(): Promise<void> {
+    if (!this.runtimeCommands) {
+      return
+    }
+
+    await this.runtimeCommands.disconnectTwitch()
+    await this.persistIfAvailable()
+  }
+
+  public async updateRuntimeConfig(updates: Partial<RuntimeConfig>): Promise<void> {
+    if (!this.runtimeConfig) {
+      return
+    }
+
+    if (updates.twitch) {
+      this.runtimeConfig.twitch = {
+        ...(this.runtimeConfig.twitch ?? {}),
+        ...updates.twitch,
+      }
+    }
+
+    if (updates.obs) {
+      this.runtimeConfig.obs = {
+        ...(this.runtimeConfig.obs ?? {}),
+        ...updates.obs,
+      }
+    }
+
+    await this.persistIfAvailable()
   }
 
   private async persistIfAvailable(): Promise<void> {
@@ -164,7 +212,6 @@ export class TriggerHubAppFacade {
       return
     }
 
-    void this.runtimeConfig
     await this.persistence.persist()
   }
 }

@@ -17,6 +17,7 @@ export interface CreateTwitchServiceOptions {
   http?: Omit<TwitchApiTransportOptions, 'policy'>
   policy?: Partial<OperationPolicy>
   pollIntervalMs?: number
+  defaultChannelName?: string
 }
 
 export const createTwitchService = (options: CreateTwitchServiceOptions): TwitchService => {
@@ -34,6 +35,7 @@ export const createTwitchService = (options: CreateTwitchServiceOptions): Twitch
       }),
       options.eventBus,
       options.pollIntervalMs,
+      options.defaultChannelName,
     )
   }
 
@@ -41,5 +43,6 @@ export const createTwitchService = (options: CreateTwitchServiceOptions): Twitch
     new InMemoryTwitchTransport(),
     options.eventBus,
     options.pollIntervalMs,
+    options.defaultChannelName,
   )
 }

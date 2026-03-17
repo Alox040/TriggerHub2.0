@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Datenschutzerklärung – TriggerHub</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --border: #2a2a2a;
+      --text: #e0e0e0;
+      --muted: #888;
+      --accent: #7c6fcd;
+      --max-w: 720px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      padding: 3rem 1.5rem 6rem;
+    }
+    .wrap { max-width: var(--max-w); margin: 0 auto; }
+    h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .meta { color: var(--muted); font-size: 0.85rem; margin-bottom: 3rem; }
+    h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 2.5rem 0 0.75rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+      color: #fff;
+    }
+    p { margin-bottom: 0.75rem; }
+    ul { padding-left: 1.4rem; margin-bottom: 0.75rem; }
+    li { margin-bottom: 0.35rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    address { font-style: normal; margin-bottom: 0.75rem; }
+    .table-wrap { overflow-x: auto; margin-bottom: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td {
+      text-align: left;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+    }
+    th { background: var(--surface); color: #fff; font-weight: 600; }
+    td { color: var(--text); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Datenschutzerklärung</h1>
+  <p class="meta">Stand: 17. März 2026 &nbsp;·&nbsp; TriggerHub Version 0.1.1</p>
+
+  <!-- 1 -->
+  <h2>1. Verantwortlicher</h2>
+  <address>
+    Alexander Posdziech<br>
+    Voßort 14<br>
+    21037 Hamburg<br>
+    Deutschland<br>
+    E-Mail: <a href="mailto:Triggerhub@outlook.com">Triggerhub@outlook.com</a>
+  </address>
+  <p>
+    TriggerHub wird von einer Privatperson betrieben. Es besteht kein eingetragenes
+    Unternehmen. Der Dienst befindet sich im Early-Access-Stadium und ist nicht
+    öffentlich zugänglich.
+  </p>
+
+  <!-- 2 -->
+  <h2>2. Gegenstand dieser Datenschutzerklärung</h2>
+  <p>
+    TriggerHub besteht aus zwei Komponenten:
+  </p>
+  <ul>
+    <li>
+      <strong>Desktop-Anwendung</strong> – lokal auf dem Rechner des Nutzers installiert
+      (Windows, Electron). Alle Konfigurationsdaten (Trigger, Makros, API-Zugangsdaten)
+      werden ausschließlich lokal gespeichert. Es werden keine Daten an den Betreiber
+      übertragen.
+    </li>
+    <li>
+      <strong>Website</strong> – gehostet auf Vercel. Enthält eine Landing Page sowie
+      einen geschlossenen Zugriffsbereich mit E-Mail-Authentifizierung.
+    </li>
+  </ul>
+  <p>
+    Diese Datenschutzerklärung bezieht sich auf die Verarbeitung personenbezogener
+    Daten im Zusammenhang mit der Website.
+  </p>
+
+  <!-- 3 -->
+  <h2>3. Hosting &amp; Serverlogs (Vercel)</h2>
+  <p>
+    Die Website wird über <strong>Vercel Inc.</strong> (440 N Barranca Ave #4133,
+    Covina, CA 91723, USA) gehostet. Beim Aufruf der Website werden durch den
+    Hosting-Provider automatisch Server-Logdaten erhoben. Diese können enthalten:
+  </p>
+  <ul>
+    <li>IP-Adresse des anfragenden Endgeräts</li>
+    <li>Datum und Uhrzeit der Anfrage</li>
+    <li>Aufgerufene URL, HTTP-Statuscode, übertragene Datenmenge</li>
+    <li>Browser-Typ und Betriebssystem (User-Agent)</li>
+  </ul>
+  <p>
+    Diese Daten werden von Vercel zur technischen Bereitstellung des Dienstes
+    verarbeitet. Der Betreiber von TriggerHub hat keinen aktiven Zugriff auf diese
+    Rohdaten. Vercel verarbeitet Daten nach eigenen Datenschutzrichtlinien; eine
+    Übermittlung in die USA kann dabei stattfinden (Standardvertragsklauseln gemäß
+    Art. 46 DSGVO).
+  </p>
+  <p>
+    Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem
+    sicher und stabil betriebenen Dienst).
+  </p>
+
+  <!-- 4 -->
+  <h2>4. Registrierung &amp; Authentifizierung</h2>
+  <p>
+    Der Zugang zur Anwendung ist auf eingeladene Nutzer beschränkt. Eine öffentliche
+    Registrierung ist nicht möglich. Für die Anmeldung werden folgende Daten
+    verarbeitet:
+  </p>
+  <ul>
+    <li>E-Mail-Adresse</li>
+    <li>Passwort (gespeichert als Hash, niemals im Klartext)</li>
+    <li>Session-Token (kurzlebig, serverseitig verwaltet via Vercel Serverless Functions)</li>
+  </ul>
+  <p>
+    Es werden keine Drittanbieter-Login-Dienste (z. B. Google, GitHub) genutzt.
+  </p>
+  <p>
+    Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung /
+    vorvertragliche Maßnahmen).
+  </p>
+  <p>
+    Zusätzlich können im Rahmen eines Profils optionale Angaben wie Anzeigename, Avatar-URL
+    und eine kurze Bio gespeichert werden. Diese Profildaten werden in einer Profil-Datei
+    auf dem Server abgelegt, um sie bei erneuter Anmeldung anzeigen und verwalten zu können.
+  </p>
+  <p>
+    <strong>Speicherdauer:</strong> Authentifizierungs- und Profildaten werden
+    grundsätzlich für die Dauer der Nutzung des geschlossenen Alpha-Zugangs gespeichert
+    und auf Anfrage per E-Mail gelöscht, soweit keine gesetzlichen Aufbewahrungspflichten
+    entgegenstehen.
+  </p>
+
+  <!-- 5 -->
+  <h2>5. Externe APIs (Twitch, Spotify)</h2>
+  <p>
+    Die Desktop-Anwendung kann optional mit den folgenden Drittdiensten verbunden
+    werden:
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Dienst</th>
+          <th>Zweck</th>
+          <th>Datenfluss</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Twitch (Twitch Interactive, Inc.)</td>
+          <td>Kanal-Events und Trigger empfangen (EventSub)</td>
+          <td>OAuth 2.0 direkt vom Client des Nutzers; Token liegt lokal</td>
+        </tr>
+        <tr>
+          <td>Spotify (Spotify AB)</td>
+          <td>Wiedergabe steuern (Play, Pause, Skip)</td>
+          <td>OAuth 2.0 direkt vom Client des Nutzers; Token liegt lokal</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    Die Verbindung zu diesen Diensten ist freiwillig und wird vom Nutzer selbst
+    eingerichtet. Zugangsdaten (Access Tokens) werden ausschließlich auf dem lokalen
+    Gerät des Nutzers gespeichert und nicht an den Betreiber übertragen. API-Anfragen
+    werden direkt zwischen der Desktop-App und den jeweiligen Diensten abgewickelt.
+  </p>
+  <p>
+    Für die Verarbeitung durch Twitch und Spotify gelten deren eigene
+    Datenschutzbestimmungen. Der Betreiber von TriggerHub hat keinen Einfluss auf
+    diese Verarbeitung.
+  </p>
+
+  <!-- 6 -->
+  <h2>6. Cookies &amp; Keine Analyse- oder Tracking-Tools</h2>
+  <p>
+    Es werden keinerlei Analytics-Dienste (z. B. Google Analytics, Plausible,
+    Matomo) eingesetzt. Es findet kein Tracking des Nutzerverhaltens statt. Es werden
+    keine Werbe- oder Marketing-Cookies gesetzt.
+  </p>
+  <p>
+    Folgende Cookies werden eingesetzt:
+  </p>
+  <ul>
+    <li><strong>th_prelaunch_gate</strong> – HttpOnly-Cookie zur Durchführung der vorgeschalteten Zugriffskontrolle für die geschlossene Alpha.</li>
+    <li><strong>th_prelaunch_session</strong> – HttpOnly-Cookie zur Verwaltung der angemeldeten Session im geschlossenen Bereich.</li>
+    <li><strong>th_csrf</strong> – Sicherheits-Cookie zur Bereitstellung eines CSRF-Tokens für Formularanfragen.</li>
+    <li><strong>sidebar_state</strong> – Präferenz-Cookie, das speichert, ob die Navigationsleiste ein- oder ausgeklappt ist.</li>
+  </ul>
+  <p>
+    Diese Cookies sind technisch bzw. funktional erforderlich, um den geschlossenen
+    Bereich sicher zu betreiben und die Darstellung der Website zu steuern. Sie
+    werden nicht zu Tracking-, Analyse- oder Werbezwecken verwendet und bedürfen
+    daher nach § 25 Abs. 2 Nr. 2 TTDSG keiner gesonderten Einwilligung.
+  </p>
+
+  <!-- 7 -->
+  <h2>7. Datenweitergabe an Dritte</h2>
+  <p>
+    Eine Weitergabe personenbezogener Daten an Dritte findet nicht statt, mit
+    Ausnahme der technisch bedingten Verarbeitung durch den Hosting-Provider Vercel
+    (siehe Abschnitt 3). Es erfolgt kein Verkauf von Daten.
+  </p>
+
+  <!-- 8 -->
+  <h2>8. Betroffenenrechte</h2>
+  <p>
+    Als betroffene Person stehen Ihnen gemäß DSGVO folgende Rechte zu:
+  </p>
+  <ul>
+    <li><strong>Auskunft</strong> (Art. 15 DSGVO) – Informationen über gespeicherte Daten</li>
+    <li><strong>Berichtigung</strong> (Art. 16 DSGVO) – Korrektur unrichtiger Daten</li>
+    <li><strong>Löschung</strong> (Art. 17 DSGVO) – Entfernung Ihrer Daten</li>
+    <li><strong>Einschränkung der Verarbeitung</strong> (Art. 18 DSGVO)</li>
+    <li><strong>Widerspruch</strong> (Art. 21 DSGVO) – gegen Verarbeitungen auf Basis berechtigter Interessen</li>
+    <li><strong>Datenübertragbarkeit</strong> (Art. 20 DSGVO)</li>
+  </ul>
+  <p>
+    Zur Ausübung Ihrer Rechte wenden Sie sich per E-Mail an:
+    <a href="mailto:Triggerhub@outlook.com">Triggerhub@outlook.com</a>
+  </p>
+  <p>
+    Sie haben außerdem das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu
+    beschweren. Zuständig ist die Behörde des Bundeslandes, in dem Sie Ihren
+    Wohnsitz haben, oder die Behörde des Bundeslandes Hamburg:
+  </p>
+  <p>
+    Der Hamburgische Beauftragte für Datenschutz und Informationsfreiheit<br>
+    Ludwig-Erhard-Str. 22, 20459 Hamburg<br>
+    <a href="https://datenschutz.hamburg.de" target="_blank" rel="noopener">datenschutz.hamburg.de</a>
+  </p>
+
+  <!-- 9 -->
+  <h2>9. Änderungen dieser Datenschutzerklärung</h2>
+  <p>
+    Diese Erklärung kann bei Änderungen am Dienst aktualisiert werden. Das
+    Datum der letzten Änderung ist oben angegeben. Wesentliche Änderungen werden
+    den aktiven Nutzern per E-Mail mitgeteilt.
+  </p>
+
+</div>
+</body>
+</html>

@@ -19,6 +19,8 @@ export interface DashboardViewModel {
   status: {
     obsConnected: boolean
     spotifyConnected: boolean
+    clipConnected: boolean
+    twitchConnected: boolean
   }
 }
 
@@ -26,4 +28,11 @@ export interface RuntimeStatusViewModel {
   obsConnected: boolean
   spotifyConnected: boolean
   clipConnected: boolean
+  twitchConnected: boolean
+}
+
+export interface RuntimeLogEntry {
+  id: string
+  message: string
+  timestamp: number
 }

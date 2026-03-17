@@ -5,6 +5,7 @@ import type { ClipExporter } from './clipExporter.interface'
 import { buildClipBuffer } from './clipProcessor'
 
 export class ClipService implements ClipServicePort {
+  private connected = false
   private active = false
   private readonly policy: OperationPolicy
 
@@ -18,11 +19,32 @@ export class ClipService implements ClipServicePort {
     }
   }
 
+  public async connect(): Promise<void> {
+    this.connected = true
+  }
+
+  public async disconnect(): Promise<void> {
+    this.connected = false
+    this.active = false
+  }
+
+  public isConnected(): boolean {
+    return this.connected
+  }
+
   public async startCapture(): Promise<void> {
+    if (!this.connected) {
+      throw new Error('Clip service must be connected before starting capture')
+    }
+
     this.active = true
   }
 
   public async saveClip(): Promise<string> {
+    if (!this.connected) {
+      throw new Error('Clip service must be connected before saving clips')
+    }
+
     if (!this.active) {
       throw new Error('Clip capture is not active')
     }

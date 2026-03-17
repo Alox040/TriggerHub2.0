@@ -1,10 +1,10 @@
 import type { EventBusPort } from '../../types'
+import type { TwitchServicePort } from '../../types'
 import type { TwitchTransport } from './twitchClient'
 import {
   normalizeTwitchChannelName,
   type StreamStatus,
   type TwitchEvent,
-  type TwitchServicePort,
 } from './contracts'
 
 export const TwitchActionTypes = {
@@ -17,6 +17,7 @@ export class TwitchService implements TwitchServicePort {
 
   private connected = false
   private readonly pollIntervalMs: number
+  private readonly defaultChannelName: string | null
   private channelName: string | null = null
   private currentStatus: StreamStatus | null = null
   private pollTimer: ReturnType<typeof setInterval> | null = null
@@ -26,12 +27,17 @@ export class TwitchService implements TwitchServicePort {
     private readonly transport: TwitchTransport,
     private readonly eventBus: EventBusPort,
     pollIntervalMs = TwitchService.DEFAULT_POLL_INTERVAL_MS,
+    defaultChannelName?: string,
   ) {
     this.pollIntervalMs = pollIntervalMs
+    this.defaultChannelName =
+      typeof defaultChannelName === 'string' && defaultChannelName.trim().length > 0
+        ? normalizeTwitchChannelName(defaultChannelName)
+        : null
   }
 
-  public async connect(channelName: string): Promise<void> {
-    const normalizedChannelName = normalizeTwitchChannelName(channelName)
+  public async connect(channelName?: string): Promise<void> {
+    const normalizedChannelName = this.resolveChannelName(channelName)
 
     await this.transport.connect(normalizedChannelName)
 
@@ -57,12 +63,32 @@ export class TwitchService implements TwitchServicePort {
     this.currentStatus = null
   }
 
+  public isConnected(): boolean {
+    return this.connected
+  }
+
   public async getStreamStatus(): Promise<StreamStatus> {
     if (!this.connected) {
       throw new Error('Twitch service must be connected before reading stream status')
     }
 
     return this.loadStreamStatus(false)
+  }
+
+  private resolveChannelName(channelName?: string): string {
+    if (typeof channelName === 'string') {
+      return normalizeTwitchChannelName(channelName)
+    }
+
+    if (this.channelName !== null) {
+      return this.channelName
+    }
+
+    if (this.defaultChannelName !== null) {
+      return this.defaultChannelName
+    }
+
+    throw new Error('Twitch channel name must be provided before connecting')
   }
 
   private startPolling(): void {

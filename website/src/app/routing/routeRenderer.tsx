@@ -8,25 +8,28 @@ import { ProfilePage } from '../../pages/ProfilePage'
 import { SettingsPage } from '../../pages/SettingsPage'
 import { ForbiddenPage } from '../../pages/ForbiddenPage'
 import { SignupPage } from '../../pages/SignupPage'
-import { navigateTo, readNextPath } from './navigation'
+import { InternalPage } from '../../pages/InternalPage'
+import { ImprintPage, PrivacyPage } from '../../pages/LegalPage'
 
-export const renderRoute = (path: RoutePath): ReactElement | null => {
-  const rendererMap: Record<RoutePath, () => ReactElement | null> = {
-    '/access': () => null,
-    '/': () => <WebsiteLandingPage />,
-    '/features': () => <WebsiteLandingPage />,
-    '/pricing': () => <WebsiteLandingPage />,
-    '/about': () => <WebsiteLandingPage />,
-    '/login': () => <LoginPage onNavigate={navigateTo} nextPath={readNextPath()} />,
-    '/signup': () => <SignupPage onNavigate={navigateTo} />,
-    '/app': () => <AppPage onNavigate={navigateTo} />,
-    '/dashboard': () => <DashboardPage onNavigate={navigateTo} />,
-    '/profile': () => <ProfilePage onNavigate={navigateTo} />,
-    '/settings': () => <SettingsPage onNavigate={navigateTo} />,
-    '/forbidden': () => <ForbiddenPage onNavigate={navigateTo} />,
-    '/logout': () => null,
-    '/internal': () => null,
-  }
-
-  return rendererMap[path]()
+const rendererMap: Record<RoutePath, () => ReactElement | null> = {
+  '/access': () => null,
+  '/': () => <WebsiteLandingPage />,
+  '/features': () => <WebsiteLandingPage />,
+  '/pricing': () => <WebsiteLandingPage />,
+  '/about': () => <WebsiteLandingPage />,
+  '/impressum': () => <ImprintPage />,
+  '/datenschutz': () => <PrivacyPage />,
+  '/login': () => <LoginPage />,
+  '/signup': () => <SignupPage />,
+  '/app': () => <AppPage />,
+  '/dashboard': () => <DashboardPage />,
+  '/profile': () => <ProfilePage />,
+  '/settings': () => <SettingsPage />,
+  '/forbidden': () => <ForbiddenPage />,
+  '/logout': () => null,
+  '/imprint': () => <ImprintPage />,
+  '/privacy': () => <PrivacyPage />,
+  '/internal': () => <InternalPage />,
 }
+
+export const renderRoute = (path: RoutePath): ReactElement | null => rendererMap[path]()

@@ -181,7 +181,7 @@ describe('website auth v1', () => {
     }
   }
 
-  it('rejects non-owner backend sessions in owner-only prelaunch mode', () => {
+  it('rejects non-owner backend sessions in owner-only auth mode', () => {
     expect(() =>
       createServerBackedSession({
         userId: 'user-1',
@@ -192,7 +192,7 @@ describe('website auth v1', () => {
         lastAuthenticatedAt: '2026-03-11T00:00:00.000Z',
         sessionVersion: 1,
       }),
-    ).toThrow('Backend session snapshot is invalid for owner-only prelaunch mode')
+    ).toThrow('Backend session snapshot is invalid for owner-only auth mode')
   })
 
   it('accepts valid owner backend sessions', () => {
@@ -377,16 +377,16 @@ describe('website runtime config hardening', () => {
   it('keeps client runtime free of owner credential requirements', () => {
     const runtime = resolveRuntimeConfig(
       {
-        VITE_ACCESS_MODE: 'private_prelaunch',
+        VITE_ACCESS_MODE: 'public_product',
         VITE_SESSION_TTL_MS: '28800000',
       },
       { isDev: false },
     )
 
-    expect(runtime.appAccessMode).toBe('private_prelaunch')
+    expect(runtime.appAccessMode).toBe('public_product')
   })
 
-  it('locks the active website mode to private_prelaunch', () => {
+  it('allows the active website mode list to resolve invite-only and public product', () => {
     const inviteRuntime = resolveRuntimeConfig(
       {
         VITE_ACCESS_MODE: 'invite_only',
@@ -400,11 +400,11 @@ describe('website runtime config hardening', () => {
       { isDev: false },
     )
 
-    expect(inviteRuntime.appAccessMode).toBe('private_prelaunch')
-    expect(publicRuntime.appAccessMode).toBe('private_prelaunch')
+    expect(inviteRuntime.appAccessMode).toBe('invite_only')
+    expect(publicRuntime.appAccessMode).toBe('public_product')
   })
 
-  it('ignores removed signup env and resolves access mode from the active whitelist', () => {
+  it('falls back to the public default for legacy prelaunch mode', () => {
     const runtime = resolveRuntimeConfig(
       {
         VITE_ACCESS_MODE: 'private_prelaunch',
@@ -413,12 +413,13 @@ describe('website runtime config hardening', () => {
       { isDev: false },
     )
 
-    expect(runtime.appAccessMode).toBe('private_prelaunch')
+    expect(runtime.appAccessMode).toBe('public_product')
   })
 
-  it('keeps future access modes typed even when the active runtime is still prelaunch-only', () => {
-    expect(ACTIVE_ACCESS_MODES).toEqual([DEFAULT_ACCESS_MODE])
-    expect(FUTURE_PUBLIC_ACCESS_MODES).toEqual(['invite_only', 'public_product'])
+  it('keeps public access modes active and no longer treats them as future-only', () => {
+    expect(DEFAULT_ACCESS_MODE).toBe('public_product')
+    expect(ACTIVE_ACCESS_MODES).toEqual(['invite_only', 'public_product'])
+    expect(FUTURE_PUBLIC_ACCESS_MODES).toEqual([])
     expect(isAccessMode('invite_only')).toBe(true)
     expect(isAccessMode('public_product')).toBe(true)
     expect(isAccessMode('unknown_mode')).toBe(false)
@@ -437,5 +438,9 @@ describe('router decision helpers', () => {
 
   it('redirects legacy signup path to login', () => {
     expect(getSystemRedirectForRoute('/signup')).toBe('/login')
+  })
+
+  it('redirects legacy access path to root', () => {
+    expect(getSystemRedirectForRoute('/access')).toBe('/')
   })
 })

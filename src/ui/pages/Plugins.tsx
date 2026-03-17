@@ -32,27 +32,20 @@ export const PluginsPage = ({
       header={<Header title={title} live={live} />}
       main={
         <PanelCard title="Installed Plugins">
-          <div style={{ display: 'grid', gap: 10 }}>
+          <div className="th-card-list">
             {plugins.map((plugin) => (
-              <div
-                key={plugin.id}
-                style={{
-                  border: '1px solid var(--th-border-subtle)',
-                  borderRadius: 'var(--th-radius-md)',
-                  padding: 12,
-                }}
-              >
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--th-text-primary)' }}>{plugin.name}</div>
-                <div style={{ fontSize: 12, color: 'var(--th-text-secondary)', marginTop: 6 }}>ID: {plugin.id}</div>
-              </div>
+              <article className="th-card-list__item" key={plugin.id}>
+                <div className="th-card-list__title">{plugin.name}</div>
+                <div className="th-card-list__meta">ID: {plugin.id}</div>
+              </article>
             ))}
           </div>
         </PanelCard>
       }
       rightPanel={
-        <div style={{ padding: 16, display: 'grid', gap: 12 }}>
+        <div className="th-right-panel-stack">
           <PanelCard title="Plugin Status">
-            <div style={{ fontSize: 12, color: 'var(--th-text-secondary)' }}>
+            <div className="th-card-list__meta">
               {plugins.length} plugin modules are currently registered in the desktop runtime.
             </div>
           </PanelCard>

@@ -2,8 +2,8 @@ import { PanelCard, StatusBar, TriggerCard } from '../components'
 import { Header } from '../layout/Header'
 import { MainLayout } from '../layout/MainLayout'
 import { Sidebar } from '../layout/Sidebar'
-import type { DashboardViewModel } from '../types'
 import type { AppNavigationItem, AppViewId } from '../navigation'
+import type { DashboardViewModel, RuntimeLogEntry } from '../types'
 
 interface DashboardPageProps {
   viewModel: DashboardViewModel
@@ -11,6 +11,7 @@ interface DashboardPageProps {
   activeNavId: AppViewId
   onSelectNav: (id: AppViewId) => void
   onToggleTrigger: (triggerId: string) => void
+  runtimeLog: RuntimeLogEntry[]
 }
 
 export const DashboardPage = ({
@@ -19,6 +20,7 @@ export const DashboardPage = ({
   activeNavId,
   onSelectNav,
   onToggleTrigger,
+  runtimeLog,
 }: DashboardPageProps): JSX.Element => {
   return (
     <MainLayout
@@ -26,7 +28,10 @@ export const DashboardPage = ({
       header={<Header title={viewModel.title} live={viewModel.live} />}
       main={
         <>
-          <h2 className="th-section-title">Trigger Controls</h2>
+          <div className="th-section-heading">
+            <h2 className="th-section-heading__title">Trigger Controls</h2>
+            <p className="th-section-heading__subtext">Toggle and manage triggers without leaving the dashboard.</p>
+          </div>
           <div className="th-grid">
             {viewModel.triggers.map((trigger) => (
               <TriggerCard key={trigger.id} trigger={trigger} onToggle={onToggleTrigger} />
@@ -36,26 +41,28 @@ export const DashboardPage = ({
             <StatusBar
               obsConnected={viewModel.status.obsConnected}
               spotifyConnected={viewModel.status.spotifyConnected}
+              clipConnected={viewModel.status.clipConnected}
+              twitchConnected={viewModel.status.twitchConnected}
             />
           </div>
         </>
       }
       rightPanel={
-        <div style={{ padding: 16, display: 'grid', gap: 12 }}>
-          <PanelCard title="Active Automations">
-            <div style={{ display: 'grid', gap: 8 }}>
-              {viewModel.automations.map((item) => (
-                <div key={item.id} style={{ border: '1px solid var(--th-border-subtle)', borderRadius: 10, padding: 10 }}>
-                  <div style={{ fontSize: 12, color: 'var(--th-text-primary)' }}>{item.title}</div>
-                  <div style={{ fontSize: 11, color: 'var(--th-text-muted)' }}>{item.detail}</div>
-                </div>
-              ))}
-            </div>
-          </PanelCard>
-          <PanelCard title="Operations Overview">
-            <div style={{ display: 'grid', gap: 8, color: 'var(--th-text-secondary)', fontSize: 12 }}>
-              <div>{viewModel.triggers.length} trigger actions available from the dashboard.</div>
-              <div>{viewModel.automations.length} macros currently registered in the runtime.</div>
+        <div className="th-right-panel-stack">
+          <PanelCard title="Runtime Log">
+            <div className="th-runtime-log">
+              {runtimeLog.length === 0 ? (
+                <div className="th-runtime-log__entry th-runtime-log__empty">No recent activity yet.</div>
+              ) : (
+                runtimeLog.map((entry) => (
+                  <div className="th-runtime-log__entry" key={entry.id}>
+                    <div className="th-runtime-log__timestamp">
+                      {new Date(entry.timestamp).toLocaleTimeString()}
+                    </div>
+                    <div className="th-runtime-log__message">{entry.message}</div>
+                  </div>
+                ))
+              )}
             </div>
           </PanelCard>
         </div>

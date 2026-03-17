@@ -11,6 +11,7 @@ describe('createAppModuleContainer', () => {
     expect(state.connectedServices.obs).toBe(false)
     expect(state.connectedServices.spotify).toBe(false)
     expect(state.connectedServices.clip).toBe(false)
+    expect(state.connectedServices.twitch).toBe(false)
 
     expect(state.activeTriggers.some((t) => t.id === 'trigger-main-scene')).toBe(true)
     expect(state.activeMacros.some((m) => m.id === 'macro-default-scene')).toBe(true)
@@ -28,6 +29,8 @@ describe('createAppModuleContainer', () => {
     expect(state.connectedServices.obs).toBe(true)
     expect(state.connectedServices.spotify).toBe(true)
     expect(state.connectedServices.clip).toBe(true)
+    expect(state.connectedServices.twitch).toBe(true)
+    await expect(container.clipService.saveClip()).rejects.toThrow('not active')
 
     await container.stop()
   })
@@ -41,5 +44,18 @@ describe('createAppModuleContainer', () => {
     await expect(container.appFacade.executeTrigger('trigger-main-scene')).resolves.toBeUndefined()
 
     await container.stop()
+  })
+
+  it('disconnects twitch on stop after a manual twitch connection', async () => {
+    const container = await createAppModuleContainer()
+
+    await container.start()
+    await container.appFacade.connectTwitch()
+
+    expect((await container.appFacade.getSettingsState()).connectedServices.twitch).toBe(true)
+
+    await container.stop()
+
+    expect(container.twitchService.isConnected()).toBe(false)
   })
 })

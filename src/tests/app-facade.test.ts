@@ -31,6 +31,7 @@ describe('TriggerHubAppFacade executeTrigger', () => {
       obs: false,
       spotify: false,
       clip: false,
+      twitch: false,
     })
 
     await expect(facade.executeTrigger('exec-trigger')).resolves.toBeUndefined()
@@ -66,6 +67,7 @@ describe('TriggerHubAppFacade read model validation', () => {
       obs: true,
       spotify: false,
       clip: true,
+      twitch: true,
     })
 
     const state = await facade.getDashboardState()
@@ -86,10 +88,11 @@ describe('TriggerHubAppFacade read model validation', () => {
     const facade = new TriggerHubAppFacade(
       triggerEngine,
       macroEngine,
-      { obs: 'yes', spotify: false, clip: true } as unknown as {
+      { obs: 'yes', spotify: false, clip: true, twitch: true } as unknown as {
         obs: boolean
         spotify: boolean
         clip: boolean
+        twitch: boolean
       },
     )
 
@@ -128,7 +131,7 @@ describe('TriggerHubAppFacade read model validation', () => {
     const facade = new TriggerHubAppFacade(
       triggerEngine,
       macroEngine,
-      { obs: true, spotify: false, clip: true },
+      { obs: true, spotify: false, clip: true, twitch: true },
       pluginRegistry,
     )
 
@@ -160,6 +163,7 @@ describe('TriggerHubAppFacade read model validation', () => {
         obs: true,
         spotify: false,
         clip: true,
+        twitch: true,
       },
       triggerCount: 1,
       macroCount: 1,
@@ -181,7 +185,7 @@ describe('TriggerHubAppFacade persistence integration', () => {
     const facade = new TriggerHubAppFacade(
       triggerEngine,
       macroEngine,
-      { obs: false, spotify: false, clip: false },
+      { obs: false, spotify: false, clip: false, twitch: false },
       undefined,
       {
         persist: async () => {
@@ -227,7 +231,7 @@ describe('TriggerHubAppFacade persistence integration', () => {
     const facade = new TriggerHubAppFacade(
       triggerEngine,
       macroEngine,
-      { obs: false, spotify: false, clip: false },
+      { obs: false, spotify: false, clip: false, twitch: false },
       undefined,
       { persist: persistSpy },
     )
@@ -289,6 +293,8 @@ describe('TriggerHubAppFacade persistence integration', () => {
   it('delegates explicit runtime activation commands when available', async () => {
     const activateRuntime = vi.fn(async () => undefined)
     const deactivateRuntime = vi.fn(async () => undefined)
+    const connectTwitch = vi.fn(async (_channelName?: string) => undefined)
+    const disconnectTwitch = vi.fn(async () => undefined)
     const macroEngine = new MacroEngine(async () => undefined)
     const triggerEngine = new TriggerEngine(
       new InMemoryEventBus(),
@@ -300,17 +306,21 @@ describe('TriggerHubAppFacade persistence integration', () => {
     const facade = new TriggerHubAppFacade(
       triggerEngine,
       macroEngine,
-      { obs: false, spotify: false, clip: false },
+      { obs: false, spotify: false, clip: false, twitch: false },
       undefined,
       undefined,
       undefined,
-      { activateRuntime, deactivateRuntime },
+      { activateRuntime, deactivateRuntime, connectTwitch, disconnectTwitch },
     )
 
     await facade.activateRuntime()
     await facade.deactivateRuntime()
+    await facade.connectTwitch('streamer')
+    await facade.disconnectTwitch()
 
     expect(activateRuntime).toHaveBeenCalledTimes(1)
     expect(deactivateRuntime).toHaveBeenCalledTimes(1)
+    expect(connectTwitch).toHaveBeenCalledWith('streamer')
+    expect(disconnectTwitch).toHaveBeenCalledTimes(1)
   })
 })

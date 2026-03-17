@@ -1,11 +1,26 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
+console.info('[TriggerHub preload] preload start', {
+  location: typeof location === 'undefined' ? 'unknown' : location.href,
+})
+
 function isValidWindowCommand(command) {
   if (!command || typeof command !== 'object') {
     return false
   }
 
   return ['focus', 'minimize', 'toggle-fullscreen'].includes(command.type)
+}
+
+function registerUpdaterStateListener(listener) {
+  const wrappedListener = (_event, state) => {
+    listener(state)
+  }
+
+  ipcRenderer.on('updater:state', wrappedListener)
+  return () => {
+    ipcRenderer.removeListener('updater:state', wrappedListener)
+  }
 }
 
 contextBridge.exposeInMainWorld('triggerHubElectron', {
@@ -31,4 +46,29 @@ contextBridge.exposeInMainWorld('triggerHubElectron', {
       return ipcRenderer.invoke('window:command', command)
     },
   },
+  updater: {
+    getState: () => {
+      return ipcRenderer.invoke('updater:get-state')
+    },
+    checkForUpdates: () => {
+      return ipcRenderer.invoke('updater:check')
+    },
+    downloadUpdate: () => {
+      return ipcRenderer.invoke('updater:download')
+    },
+    installUpdate: () => {
+      return ipcRenderer.invoke('updater:install')
+    },
+    onStateChange: (listener) => {
+      if (typeof listener !== 'function') {
+        throw new Error('Updater listener must be a function')
+      }
+
+      return registerUpdaterStateListener(listener)
+    },
+  },
+})
+
+console.info('[TriggerHub preload] bridge exposed', {
+  keys: ['clipExporter', 'storage', 'windowControl', 'updater'],
 })

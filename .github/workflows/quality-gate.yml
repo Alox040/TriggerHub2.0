@@ -195,3 +195,19 @@ jobs:
           fi
 
           echo "Quality gate PASSED. All blocking checks succeeded."
+
+  deploy_website:
+    name: Deploy Website to Vercel
+    runs-on: ubuntu-latest
+    needs: [summary]
+    # Only deploy on direct pushes to release branches — not on PRs (avoids deploying unmerged code)
+    if: >
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/heads/release/') &&
+      needs.summary.result == 'success' &&
+      vars.VERCEL_DEPLOY_HOOK_URL != ''
+    env:
+      VERCEL_DEPLOY_HOOK_URL: ${{ vars.VERCEL_DEPLOY_HOOK_URL }}
+    steps:
+      - name: Trigger Vercel deployment
+        run: curl -fsS -X POST "$VERCEL_DEPLOY_HOOK_URL"

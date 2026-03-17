@@ -4,12 +4,21 @@ import {
   type ObsApiResponse,
   type ObsSetSceneRequest,
 } from './contracts'
+import type { EventBusPort } from '../../types'
 import { HttpClient, type HttpClientOptions } from '../shared'
+import OBSWebSocket from 'obs-websocket-js'
 
 export interface ObsTransport {
   connect(): Promise<void>
   disconnect(): Promise<void>
   setCurrentScene(sceneName: string): Promise<void>
+}
+
+export interface ObsWebSocketTransportOptions {
+  host: string
+  port: number
+  password?: string
+  eventBus: EventBusPort
 }
 
 export class InMemoryObsTransport implements ObsTransport {
@@ -60,5 +69,78 @@ export class ObsHttpTransport implements ObsTransport {
   public async setCurrentScene(sceneName: string): Promise<void> {
     const payload: ObsSetSceneRequest = { sceneName: normalizeObsSceneName(sceneName) }
     await this.http.post<ObsApiResponse>('/scene', payload, isObsApiResponse)
+  }
+}
+
+export class ObsWebSocketTransport implements ObsTransport {
+  private readonly client: OBSWebSocket
+  private connected = false
+
+  public constructor(private readonly options: ObsWebSocketTransportOptions) {
+    this.client = new OBSWebSocket()
+  }
+
+  public async connect(): Promise<void> {
+    if (this.connected) {
+      return
+    }
+
+    const url = `ws://${this.options.host}:${this.options.port}`
+
+    try {
+      await this.client.connect(url, this.options.password ? { password: this.options.password } : undefined)
+      this.connected = true
+
+      await this.options.eventBus.publish('obs:connected', {
+        host: this.options.host,
+        port: this.options.port,
+      })
+
+      this.registerEventHandlers()
+    } catch (error) {
+      this.connected = false
+      throw error
+    }
+  }
+
+  public async disconnect(): Promise<void> {
+    if (!this.connected) {
+      return
+    }
+
+    try {
+      await this.client.disconnect()
+    } finally {
+      this.connected = false
+      await this.options.eventBus.publish('obs:disconnected', {})
+    }
+  }
+
+  public async setCurrentScene(sceneName: string): Promise<void> {
+    if (!this.connected) {
+      throw new Error('OBS transport is not connected')
+    }
+
+    const normalizedSceneName = normalizeObsSceneName(sceneName)
+    await this.client.call('SetCurrentProgramScene', { sceneName: normalizedSceneName })
+  }
+
+  private registerEventHandlers(): void {
+    this.client.on('CurrentProgramSceneChanged', async (data: { sceneName?: string }) => {
+      const sceneName = typeof data.sceneName === 'string' ? data.sceneName : ''
+      const normalizedSceneName = normalizeObsSceneName(sceneName)
+      await this.options.eventBus.publish('obs:scene-changed', { sceneName: normalizedSceneName })
+    })
+
+    this.client.on('StreamStateChanged', async (data: { outputActive?: boolean }) => {
+      await this.options.eventBus.publish('obs:stream-state-changed', {
+        outputActive: Boolean(data.outputActive),
+      })
+    })
+
+    this.client.on('ConnectionClosed', async () => {
+      this.connected = false
+      await this.options.eventBus.publish('obs:disconnected', {})
+    })
   }
 }

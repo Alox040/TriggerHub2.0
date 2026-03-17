@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createAppModuleContainer } from '../app/bootstrap'
+import { DESKTOP_PREFERENCES_STORAGE_KEY } from '../app/storageBridge'
 import { InMemoryStorage } from '../storage/inMemoryStorage'
 import type { RuntimeConfig } from '../app/runtimeConfig'
 
@@ -274,6 +275,46 @@ describe('storage-backed runtime startup', () => {
     expect(state.activeMacros.filter((macro) => macro.id === 'macro-default-scene')).toHaveLength(1)
 
     await secondContainer.stop()
+  })
+
+  it('persists desktop launch preferences when runtime activation changes', async () => {
+    const storage = new InMemoryStorage()
+    const container = await createAppModuleContainer(storage)
+
+    await container.start()
+    await container.appFacade.activateRuntime()
+
+    const persistedPreferences = await storage.load<{
+      preferences?: { restoreRuntimeOnLaunch?: boolean; restoreTwitchConnection?: boolean }
+    }>(DESKTOP_PREFERENCES_STORAGE_KEY)
+
+    expect(persistedPreferences?.preferences).toEqual({
+      restoreRuntimeOnLaunch: true,
+      restoreTwitchConnection: true,
+    })
+  })
+
+  it('restores persisted desktop launch preferences on startup', async () => {
+    const storage = new InMemoryStorage()
+    await storage.save(DESKTOP_PREFERENCES_STORAGE_KEY, {
+      schema: 'triggerhub.desktop-preferences',
+      version: 1,
+      preferences: {
+        restoreRuntimeOnLaunch: true,
+        restoreTwitchConnection: true,
+      },
+    })
+
+    const container = await createAppModuleContainer(storage)
+    await container.start()
+
+    const state = await container.appFacade.getSettingsState()
+    expect(state.connectedServices.obs).toBe(true)
+    expect(state.connectedServices.spotify).toBe(true)
+    expect(state.connectedServices.clip).toBe(true)
+    expect(state.connectedServices.twitch).toBe(true)
+
+    await container.stop()
   })
 
   it('persists facade CRUD mutations when storage is available', async () => {

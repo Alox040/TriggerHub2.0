@@ -91,16 +91,20 @@ describe('Services', () => {
   it('Spotify service methods resolve', async () => {
     const spotify = createSpotifyService()
 
+    await spotify.connect()
     await expect(spotify.play()).resolves.toBeUndefined()
     await expect(spotify.nextTrack()).resolves.toBeUndefined()
     await expect(spotify.pause()).resolves.toBeUndefined()
   })
 
-  it('Clip service requires startCapture before saveClip', async () => {
+  it('Clip service requires connect before capture and startCapture before saveClip', async () => {
     const clip = new ClipService()
 
-    await expect(clip.saveClip()).rejects.toThrow('not active')
+    await expect(clip.startCapture()).rejects.toThrow('must be connected')
+    await expect(clip.saveClip()).rejects.toThrow('must be connected')
 
+    await clip.connect()
+    await expect(clip.saveClip()).rejects.toThrow('not active')
     await clip.startCapture()
     await expect(clip.saveClip()).resolves.toMatch(/^clips\/.+\.mp4$/)
   })
@@ -122,6 +126,7 @@ describe('Services', () => {
       timeoutMs: 10,
     })
 
+    await spotify.connect()
     await expect(spotify.play()).rejects.toBeInstanceOf(ServiceOperationError)
   })
 
@@ -129,6 +134,7 @@ describe('Services', () => {
     const dir = await mkdtemp(join(tmpdir(), 'triggerhub-clip-test-'))
     const clip = new ClipService(new FileSystemClipExporter({ outputDir: dir }))
 
+    await clip.connect()
     await clip.startCapture()
     const path = await clip.saveClip()
 
@@ -147,6 +153,7 @@ describe('Services', () => {
       timeoutMs: 100,
     })
 
+    await clip.connect()
     await clip.startCapture()
 
     await expect(clip.saveClip()).rejects.toBeInstanceOf(ServiceOperationError)
@@ -235,6 +242,7 @@ describe('Services', () => {
       http: { baseUrl: 'http://spotify.test', fetchImpl },
     })
 
+    await spotify.connect()
     await spotify.play()
     await spotify.nextTrack()
     await spotify.pause()
@@ -256,7 +264,40 @@ describe('Services', () => {
       policy: { retries: 0, timeoutMs: 100, retryDelayMs: 1 },
     })
 
+    await spotify.connect()
     await expect(spotify.play()).rejects.toBeInstanceOf(ServiceOperationError)
+  })
+
+  it('tracks explicit connection lifecycle for spotify, clip, obs, and twitch services', async () => {
+    const spotify = createSpotifyService()
+    const clip = createClipService()
+    const obs = createObsService()
+    const twitch = createTwitchService({ eventBus: new InMemoryEventBus() })
+
+    expect(spotify.isConnected()).toBe(false)
+    expect(clip.isConnected()).toBe(false)
+    expect(obs.isConnected()).toBe(false)
+    expect(twitch.isConnected()).toBe(false)
+
+    await spotify.connect()
+    await clip.connect()
+    await obs.connect()
+    await twitch.connect('TriggerHubChannel')
+
+    expect(spotify.isConnected()).toBe(true)
+    expect(clip.isConnected()).toBe(true)
+    expect(obs.isConnected()).toBe(true)
+    expect(twitch.isConnected()).toBe(true)
+
+    await spotify.disconnect()
+    await clip.disconnect()
+    await obs.disconnect()
+    await twitch.disconnect()
+
+    expect(spotify.isConnected()).toBe(false)
+    expect(clip.isConnected()).toBe(false)
+    expect(obs.isConnected()).toBe(false)
+    expect(twitch.isConnected()).toBe(false)
   })
 
   it('supports twitch connect and disconnect lifecycle', async () => {
@@ -282,6 +323,19 @@ describe('Services', () => {
       channelName: 'triggerhubchannel',
     })
     await expect(twitch.getStreamStatus()).rejects.toThrow('must be connected')
+  })
+
+  it('supports twitch lifecycle connect without an explicit channel when a default is configured', async () => {
+    const eventBus = new InMemoryEventBus()
+    const transport = new InMemoryTwitchTransport()
+    const twitch = new TwitchService(transport, eventBus, 60_000, 'TriggerHubChannel')
+
+    await twitch.connect()
+
+    expect(transport.getSnapshot()).toMatchObject({
+      connected: true,
+      channelName: 'triggerhubchannel',
+    })
   })
 
   it('emits twitch stream status events while polling', async () => {

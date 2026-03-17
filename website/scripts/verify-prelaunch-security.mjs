@@ -24,49 +24,14 @@ if (configuredSensitiveClientEnvKeys.length > 0) {
   )
 }
 
-if (appAccessMode !== 'private_prelaunch') {
+if (appAccessMode !== 'public_product') {
   throw new Error(
-    `Prelaunch security check failed: VITE_ACCESS_MODE must be explicitly set to private_prelaunch for this website build. Received: ${appAccessMode || '(missing)'}`,
+    `Website build check failed: VITE_ACCESS_MODE must be explicitly set to public_product for this website build. Received: ${appAccessMode || '(missing)'}`,
   )
 }
 
-if (appAccessMode === 'private_prelaunch') {
-  const requiredServerEnvKeys = [
-    'VITE_SESSION_TTL_MS',
-    'OWNER_LOGIN_USERNAME',
-    'OWNER_LOGIN_PASSWORD_HASH',
-    'OWNER_LOGIN_PASSWORD_SALT',
-    'OWNER_LOGIN_PASSWORD_ITERATIONS',
-    'OWNER_USER_ID',
-    'OWNER_EMAIL',
-    'PRELAUNCH_SESSION_SECRET',
-    'PRELAUNCH_ACCESS_KEY',
-    'PRELAUNCH_GATE_TTL_MS',
-  ]
-  const missingServerEnvKeys = requiredServerEnvKeys.filter((key) => {
-    const value = process.env[key]
-    return typeof value !== 'string' || value.trim().length === 0
-  })
+const sessionTtlMs = Number.parseInt((process.env.VITE_SESSION_TTL_MS ?? '').trim(), 10)
 
-  if (missingServerEnvKeys.length > 0) {
-    throw new Error(
-      `Prelaunch security check failed: required prelaunch auth env vars are missing: ${missingServerEnvKeys.join(', ')}`,
-    )
-  }
-
-  const positiveIntegerEnvKeys = ['VITE_SESSION_TTL_MS', 'OWNER_LOGIN_PASSWORD_ITERATIONS', 'PRELAUNCH_GATE_TTL_MS']
-  const invalidPositiveIntegerEnvKeys = positiveIntegerEnvKeys.filter((key) => {
-    const value = Number.parseInt((process.env[key] ?? '').trim(), 10)
-    return !Number.isFinite(value) || value <= 0
-  })
-
-  if (invalidPositiveIntegerEnvKeys.length > 0) {
-    throw new Error(
-      `Prelaunch security check failed: expected positive integer env values for ${invalidPositiveIntegerEnvKeys.join(', ')}`,
-    )
-  }
-
-  if ((process.env.PRELAUNCH_SESSION_SECRET ?? '').trim() === (process.env.PRELAUNCH_ACCESS_KEY ?? '').trim()) {
-    throw new Error('Prelaunch security check failed: PRELAUNCH_SESSION_SECRET and PRELAUNCH_ACCESS_KEY must differ.')
-  }
+if (!Number.isFinite(sessionTtlMs) || sessionTtlMs <= 0) {
+  throw new Error('Website build check failed: VITE_SESSION_TTL_MS must be set to a positive integer.')
 }

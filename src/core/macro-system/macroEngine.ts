@@ -55,8 +55,8 @@ export class MacroEngine implements MacroEnginePort {
     })
   }
 
-  public async removeMacro(macroId: string): Promise<void> {
-    this.macroMap.delete(macroId)
+  public removeMacro(macroId: string): boolean {
+    return this.macroMap.delete(macroId)
   }
 
   public async runMacro(macroId: string, options: MacroRunOptions = {}): Promise<void> {

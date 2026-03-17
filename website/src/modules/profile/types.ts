@@ -9,9 +9,11 @@ export interface ProfileRecord {
   updatedAt: number
 }
 
-export interface ProfileStore {
-  readAll(): ProfileRecord[]
-  writeAll(profiles: ProfileRecord[]): void
+export interface ProfileStoragePort {
+  getProfile(userId: string): Promise<ProfileRecord | null>
+  saveProfile(profile: ProfileRecord): Promise<void>
+  updateProfile(profile: ProfileRecord): Promise<void>
+  deleteProfile(userId: string): Promise<void>
 }
 
 export interface ProfileCacheStore {

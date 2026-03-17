@@ -17,6 +17,8 @@ describe('DashboardPage UI', () => {
       status: {
         obsConnected: true,
         spotifyConnected: true,
+        clipConnected: false,
+        twitchConnected: true,
       },
     }
 
@@ -27,15 +29,16 @@ describe('DashboardPage UI', () => {
         activeNavId="dashboard"
         onSelectNav={() => undefined}
         onToggleTrigger={() => undefined}
+        runtimeLog={[]}
       />,
     )
 
     expect(html).toContain('Main Dashboard')
-    expect(html).toContain('Editor')
+    expect(html).toContain('Triggers')
+    expect(html).toContain('Macros')
     expect(html).toContain('Trigger Controls')
-    expect(html).toContain('Active Automations')
-    expect(html).toContain('Operations Overview')
     expect(html).toContain('Starting Soon')
-    expect(html).toContain('BRB Sequence')
+    expect(html).toContain('Clip not connected')
+    expect(html).toContain('Twitch connected')
   })
 })

@@ -4,7 +4,6 @@ import { createServerBackedSession } from '../../modules/auth/backendSession'
 import type { AuthSession, LoginRequest } from '../../modules/auth/types'
 import type { AuthIdentity } from '../../modules/access-control/types'
 import type { BackendAuthApi } from '../../modules/auth/backendAuthContract'
-import { usePrelaunchGate } from './PrelaunchGateProvider'
 
 interface AuthContextValue {
   session: AuthSession | null
@@ -111,21 +110,14 @@ const backendAuthApi: BackendAuthApi = {
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { isGateEnabled, isGateInitializing, isGateOpen } = usePrelaunchGate()
   const [session, setSession] = useState<AuthSession | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
   const [authUnavailableReason, setAuthUnavailableReason] = useState<string | null>(null)
 
   useEffect(() => {
-    if (isGateEnabled && isGateInitializing) {
-      return
-    }
-
-    if (isGateEnabled && !isGateOpen) {
-      setSession(null)
-      setAuthUnavailableReason(null)
-      setIsInitializing(false)
-      return
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('th.website.auth.session.v1')
+      window.localStorage.removeItem('th.website.auth.session.guard.v1')
     }
 
     let isActive = true
@@ -162,7 +154,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       isActive = false
     }
-  }, [isGateEnabled, isGateInitializing, isGateOpen])
+  }, [])
 
   const value = useMemo<AuthContextValue>(
     () => ({

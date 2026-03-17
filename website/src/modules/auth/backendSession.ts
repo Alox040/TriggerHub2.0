@@ -30,7 +30,7 @@ export const isOwnerSessionSnapshot = (value: unknown): value is BackendSessionS
 
 export const createServerBackedSession = (session: BackendSessionSnapshot): AuthSession => {
   if (!isOwnerSessionSnapshot(session)) {
-    throw new AuthError('Backend session snapshot is invalid for owner-only prelaunch mode')
+    throw new AuthError('Backend session snapshot is invalid for owner-only auth mode')
   }
 
   const issuedAt = Date.parse(session.issuedAt)

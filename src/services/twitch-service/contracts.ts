@@ -15,12 +15,6 @@ export interface TwitchChannelInfo {
 
 export type TwitchEvent = 'twitch:stream-live' | 'twitch:stream-offline'
 
-export interface TwitchServicePort {
-  connect(channelName: string): Promise<void>
-  disconnect(): Promise<void>
-  getStreamStatus(): Promise<StreamStatus>
-}
-
 export class TwitchServiceError extends Error {
   public constructor(message: string) {
     super(message)

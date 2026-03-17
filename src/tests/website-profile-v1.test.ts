@@ -2,14 +2,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import crypto from 'node:crypto'
 import os from 'node:os'
 import path from 'node:path'
+import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import gateLoginHandler from '../../website/api/prelaunch-gate/login'
 import gateMeHandler from '../../website/api/prelaunch-gate/me'
 import authLoginHandler from '../../website/api/auth/login'
 import profileHandler from '../../website/api/profile/me'
 import { resetInMemorySecurityGuardsForTests } from '../../website/api/_security'
-import { resetProfileStoreForTests } from '../../website/api/_profile'
+import { resetProfileStoreForTests, setProfileStorageForTests } from '../../website/api/_profile'
+import { FileProfileStorage } from '../../website/src/modules/profile/fileProfileStorage'
 import { ProfileService, ProfileServiceError } from '../../website/src/modules/profile/profileService'
-import type { ProfileCacheStore, UserProfileView } from '../../website/src/modules/profile/types'
+import type { ProfileCacheStore, ProfileRecord, ProfileStoragePort, UserProfileView } from '../../website/src/modules/profile/types'
 import { ProfileValidationError } from '../../website/src/modules/profile/validation'
 
 interface MockRequestInit {
@@ -92,7 +94,31 @@ const createMemoryCacheStore = (): ProfileCacheStore => {
   }
 }
 
+const createMemoryProfileStorage = (): ProfileStoragePort & { records: Map<string, ProfileRecord> } => {
+  const records = new Map<string, ProfileRecord>()
+
+  return {
+    records,
+    getProfile: async (userId) => records.get(userId) ?? null,
+    saveProfile: async (profile) => {
+      records.set(profile.userId, { ...profile })
+    },
+    updateProfile: async (profile) => {
+      if (!records.has(profile.userId)) {
+        return
+      }
+
+      records.set(profile.userId, { ...profile })
+    },
+    deleteProfile: async (userId) => {
+      records.delete(userId)
+    },
+  }
+}
+
 describe('website profile v2', () => {
+  let profileStorage: ReturnType<typeof createMemoryProfileStorage>
+
   const originalEnv = {
     accessMode: process.env.VITE_ACCESS_MODE,
     sessionTtlMs: process.env.VITE_SESSION_TTL_MS,
@@ -125,9 +151,9 @@ describe('website profile v2', () => {
     process.env.PRELAUNCH_SESSION_SECRET = 'test-session-secret'
     process.env.PRELAUNCH_ACCESS_KEY = 'test-access-key'
     process.env.PRELAUNCH_GATE_TTL_MS = '43200000'
-    process.env.PROFILE_STORE_PATH = path.join(os.tmpdir(), `triggerhub-profile-test-${crypto.randomUUID()}.json`)
+    profileStorage = createMemoryProfileStorage()
+    setProfileStorageForTests(profileStorage)
     resetInMemorySecurityGuardsForTests()
-    await resetProfileStoreForTests()
   })
 
   afterEach(async () => {
@@ -144,6 +170,7 @@ describe('website profile v2', () => {
     process.env.PRELAUNCH_GATE_TTL_MS = originalEnv.gateTtlMs
     process.env.PROFILE_STORE_PATH = originalEnv.profileStorePath
     resetInMemorySecurityGuardsForTests()
+    setProfileStorageForTests()
     await resetProfileStoreForTests()
     vi.restoreAllMocks()
   })
@@ -215,6 +242,12 @@ describe('website profile v2', () => {
         role: 'owner',
       },
     })
+    expect(profileStorage.records.get('owner')).toMatchObject({
+      userId: 'owner',
+      displayName: 'Owner',
+      avatarUrl: '',
+      bio: '',
+    })
   })
 
   it('updates the current profile through the API with csrf validation and persists the result', async () => {
@@ -256,6 +289,12 @@ describe('website profile v2', () => {
         bio: 'Server-backed profile',
         role: 'owner',
       },
+    })
+    expect(profileStorage.records.get('owner')).toMatchObject({
+      userId: 'owner',
+      displayName: 'Owner Updated',
+      avatarUrl: 'https://example.com/avatar.png',
+      bio: 'Server-backed profile',
     })
   })
 
@@ -348,5 +387,47 @@ describe('website profile v2', () => {
         bio: '',
       }),
     ).rejects.toBeInstanceOf(ProfileValidationError)
+  })
+})
+
+describe('FileProfileStorage', () => {
+  it('persists profiles in the legacy JSON file format', async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'triggerhub-profile-storage-'))
+    const storePath = path.join(tempDir, 'profiles.json')
+    const storage = new FileProfileStorage({ storePath })
+    const now = Date.now()
+
+    try {
+      await storage.saveProfile({
+        userId: 'owner',
+        displayName: 'Owner',
+        avatarUrl: '',
+        bio: 'Persisted',
+        createdAt: now,
+        updatedAt: now,
+      })
+
+      expect(await storage.getProfile('owner')).toEqual({
+        userId: 'owner',
+        displayName: 'Owner',
+        avatarUrl: '',
+        bio: 'Persisted',
+        createdAt: now,
+        updatedAt: now,
+      })
+
+      expect(JSON.parse(await readFile(storePath, 'utf8'))).toEqual([
+        {
+          userId: 'owner',
+          displayName: 'Owner',
+          avatarUrl: '',
+          bio: 'Persisted',
+          createdAt: now,
+          updatedAt: now,
+        },
+      ])
+    } finally {
+      await rm(tempDir, { recursive: true, force: true })
+    }
   })
 })

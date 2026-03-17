@@ -62,7 +62,7 @@ export interface TriggerGraphPort {
 export interface MacroEnginePort {
   registerMacro(macro: Macro): Promise<void>
   updateMacro(macro: Macro): Promise<void>
-  removeMacro(macroId: string): Promise<void>
+  removeMacro(macroId: string): boolean
   getMacroById(macroId: string): MacroDefinition | undefined
   getAllMacros(): MacroDefinition[]
   runMacro(macroId: string, options?: MacroRunOptions): Promise<void>
@@ -76,23 +76,31 @@ export interface AppControllerPort {
 export interface ObsServicePort {
   connect(): Promise<void>
   disconnect(): Promise<void>
+  isConnected(): boolean
   switchScene(sceneName: string): Promise<void>
 }
 
 export interface SpotifyServicePort {
+  connect(): Promise<void>
+  disconnect(): Promise<void>
+  isConnected(): boolean
   play(): Promise<void>
   pause(): Promise<void>
   nextTrack(): Promise<void>
 }
 
 export interface ClipServicePort {
+  connect(): Promise<void>
+  disconnect(): Promise<void>
+  isConnected(): boolean
   startCapture(): Promise<void>
   saveClip(): Promise<string>
 }
 
 export interface TwitchServicePort {
-  connect(channelName: string): Promise<void>
+  connect(channelName?: string): Promise<void>
   disconnect(): Promise<void>
+  isConnected(): boolean
   getStreamStatus(): Promise<{
     channelName: string
     isLive: boolean
@@ -143,4 +151,6 @@ export interface AppFacadePort {
   deleteMacro(macroId: string): Promise<void>
   activateRuntime(): Promise<void>
   deactivateRuntime(): Promise<void>
+  connectTwitch(channelName?: string): Promise<void>
+  disconnectTwitch(): Promise<void>
 }

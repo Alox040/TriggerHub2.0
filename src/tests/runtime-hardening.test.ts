@@ -116,7 +116,7 @@ describe('runtime hardening', () => {
         macroEngine: {
           registerMacro: async () => undefined,
           updateMacro: async () => undefined,
-          removeMacro: async () => undefined,
+          removeMacro: () => false,
           getMacroById: () => undefined,
           getAllMacros: () => [],
           runMacro: async () => undefined,

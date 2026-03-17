@@ -3,6 +3,7 @@ import type {
   MacroStep as CoreMacroStep,
 } from '../core/macro-system/macroTypes'
 import type { GraphTrigger } from '../core/trigger-engine/triggerGraphTypes'
+import type { ObsRuntimeConfig, TwitchRuntimeConfig } from '../app/runtimeConfig'
 
 export interface Trigger {
   id: string
@@ -18,6 +19,7 @@ export interface DashboardState {
     obs: boolean
     spotify: boolean
     clip: boolean
+    twitch: boolean
   }
   activeTriggers: Trigger[]
   activeMacros: Macro[]
@@ -42,9 +44,12 @@ export interface SettingsState {
     obs: boolean
     spotify: boolean
     clip: boolean
+    twitch: boolean
   }
   triggerCount: number
   macroCount: number
+  twitchConfig: TwitchRuntimeConfig
+  obsConfig: ObsRuntimeConfig
 }
 
 /** Well-known event topic strings. Use as constants in publish/subscribe calls. */
