@@ -38,6 +38,20 @@ Diese Werte passen zum vorhandenen Projekt:
 - Build Command: `npm run build`
 - Output Directory: `dist`
 
+### 1.1 Verknuepfung mit dem richtigen Vercel-Projekt
+
+Wichtig ist, dass die Custom Domain **nicht** mit einem separaten App-/Test-Projekt, sondern mit genau dem Projekt verknuepft ist, das die Website aus `website/` baut:
+
+- im Vercel-Dashboard sicherstellen, dass:
+  - unter **Settings → General → Root Directory** der Wert `website` gesetzt ist
+  - unter **Settings → General → Framework Preset** der Wert `Vite` gesetzt ist
+  - unter **Settings → General → Build & Output Settings**:
+    - **Build Command** = `npm run build`
+    - **Output Directory** = `dist`
+- unter **Settings → Domains** pruefen, dass:
+  - die Domain(s) (`triggerhub.de`, `www.triggerhub.de`) diesem Website-Projekt zugeordnet sind
+  - kein anderes Vercel-Projekt dieselbe Domain eingetragen hat
+
 ### 2. Environment Variables setzen
 
 Pflichtwerte laut `website/.env.example`, `website/README.md` und `website/scripts/verify-prelaunch-security.mjs`:
@@ -153,8 +167,9 @@ Wenn die DNS-Verwaltung ausserhalb von Vercel liegt, ist das uebliche Setup:
 - Wert: `cname.vercel-dns.com`
 
 Wichtig:
-
+ 
 - massgeblich sind immer die Werte, die Vercel im Domain-Dialog fuer `triggerhub.de` anzeigt
+- die Domain muss eindeutig **diesem** Website-Projekt (Root Directory `website`) zugeordnet sein, nicht einem separaten Desktop-/App-Projekt
 
 ## Redirect www -> root
 
@@ -232,6 +247,48 @@ npm --prefix website run build
 ```
 
 Das verifiziert den Vite-Produktions-Build lokal. Die API-Routen unter `website/api/` werden im Hosting-Fall von Vercel als Functions ausgefuehrt.
+
+## Manuelle Korrektur in Vercel (Schritt-fuer-Schritt)
+
+1. Im Vercel-Dashboard das **Website-Projekt** fuer `TriggerHub 2.0` oeffnen.
+2. Unter **Settings → General**:
+   - **Root Directory** = `website`
+   - **Framework Preset** = `Vite`
+   - **Build Command** = `npm run build`
+   - **Output Directory** = `dist`
+3. Unter **Settings → Environment Variables** mindestens setzen:
+   - `VITE_ACCESS_MODE=public_product`
+   - `VITE_SESSION_TTL_MS=<positiver Integer, z.B. 600000>`
+   - optional: Owner-/Security-Variablen (`OWNER_*`, `PRELAUNCH_SESSION_SECRET`) entsprechend `website/.env.example`
+4. Unter **Settings → Domains**:
+   - `triggerhub.de` und `www.triggerhub.de` zu diesem Website-Projekt hinzufuegen
+   - die Root-Domain `triggerhub.de` als **Primary** markieren
+   - sicherstellen, dass kein anderes Vercel-Projekt diese Domains eingetragen hat
+5. Neues Production-Deployment ausloesen (z.B. via „Redeploy“ oder neuen Commit).
+
+## Post-Deploy Smoketest
+
+Nach erfolgreichem Deployment im Browser und per HTTP-Client pruefen:
+
+- Oeffentliche Seiten:
+  - `https://triggerhub.de/`
+  - `https://triggerhub.de/features`
+  - `https://triggerhub.de/pricing`
+  - `https://triggerhub.de/about`
+  - `https://triggerhub.de/impressum`
+  - `https://triggerhub.de/datenschutz`
+  - `https://triggerhub.de/imprint`
+  - `https://triggerhub.de/privacy`
+- Basis-App-/Auth-Routen:
+  - `https://triggerhub.de/login` (Landing + Login-Flow sichtbar)
+  - `https://triggerhub.de/app` (App-Shell laedt)
+- API-Endpunkte (Statuscodes + JSON grob verifizieren):
+  - `https://triggerhub.de/api/auth/me`
+  - `https://triggerhub.de/api/auth/login`
+  - `https://triggerhub.de/api/auth/logout`
+  - `https://triggerhub.de/api/profile/me`
+
+Wenn diese Aufrufe erwartungsgemaess funktionieren und im Vercel-Projekt-Log das Website-Projekt mit Root Directory `website` angezeigt wird, ist die Domain korrekt mit der Website verknuepft.
 
 ## Quellenbasis
 
