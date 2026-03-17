@@ -2,8 +2,8 @@
   "meta": {
     "title": "TriggerHub 2.0 – Geschlossene Alpha für Stream-Automatisierung",
     "description": "TriggerHub 2.0 ist eine geschlossene Alpha-Windows-Desktop-App für Streamer und Creator. OBS-, Spotify- und Automations-Workflows sind begrenzt, experimentell und in aktiver Entwicklung, während wir diese Vorschau stabilisieren.",
-    "ogTitle": "TriggerHub | Automatisiere deinen Stream-Workflow",
-    "ogDescription": "Eine Windows-Desktop-Automatisierung für Streamer und Creator. Verbinde OBS, Spotify und deine Tools in einem lokalen Workflow-Hub."
+    "ogTitle": "TriggerHub 2.0 – Geschlossene Alpha für Stream-Automatisierung",
+    "ogDescription": "Geschlossene Alpha-Desktop-Automatisierung für PC-Streamer. Kernmodule für Trigger und Makros funktionieren; OBS-, Spotify- und Clip-Tools sind vorhanden, werden aber noch verdrahtet und gehärtet."
   },
   "languageSwitcher": {
     "label": "Sprache",

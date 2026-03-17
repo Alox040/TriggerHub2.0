@@ -2,8 +2,8 @@
   "meta": {
     "title": "TriggerHub 2.0 – Closed Alpha for stream automation",
     "description": "TriggerHub 2.0 is a closed-alpha Windows desktop app for streamers and creators. OBS, Spotify, and automation workflows are limited, experimental, and in active development while we stabilize this preview release.",
-    "ogTitle": "TriggerHub | Automate your stream workflow",
-    "ogDescription": "A Windows desktop automation tool for streamers and creators. Connect OBS, Spotify, and your tools in one local workflow hub."
+    "ogTitle": "TriggerHub 2.0 – Closed Alpha for stream automation",
+    "ogDescription": "Closed-alpha Windows desktop automation for PC streamers. Core trigger and macro modules work; OBS, Spotify, and clip tooling are present but still being wired and hardened."
   },
   "languageSwitcher": {
     "label": "Language",
@@ -37,9 +37,9 @@
     "seeCapabilities": "See what's built"
   },
   "landing": {
-    "hero": {
+      "hero": {
       "title": "TriggerHub 2.0 Closed Alpha: Automate your stream. Stay focused live.",
-      "description": "TriggerHub 2.0 wires OBS, Spotify, scenes, and overlays through triggers and macros so you can automate the stream start-to-clip workflow. Automations run locally with no cloud relay.",
+      "description": "TriggerHub 2.0 is a closed-alpha Windows desktop app that is designed to wire OBS, Spotify, scenes, and overlays through triggers and macros. Core automation modules work today, while integrations and end-to-end workflows are still being implemented and stabilized. Automations execute locally with no cloud relay when wired.",
       "proofPoints": [
         "Desktop automation tuned for Windows stream setups",
         "Local runtime keeps OBS, music, and clips in sync",
@@ -60,7 +60,7 @@
       "workflow": {
         "eyebrow": "How it works",
         "title": "Three steps from event to action.",
-        "description": "This workflow outline shows the intended flow from event to action so you can follow each stage confidently."
+        "description": "This workflow outline shows the intended flow from event to action. In the current alpha, some steps are only partially implemented or may require manual workarounds until more of the runtime wiring is complete."
       },
       "extensions": {
         "eyebrow": "Where it's headed",
