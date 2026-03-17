@@ -3,23 +3,19 @@ import { Header } from '../layout/Header'
 import { MainLayout } from '../layout/MainLayout'
 import { Sidebar } from '../layout/Sidebar'
 import type { DashboardViewModel } from '../types'
+import type { AppNavigationItem, AppViewId } from '../navigation'
 
 interface DashboardPageProps {
   viewModel: DashboardViewModel
-  activeNavId: string
-  onSelectNav: (id: string) => void
+  navItems: AppNavigationItem[]
+  activeNavId: AppViewId
+  onSelectNav: (id: AppViewId) => void
   onToggleTrigger: (triggerId: string) => void
 }
 
-const navItems = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'scenes', label: 'Scenes & Sources' },
-  { id: 'triggers', label: 'Quick Triggers' },
-  { id: 'automations', label: 'Automations' },
-]
-
 export const DashboardPage = ({
   viewModel,
+  navItems,
   activeNavId,
   onSelectNav,
   onToggleTrigger,
@@ -40,6 +36,8 @@ export const DashboardPage = ({
             <StatusBar
               obsConnected={viewModel.status.obsConnected}
               spotifyConnected={viewModel.status.spotifyConnected}
+              clipConnected={viewModel.status.clipConnected}
+              twitchConnected={viewModel.status.twitchConnected}
             />
           </div>
         </>
@@ -54,6 +52,12 @@ export const DashboardPage = ({
                   <div style={{ fontSize: 11, color: 'var(--th-text-muted)' }}>{item.detail}</div>
                 </div>
               ))}
+            </div>
+          </PanelCard>
+          <PanelCard title="Operations Overview">
+            <div style={{ display: 'grid', gap: 8, color: 'var(--th-text-secondary)', fontSize: 12 }}>
+              <div>{viewModel.triggers.length} trigger actions available from the dashboard.</div>
+              <div>{viewModel.automations.length} macros currently registered in the runtime.</div>
             </div>
           </PanelCard>
         </div>
