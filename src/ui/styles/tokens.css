@@ -1,14 +1,38 @@
+/**
+ * TriggerHub Electron UI Tokens — alias bridge
+ *
+ * These --th-* tokens are the public API consumed by Electron UI components.
+ * Values delegate to the shared design-system primitives where equivalent,
+ * and define their own where the Electron surface scale differs.
+ *
+ * Source of truth for the underlying values: website/src/styles/theme.css
+ */
 :root {
-  --th-bg-shell: #0e0e11;
-  --th-bg-main: #121214;
-  --th-bg-panel: #18181b;
-  --th-border-subtle: rgba(255, 255, 255, 0.04);
+  /* ── Backgrounds (Electron surface scale) ────────────────────────── */
+  --th-bg-shell: #0e0e11;   /* outermost chrome, slightly darker than web --background */
+  --th-bg-main: #121214;    /* content canvas */
+  --th-bg-panel: #18181b;   /* panels, cards, sidebar items */
+
+  /* ── Borders ─────────────────────────────────────────────────────── */
+  --th-border-subtle: rgba(255, 255, 255, 0.04); /* = --sidebar-border */
   --th-border-weak: rgba(255, 255, 255, 0.1);
-  --th-text-primary: #f4f4f5;
+
+  /* ── Text ────────────────────────────────────────────────────────── */
+  --th-text-primary: #f4f4f5;   /* = --foreground */
   --th-text-secondary: #a1a1aa;
   --th-text-muted: #71717a;
-  --th-accent: #2dd4bf;
+
+  /* ── Brand accent ────────────────────────────────────────────────── */
+  --th-accent: #0EA5E9;   /* = --primary */
+  --th-accent-subtle: rgba(14, 165, 233, 0.1);
+  --th-accent-border: rgba(14, 165, 233, 0.3);
+
+  /* ── Semantic ────────────────────────────────────────────────────── */
+  --th-success: #10B981;
+  --th-warning: #F59E0B;
   --th-danger: #fb7185;
+
+  /* ── Radius ──────────────────────────────────────────────────────── */
   --th-radius-md: 10px;
   --th-radius-lg: 16px;
 }

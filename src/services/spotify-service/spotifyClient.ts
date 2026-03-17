@@ -1,7 +1,8 @@
-import { isSpotifyApiResponse, type SpotifyApiResponse } from './contracts'
+import { isSpotifyApiResponse, isSpotifyUserProfile, type SpotifyApiResponse } from './contracts'
 import { HttpClient, type HttpClientOptions } from '../shared'
 
 export interface SpotifyTransport {
+  connect(): Promise<void>
   play(): Promise<void>
   pause(): Promise<void>
   nextTrack(): Promise<void>
@@ -29,6 +30,11 @@ export class InMemorySpotifyTransport implements SpotifyTransport {
       trackIndex: this.trackIndex,
     }
   }
+
+  public async connect(): Promise<void> {
+    this.playing = true
+    this.trackIndex = 0
+  }
 }
 
 export interface SpotifyHttpTransportOptions extends HttpClientOptions {}
@@ -38,6 +44,10 @@ export class SpotifyHttpTransport implements SpotifyTransport {
 
   public constructor(options: SpotifyHttpTransportOptions) {
     this.http = new HttpClient(options)
+  }
+
+  public async connect(): Promise<void> {
+    await this.http.get<SpotifyUserProfile>('/me', isSpotifyUserProfile)
   }
 
   public async play(): Promise<void> {

@@ -1,36 +1,45 @@
+import type { AppViewId } from '../navigation'
+
 interface SidebarItem {
-  id: string
+  id: AppViewId
   label: string
+  description?: string
+  icon?: (props: { size?: number }) => JSX.Element
 }
 
 interface SidebarProps {
   items: SidebarItem[]
-  activeId: string
-  onSelect: (id: string) => void
+  activeId: AppViewId
+  onSelect: (id: AppViewId) => void
 }
 
 export const Sidebar = ({ items, activeId, onSelect }: SidebarProps): JSX.Element => {
   return (
     <aside className="th-sidebar">
-      <div style={{ padding: '4px 8px 12px 8px', color: 'var(--th-text-secondary)', fontSize: 12 }}>Navigation</div>
-      <nav style={{ display: 'grid', gap: 6 }}>
+      <div className="th-sidebar__title">Navigation</div>
+      <nav className="th-sidebar__nav">
         {items.map((item) => {
           const active = item.id === activeId
+          const Icon = item.icon
+          const classes = ['th-sidebar__item', active ? 'th-sidebar__item--active' : null]
+            .filter(Boolean)
+            .join(' ')
+
           return (
             <button
               key={item.id}
               onClick={() => onSelect(item.id)}
-              style={{
-                border: `1px solid ${active ? 'var(--th-border-weak)' : 'transparent'}`,
-                borderRadius: 'var(--th-radius-md)',
-                background: active ? 'var(--th-bg-panel)' : 'transparent',
-                color: active ? 'var(--th-text-primary)' : 'var(--th-text-secondary)',
-                textAlign: 'left',
-                padding: '10px 12px',
-                cursor: 'pointer',
-              }}
+              title={item.description}
+              className={classes}
+              type="button"
+              aria-current={active ? 'page' : undefined}
             >
-              {item.label}
+              {Icon ? (
+                <span className="th-sidebar__icon">
+                  <Icon size={16} />
+                </span>
+              ) : null}
+              <span>{item.label}</span>
             </button>
           )
         })}
