@@ -1,0 +1,332 @@
+{
+  "meta": {
+    "title": "TriggerHub | Automate your stream workflow",
+    "description": "TriggerHub is a Windows desktop app for streamers. Build trigger-macro automations that connect OBS, Spotify, and your tools and runs locally, no cloud required.",
+    "ogTitle": "TriggerHub | Automate your stream workflow",
+    "ogDescription": "A Windows desktop automation tool for streamers and creators. Connect OBS, Spotify, and your tools in one local workflow hub."
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "english": "EN",
+    "german": "DE",
+    "switchToEnglish": "Switch to English",
+    "switchToGerman": "Switch to German"
+  },
+  "header": {
+    "logo": "TRIGGERHUB",
+    "tagline": "Desktop automation for streamers",
+    "protectedAccess": "Sign in"
+  },
+  "nav": {
+    "benefits": "Benefits",
+    "features": "Features",
+    "howItWorks": "How it works",
+    "extensions": "Extensions",
+    "faq": "FAQ"
+  },
+  "footer": {
+    "productInfo": "TriggerHub is a Windows desktop automation tool for streamers and creators. Currently in early access; the core engine is built, integrations are in active development.",
+    "product": "Product",
+    "links": "Links",
+    "githubRepository": "GitHub repository",
+    "protectedAccess": "Sign in"
+  },
+  "hero": {
+    "badge": "Windows desktop - Early access",
+    "requestAccess": "Request access",
+    "seeCapabilities": "See what's built"
+  },
+  "landing": {
+    "hero": {
+      "title": "Automate your stream. Stay focused live.",
+      "description": "TriggerHub is a Windows desktop app that connects OBS, Spotify, and your streaming tools through triggers and macros. Automations run locally on your machine, nothing in the cloud between you and your setup.",
+      "proofPoints": [
+        "Built for Windows streaming setups",
+        "Fully local, no cloud",
+        "Closed early access"
+      ]
+    },
+    "sections": {
+      "benefits": {
+        "eyebrow": "Why it matters",
+        "title": "Less manual work. More time actually streaming.",
+        "description": "TriggerHub handles the repetitive parts of your stream setup so you can stay focused on what's in front of the camera."
+      },
+      "features": {
+        "eyebrow": "What's built",
+        "title": "Core automation, built for live setups.",
+        "description": "The trigger engine and macro system are already working. OBS and Spotify adapters are in the codebase and actively being improved."
+      },
+      "workflow": {
+        "eyebrow": "How it works",
+        "title": "Three steps from event to action.",
+        "description": "Every automation in TriggerHub follows the same model: detect an event, apply conditions, run the action locally."
+      },
+      "extensions": {
+        "eyebrow": "Where it's headed",
+        "title": "The foundation supports more than the current scope.",
+        "description": "Plugin scaffolding, clip modules, and a local runtime are already in the codebase. These are natural next directions, not roadmap promises."
+      },
+      "trust": {
+        "eyebrow": "Why trust it",
+        "title": "Built on real implementation, not mockups.",
+        "description": "Every claim on this page is backed by code in the repository."
+      },
+      "faq": {
+        "eyebrow": "FAQ",
+        "title": "Straight answers about TriggerHub.",
+        "description": "What it is today, what's in development, and what it isn't."
+      }
+    },
+    "benefits": {
+      "items": [
+        {
+          "title": "No more manual switching",
+          "description": "Set up the routine once. When your stream starts, the right scene loads, the music kicks in, and your tools respond without touching anything."
+        },
+        {
+          "title": "Runs entirely on your machine",
+          "description": "TriggerHub has no cloud backend for automations. Everything executes locally, delivering low latency, no external dependency, no privacy concerns."
+        },
+        {
+          "title": "One workflow system for your whole setup",
+          "description": "Triggers, conditions, macros, and actions share a single workflow model. You manage one context instead of juggling three interfaces."
+        }
+      ]
+    },
+    "featureCards": {
+      "items": [
+        {
+          "title": "Trigger engine",
+          "description": "Define the event that kicks off a workflow. Stream status changes, hotkeys, timed events; the engine picks up the signal and starts execution.",
+          "bullets": [
+            "Event-topic based dispatch",
+            "Condition checks before any action runs",
+            "Designed for repeating creator routines"
+          ]
+        },
+        {
+          "title": "Macro system",
+          "description": "Group actions into sequences you can reuse across workflows. Run steps in order, in parallel, or conditionally, built once, applied anywhere.",
+          "bullets": [
+            "Sequential, parallel, and conditional steps",
+            "Reusable across multiple workflows",
+            "Handles multi-step automations cleanly"
+          ]
+        },
+        {
+          "title": "Service adapters (in development)",
+          "description": "Early adapters for OBS and Spotify are in the codebase. Twitch has polling-based stream status detection. These are actively being hardened, not yet production-stable.",
+          "bullets": [
+            "OBS adapter in development",
+            "Spotify adapter in development",
+            "Clip modules and plugin scaffolding included"
+          ]
+        }
+      ]
+    },
+    "workflowSteps": {
+      "items": [
+        {
+          "title": "Pick your trigger",
+          "description": "Choose the event that starts the automation, a stream going live, a hotkey, a scene change. That's your entry point."
+        },
+        {
+          "title": "Define the logic",
+          "description": "Add conditions to control when the automation should continue. Chain steps into a macro that runs exactly how you configured it."
+        },
+        {
+          "title": "Run the action locally",
+          "description": "The automation executes on your machine. OBS switches, Spotify plays, your tools respond with no cloud relay, no added latency."
+        }
+      ]
+    },
+    "trustItems": {
+      "items": [
+        {
+          "title": "Desktop-first, not cloud-first",
+          "description": "TriggerHub runs on your machine. There is no cloud backend in the automation execution path."
+        },
+        {
+          "title": "Core modules are shipped",
+          "description": "The trigger engine, macro system, and service adapter scaffolding are in the repository and working."
+        },
+        {
+          "title": "Local execution",
+          "description": "Automations don't leave your machine. No keys sent to third parties, no network dependency when an action fires."
+        },
+        {
+          "title": "Tested build pipeline",
+          "description": "Automated tests and a production build pipeline cover both the website and the desktop codebase."
+        }
+      ]
+    },
+    "extensionCards": {
+      "items": [
+        {
+          "title": "Touch-surface control",
+          "description": "The architecture already points toward a secondary display or tablet control surface. Soundboard-style stream control is a natural extension of the current desktop model.",
+          "bullets": [
+            "Second-screen or tablet operation is a documented target direction",
+            "Soundboard workflows are referenced in project docs",
+            "Extends the desktop control model; doesn't shift it"
+          ]
+        },
+        {
+          "title": "Richer clip workflows",
+          "description": "Clip export modules and a plugin system are already in the codebase. A more capable clip pipeline with auto-save, processing, editor integration follows naturally from there.",
+          "bullets": [
+            "Clip export is already part of the repository scope",
+            "Plugin system exists as an extension point",
+            "Content tooling improvements are on the roadmap"
+          ]
+        },
+        {
+          "title": "AI-assisted post-production",
+          "description": "The roadmap mentions AI-assisted creator workflows as a later direction. A future plugin for clip refinement, tagging, and publishing fits the existing architecture, framed as possible, not current.",
+          "bullets": [
+            "Positioned as a possible extension, not a current feature",
+            "Grounded in roadmap notes about AI-assisted workflows",
+            "Keeps the product honest while showing where it can go"
+          ]
+        }
+      ]
+    },
+    "faq": {
+      "items": [
+        {
+          "question": "What is TriggerHub today?",
+          "answer": "A Windows desktop automation app in early access. The trigger engine and macro system work. OBS and Spotify adapters are in the codebase and being actively developed."
+        },
+        {
+          "question": "Which integrations are working right now?",
+          "answer": "OBS and Spotify adapters are in active development. They are present in the codebase but not yet production-stable. Twitch has polling-based stream status detection."
+        },
+        {
+          "question": "Is it a cloud product?",
+          "answer": "No. TriggerHub runs entirely on your machine. Automations execute locally, no cloud backend, no external relay."
+        },
+        {
+          "question": "Which platform does it support?",
+          "answer": "Windows x64 is the current target. Mac and Linux are not on the near-term roadmap."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Get early access.",
+      "description": "TriggerHub is in active development. Access is limited. Request it to follow the release and get notified when builds are available."
+    }
+  },
+  "desktopPreview": {
+    "workflowOverview": "Workflow overview",
+    "automationFlow": "Automation flow",
+    "liveStreamStartup": "Live stream startup",
+    "localRuntime": "Local runtime",
+    "trigger": "Trigger",
+    "triggerDesc": "Detect a source event in your setup",
+    "condition": "Condition",
+    "conditionDesc": "Decide when the workflow should continue",
+    "macro": "Macro",
+    "macroDesc": "Group repeated steps into one reusable sequence",
+    "action": "Action",
+    "actionDesc": "Run the connected tool change locally",
+    "connectedSurface": "Connected surface",
+    "obsControl": "OBS control",
+    "spotifyActions": "Spotify actions",
+    "clipExport": "Clip export modules",
+    "pluginRuntime": "Plugin-ready runtime",
+    "whyItMatters": "Why it matters",
+    "whyItMattersText": "Keep repetitive actions out of your live setup. Reduce manual switching. Run everything from one local control layer."
+  },
+  "cta": {
+    "finalLabel": "Early access",
+    "requestProtectedAccess": "Request access",
+    "viewRepository": "View repository"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "accessModeNote": "Access mode is {{mode}}. Public registration is currently disabled.",
+      "authUnavailable": "Login is currently unavailable.",
+      "username": "Username",
+      "password": "Password",
+      "signingIn": "Signing in...",
+      "submit": "Sign in",
+      "errorUnexpected": "Login failed unexpectedly"
+    },
+    "signup": {
+      "title": "Account Registration",
+      "notAvailable": "Public registration is not available in {{mode}} mode.",
+      "restricted": "Access is currently restricted to the site owner.",
+      "signInInstead": "Sign in instead"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Your TriggerHub account dashboard.",
+    "openProfile": "Profile",
+    "openSettings": "Settings"
+  },
+  "profile": {
+    "title": "Profile",
+    "identityNote": "Role: {{role}}",
+    "unknownRole": "unknown",
+    "loading": "Loading profile...",
+    "displayName": "Display name",
+    "avatarUrl": "Avatar URL",
+    "avatarPlaceholder": "https://...",
+    "bio": "Bio",
+    "save": "Save profile",
+    "back": "Back",
+    "saved": "Profile saved",
+    "updateFailed": "Failed to update profile"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account and preferences.",
+    "backToDashboard": "Back to Dashboard"
+  },
+  "forbidden": {
+    "title": "Access denied",
+    "description": "Your current account is not allowed to access this page.",
+    "backToLogin": "Back to login"
+  },
+  "appPage": {
+    "title": "App",
+    "description": "TriggerHub app.",
+    "openDashboard": "Open Dashboard",
+    "settings": "Settings"
+  },
+  "internal": {
+    "title": "Internal Owner Area",
+    "loggedInAs": "Logged in as {{userId}} with role {{role}}.",
+    "openDashboard": "Open Dashboard",
+    "openProfile": "Open Profile",
+    "logout": "Logout"
+  },
+  "errors": {
+    "auth": {
+      "invalid_credentials": "Invalid username or password",
+      "logout_failed": "Logout failed",
+      "validate_session_failed": "Failed to validate owner session",
+      "refresh_not_implemented": "Session refresh is not implemented in prelaunch auth mode",
+      "no_session_snapshot": "Backend login response did not include a session snapshot",
+      "auth_unavailable": "Owner authentication is unavailable"
+    },
+    "profile": {
+      "profile_load_failed": "Failed to load profile",
+      "profile_update_identity": "Cannot update profile without authenticated identity",
+      "profile_no_session": "No authenticated profile session",
+      "profile_no_payload": "Profile response did not include a profile payload",
+      "profile_input_invalid": "Profile input is invalid",
+      "profile_update_failed": "Failed to update profile",
+      "profile_user_mismatch": "Updated profile does not match the authenticated user",
+      "validation_avatar_length": "avatar_url exceeds maximum length",
+      "validation_avatar_http": "avatar_url must use http or https",
+      "validation_avatar_url": "avatar_url must be a valid absolute URL",
+      "validation_display_name_required": "display_name is required",
+      "validation_display_name_length": "display_name exceeds maximum length",
+      "validation_bio_length": "bio exceeds maximum length"
+    }
+  }
+}

@@ -9,9 +9,17 @@ export interface ProfileRecord {
   updatedAt: number
 }
 
-export interface ProfileStore {
-  readAll(): ProfileRecord[]
-  writeAll(profiles: ProfileRecord[]): void
+export interface ProfileStoragePort {
+  getProfile(userId: string): Promise<ProfileRecord | null>
+  saveProfile(profile: ProfileRecord): Promise<void>
+  updateProfile(profile: ProfileRecord): Promise<void>
+  deleteProfile(userId: string): Promise<void>
+}
+
+export interface ProfileCacheStore {
+  read(userId: string): UserProfileView | null
+  write(profile: UserProfileView): void
+  clear(userId: string): void
 }
 
 export interface ProfileInput {
@@ -26,4 +34,9 @@ export interface UserProfileView {
   avatar_url: string
   bio: string
   role: UserRole
+}
+
+export interface BackendProfileApi {
+  getCurrentProfile(): Promise<UserProfileView>
+  updateCurrentProfile(input: ProfileInput): Promise<UserProfileView>
 }

@@ -1,6 +1,7 @@
 import type { ObsServicePort } from '../../types'
 import { defaultOperationPolicy, runWithPolicy, type OperationPolicy } from '../shared'
 import type { ObsTransport } from './obsClient'
+import { normalizeObsSceneName } from './contracts'
 
 export class ObsService implements ObsServicePort {
   private connected = false
@@ -32,13 +33,19 @@ export class ObsService implements ObsServicePort {
     this.connected = false
   }
 
+  public isConnected(): boolean {
+    return this.connected
+  }
+
   public async switchScene(sceneName: string): Promise<void> {
     if (!this.connected) {
       throw new Error('OBS service must be connected before switching scenes')
     }
 
+    const normalizedSceneName = normalizeObsSceneName(sceneName)
+
     await runWithPolicy('obs.switchScene', this.policy, async () => {
-      await this.transport.setCurrentScene(sceneName)
+      await this.transport.setCurrentScene(normalizedSceneName)
     })
   }
 }

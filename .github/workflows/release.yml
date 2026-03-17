@@ -32,6 +32,30 @@ jobs:
       - name: Install website dependencies
         run: npm --prefix website ci
 
+      - name: Run root typecheck
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Validate uninstaller detection
+        run: npm run desktop:test:uninstaller
+
+      - name: Validate artifact collection
+        run: npm run desktop:test:artifacts
+
+      - name: Audit root production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Audit website production dependencies
+        run: npm --prefix website audit --omit=dev --audit-level=high
+
+      - name: Typecheck website
+        run: ./node_modules/.bin/tsc --noEmit --project website/tsconfig.json
+
+      - name: Build website
+        run: npm --prefix website run build
+
       - name: Sync website content
         run: npm run website:sync
 
@@ -134,8 +158,23 @@ jobs:
       - name: Install root dependencies
         run: npm ci
 
+      - name: Prepare code-signing certificate
+        if: ${{ secrets.TRIGGERHUB_WINDOWS_CERT_BASE64 != '' && secrets.TRIGGERHUB_WINDOWS_CERT_PASSWORD != '' }}
+        shell: pwsh
+        env:
+          TRIGGERHUB_WINDOWS_CERT_BASE64: ${{ secrets.TRIGGERHUB_WINDOWS_CERT_BASE64 }}
+          TRIGGERHUB_WINDOWS_CERT_PASSWORD: ${{ secrets.TRIGGERHUB_WINDOWS_CERT_PASSWORD }}
+        run: |
+          ./scripts/setup-code-signing.ps1 -OutputPath "$env:RUNNER_TEMP\triggerhub-codesign.pfx"
+          "CSC_LINK=$env:RUNNER_TEMP\triggerhub-codesign.pfx" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "CSC_KEY_PASSWORD=$env:TRIGGERHUB_WINDOWS_CERT_PASSWORD" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Build desktop release
         run: npm run desktop:release
+
+      - name: Smoke-test installer and portable build
+        shell: pwsh
+        run: npm run desktop:test:installer
 
       - name: Upload desktop artifacts
         uses: actions/upload-artifact@v4

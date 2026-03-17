@@ -2,27 +2,28 @@
 
 This project is an isolated Vite frontend located in `website/`.
 
-## Auth v1 (Owner-Only Prelaunch)
+## Auth v1
 
-The website now includes a minimal auth/access foundation with three access modes:
+The website includes a minimal auth/access foundation with three access modes:
 
-- `private_prelaunch` (current default and active mode)
-- `invite_only` (prepared)
-- `public_product` (prepared)
+- `private_prelaunch` (legacy mode kept in the type model)
+- `invite_only`
+- `public_product` (current default and active mode)
 
 Current behavior:
 
+- Public marketing pages are reachable without a password.
 - Public registration is disabled.
-- Owner login is required for protected routes.
-- Session requires a guard token pair (`localStorage` + `sessionStorage`) and is rejected on mismatch.
-- Password verification uses PBKDF2 (`SHA-256`, configurable iterations/salt/hash).
-- Owner auth is fail-closed when required runtime config is missing.
+- Owner login is still required for protected routes such as `/app`, `/dashboard`, `/profile`, and `/settings`.
+- Owner credentials are verified only on the server through `/api/auth/*`.
+- Session is carried by an HMAC-signed JWT in an HttpOnly cookie and revalidated through `GET /api/auth/me`.
+- Mutating auth endpoints require a double-submit CSRF token delivered through `th_csrf`.
+- Browser builds are blocked if sensitive auth env values would be bundled or if required public website env values are missing.
 
 Main files:
 
-- `src/config/runtimeConfig.ts` (access mode + auth config)
-- `src/modules/auth/*` (login/logout/session/password hashing/auth service)
-- `src/modules/auth/ownerAuthProvider.ts` (owner identity adapter)
+- `src/config/runtimeConfig.ts` (client-visible access mode flags only)
+- `src/modules/auth/*` (server-backed login/logout/session state)
 - `src/modules/access-control/*` (policy evaluation)
 - `src/modules/identity/*` (user identity records, role source of truth)
 - `src/modules/profile/*` (profile records, validation, profile service/runtime)
@@ -30,31 +31,40 @@ Main files:
 - `src/app/providers/ProfileProvider.tsx`
 - `src/app/routing/*` (route manifest + guard + router)
 - `src/pages/LoginPage.tsx`, `src/pages/InternalPage.tsx`, `src/pages/ProfilePage.tsx`, `src/pages/ForbiddenPage.tsx`
+- `api/auth/*.ts`
 
 Target route model:
 
-- Public: `/`, `/features`, `/pricing`, `/about`, `/login`, `/signup`
+- Public: `/`, `/features`, `/pricing`, `/about`, `/login`
+- Legacy redirects: `/signup` -> `/login`, `/access` -> `/`
 - Protected: `/app`, `/dashboard`, `/profile`, `/settings`
 
 Configuration:
 
 1. Copy `.env.example` to `.env`.
-2. Set owner credentials via:
-   - `VITE_OWNER_USER_ID`
-   - `VITE_OWNER_EMAIL`
-   - `VITE_OWNER_PASSWORD_HASH`
-   - `VITE_OWNER_PASSWORD_SALT`
-   - `VITE_OWNER_PASSWORD_ITERATIONS`
-3. Set mode via `VITE_ACCESS_MODE`.
-   - Route model is prepared for `private_prelaunch`, `invite_only`, `public_product`.
-   - Signup page behavior can be toggled via `VITE_ENABLE_SIGNUP`.
-4. Optionally set `VITE_SESSION_TTL_MS`.
+2. Set client/runtime flags explicitly:
+   - `VITE_ACCESS_MODE=public_product`
+   - `VITE_SESSION_TTL_MS` to a positive integer
+3. If you want protected owner routes to work, set server-side owner auth env values:
+   - `OWNER_USER_ID`
+   - `OWNER_EMAIL`
+   - `OWNER_LOGIN_USERNAME`
+   - `OWNER_LOGIN_PASSWORD_HASH`
+   - `OWNER_LOGIN_PASSWORD_SALT`
+   - `OWNER_LOGIN_PASSWORD_ITERATIONS`
+   - `PRELAUNCH_SESSION_SECRET`
+
+Important setup rule:
+
+- Do not keep generic defaults such as `owner` or `owner@example.com` in deployed configuration. Use deployment-specific owner identity values.
 
 Important:
 
-- There are no bundled credential fallbacks.
-- Missing owner config causes fail-closed auth behavior.
-- For production/prelaunch deployment, all owner credential env values are mandatory.
+- There are no bundled credential fallbacks, hashes, salts, session secrets or access keys.
+- The website build fails if sensitive auth vars use a `VITE_*` prefix.
+- The public website build requires `VITE_ACCESS_MODE=public_product` and a valid `VITE_SESSION_TTL_MS`.
+- Owner auth remains server-backed through the Vercel API handlers and HttpOnly cookies for protected routes.
+- Later production solution: full backend auth/session boundary with rotation, revocation and CSRF handling.
 
 ## Status Content Pipeline
 
@@ -106,3 +116,10 @@ Use these settings:
 - Framework Preset: `Vite`
 - Build Command: `npm run build`
 - Output Directory: `dist`
+
+Deployment notes:
+
+1. Set `VITE_ACCESS_MODE=public_product`.
+2. Keep `VITE_SESSION_TTL_MS` set to a positive integer.
+3. Keep owner auth env vars set only if you want protected owner routes to stay usable.
+4. Add `triggerhub.de` and `www.triggerhub.de` in the Vercel Domains settings and set `triggerhub.de` as the primary domain if you want `www` redirected to the apex domain.
