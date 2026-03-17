@@ -2,6 +2,13 @@ import { IdentityService } from '../identity/identityService'
 import type { ProfileInput, ProfileRecord, ProfileStore, UserProfileView } from './types'
 import { validateProfileInput } from './validation'
 
+export class ProfileServiceError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'ProfileServiceError'
+  }
+}
+
 const toProfileView = (record: ProfileRecord, role: 'owner' | 'user'): UserProfileView => ({
   user_id: record.userId,
   display_name: record.displayName,
@@ -29,7 +36,7 @@ export class ProfileService {
   ensureProfileForUser(userId: string, defaultDisplayName: string): UserProfileView {
     const user = this.identityService.getUserById(userId)
     if (!user) {
-      throw new Error(`Cannot create profile for unknown user: ${userId}`)
+      throw new ProfileServiceError('profile_update_identity')
     }
 
     const profiles = this.profileStore.readAll()
@@ -55,7 +62,7 @@ export class ProfileService {
   updateProfile(userId: string, input: ProfileInput): UserProfileView {
     const user = this.identityService.getUserById(userId)
     if (!user) {
-      throw new Error(`Cannot update profile for unknown user: ${userId}`)
+      throw new ProfileServiceError('profile_update_identity')
     }
 
     const validated = validateProfileInput(input)
