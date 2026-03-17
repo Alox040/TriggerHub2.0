@@ -1,5 +1,5 @@
 # TECH DEBT AND RISKS — TriggerHub 2.0
-> Generated: 2026-03-10 | Updated: 2026-03-10 — RISK-01 resolved
+> Generated: 2026-03-10 | Updated: 2026-03-17 — RISK-01 resolved, RISK-04 partially resolved
 
 Risks ranked by severity: CRITICAL | HIGH | MEDIUM | LOW
 
@@ -69,30 +69,24 @@ All services (OBS, Spotify, Clip) use InMemory transports that simulate behavior
 ---
 
 ### RISK-04 — No CI/CD Pipeline
-**Severity:** HIGH
+**Severity:** ~~HIGH~~ **PARTIALLY RESOLVED** (2026-03-17)
 **Type:** Operational Risk
 
-Only one GitHub Actions workflow exists: website sync. No automated build, test, or release pipeline.
+**Resolution:** CI/CD pipelines implemented.
+- ✅ `.github/workflows/ci-quality.yml` — Quality Gate
+  - Typecheck, Tests, Build-Checks
+  - Separate jobs for Core and Website
+  - Triggers on: push to main/develop/release branches, PRs, workflow_dispatch
+- ✅ `.github/workflows/release.yml` — Release Pipeline
+  - Full validation (typecheck, tests, audits)
+  - Desktop artifact builds (Windows installer + portable)
+  - GitHub Release publishing
+  - Vercel deployment hook
 
-**Impact:**
-- Bugs can reach releases undetected
-- Manual builds are error-prone and inconsistent
-- No automated artifact publishing
-
-**Fix Required:**
-Add `.github/workflows/ci.yml`:
-```yaml
-on: [push, pull_request]
-jobs:
-  ci:
-    steps:
-      - npm ci
-      - npm run typecheck
-      - npm run test
-      - npm run build
-```
-
-Add `.github/workflows/release.yml` for automated Windows installer builds.
+**Residual gaps:**
+- ⚠️ Quality Gate runs only on specific branches (main, develop, release/**), not on all pushes
+- ⚠️ No automatic test execution on every commit to feature branches
+- ✅ Release pipeline is comprehensive and production-ready
 
 ---
 
@@ -100,12 +94,12 @@ Add `.github/workflows/release.yml` for automated Windows installer builds.
 **Severity:** HIGH
 **Type:** Release Risk
 
-`electron-updater` is not installed. Users have no way to receive app updates without manually downloading a new installer.
+`electron-updater` is installed (v6.6.2) but not configured. Users have no way to receive app updates without manually downloading a new installer.
 
 **Impact:** Every update requires users to download and reinstall manually. This severely limits adoption and trust.
 
 **Fix Required:**
-1. Install `electron-updater`
+1. ✅ `electron-updater` installed
 2. Configure update server URL (GitHub Releases or self-hosted)
 3. Add IPC handler for update events (checking, downloading, ready to install)
 4. Add update notification UI component
@@ -244,7 +238,7 @@ Either:
 | RISK-01 UI Disconnected | ~~CRITICAL~~ RESOLVED | — | — |
 | RISK-02 No Electron IPC | CRITICAL | Medium | 2nd |
 | RISK-03 No Real Services | HIGH | High | 3rd |
-| RISK-04 No CI/CD | HIGH | Low | 4th |
+| RISK-04 No CI/CD | ~~HIGH~~ PARTIALLY RESOLVED | — | — |
 | RISK-05 No Auto-Update | HIGH | High | 5th |
 | RISK-06 Legacy Folders | MEDIUM | Low | 6th |
 | RISK-07 No Error Boundary | MEDIUM | Low | 7th |

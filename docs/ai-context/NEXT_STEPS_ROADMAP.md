@@ -1,5 +1,5 @@
 # NEXT STEPS ROADMAP — TriggerHub 2.0
-> Generated: 2026-03-10 | Updated: 2026-03-10 — Priority 1 complete
+> Generated: 2026-03-10 | Updated: 2026-03-17 — Priority 1 complete, Priority 3 partially complete
 
 ---
 
@@ -53,21 +53,24 @@ All tasks delivered:
 ---
 
 ### PRIORITY 3 — CI/CD Pipeline (HIGH)
-**Status:** NOT STARTED
-**Addresses:** RISK-04 (No CI/CD)
+**Status:** ✅ PARTIALLY COMPLETE (2026-03-17)
+**Addresses:** RISK-04 (No CI/CD) — PARTIALLY RESOLVED
 **Impact:** Quality gate; prevents regressions; enables automated releases
 
-**Tasks:**
-1. Create `.github/workflows/ci.yml`:
-   - Trigger: push + pull_request to main
-   - Steps: `npm ci` → `npm run typecheck` → `npm run test` → `npm run build`
-2. Create `.github/workflows/release.yml`:
-   - Trigger: push to tag `v*`
-   - Steps: ci steps + `npm run desktop:build` + upload artifact to GitHub Release
+**Completed:**
+1. ✅ `.github/workflows/ci-quality.yml` created
+   - Quality Gate with typecheck, tests, build
+   - Separate jobs for Core and Website
+   - Triggers: push to main/develop/release branches, PRs, workflow_dispatch
+2. ✅ `.github/workflows/release.yml` exists and enhanced
+   - Full validation pipeline
+   - Desktop artifact builds (Windows installer + portable)
+   - GitHub Release publishing
+   - Vercel deployment hook
 
-**Files to create:**
-- NEW: `.github/workflows/ci.yml`
-- NEW: `.github/workflows/release.yml`
+**Residual tasks:**
+- ⚠️ Consider adding CI runs on all feature branches (currently only main/develop/release/**)
+- ✅ Release pipeline is comprehensive and production-ready
 
 ---
 
