@@ -165,12 +165,12 @@ Vor Veröffentlichung MÜSSEN folgende Punkte geprüft werden:
 
 | Schritt | Status | Notiz |
 |---------|--------|-------|
-| `pnpm install` | 🔄 Läuft | Next.js-Dependencies nicht vorinstalliert |
-| `pnpm typecheck` | ⚠️ Pending | Hängt von install ab; `tsconfig.json` bereinigt (website/ excluded) |
-| `pnpm build` | ⚠️ Pending | Hängt von install ab |
-| Website-Routen vorhanden | ✅ | `/`, `/resqbrain`, `/kontakt`, `/impressum`, `/datenschutz` |
-
-*Wird nach Abschluss von `pnpm install` aktualisiert.*
+| `pnpm install` | ✅ PASS | 27 Pakete, 2m 52.6s |
+| `pnpm typecheck` | ✅ PASS | 0 Fehler (website/ aus tsconfig excluded) |
+| `pnpm build` | ✅ PASS | Next.js 16.2.7 Turbopack, 2.6s compile, 7 Routen prerendered |
+| Website-Routen vorhanden | ✅ PASS | `/`, `/resqbrain`, `/kontakt`, `/impressum`, `/datenschutz`, `/_not-found` |
+| Git Commit | ✅ | `859101cd` auf Branch `release/v0.1.1-prep` |
+| Git Push | ✅ | `3de324e0..859101cd` → `github.com/Alox040/TriggerHub2.0` |
 
 ---
 
