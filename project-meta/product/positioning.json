@@ -1,7 +1,0 @@
-{
-  "targetAudience": "Live-Streamer und Content Creator, die wiederkehrende Abläufe in ihrer Desktop-Streaming-Umgebung automatisieren wollen.",
-  "coreProblem": "Streaming-Workflows bestehen aus vielen wiederkehrenden, manuellen Schritten zwischen Tools wie OBS und Musiksteuerung, die während eines Live-Setups schnell fehleranfällig und ablenkend werden.",
-  "solution": "TriggerHub bündelt Trigger-Engine, Makro-System und Desktop-Service-Integrationen in einer gemeinsamen Runtime, damit Ereignisse automatisiert Aktionen und Makros für OBS und Spotify auslösen können.",
-  "differentiator": "Der aktuelle Fokus liegt auf einer lokalen Desktop-Automation mit kombinierbarem Trigger-/Makro-Modell, angebundenen OBS- und Spotify-Services sowie einem erweiterbaren Plugin-System statt auf einer breiten, aber nicht belegten Integrationsfläche.",
-  "currentStatus": "Implementiert sind Trigger-Engine, Macro-System, OBS-Integration, Spotify-Integration und Plugin-System. Twitch und Discord sind im aktuellen Codebestand nicht implementiert."
-}

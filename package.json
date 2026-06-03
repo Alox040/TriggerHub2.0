@@ -1,125 +1,25 @@
 {
-    "name": "triggerhub2",
-    "version": "0.1.1",
-    "description": "TriggerHub 2.0 desktop automation runtime for creators and stream workflows.",
-    "author": "TriggerHub",
-    "private": true,
-    "type": "module",
-    "main": "electron/main.cjs",
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "preview": "vite preview",
-        "desktop:dev": "npm run dev",
-        "desktop:preview": "npm run preview",
-        "desktop:build:renderer": "vite build",
-        "desktop:package:installer": "electron-builder --win nsis --x64 --publish never",
-        "desktop:package:portable": "electron-builder --win portable --x64 --publish never",
-        "typecheck": "tsc --noEmit",
-        "test": "vitest run",
-        "test:watch": "vitest",
-        "context:sync": "tsx scripts/context-sync.ts",
-        "website:sync": "tsx scripts/generate-website-content.ts",
-        "website:dev": "npm --prefix website run dev",
-        "website:build": "npm --prefix website run build",
-        "website:preview": "npm --prefix website run preview",
-        "watch:features": "tsx scripts/feature-change-watcher.ts",
-        "release": "tsx scripts/run-release.ts",
-        "release:validate": "tsx scripts/release-orchestrator.ts",
-        "design:dev": "npm --prefix design run dev",
-        "design:build": "npm --prefix design run build",
-        "desktop:build": "npm run desktop:build:renderer && npm run desktop:package:installer && npm run desktop:package:portable",
-        "desktop:build:installer": "npm run desktop:build:renderer && npm run desktop:package:installer",
-        "desktop:build:portable": "npm run desktop:build:renderer && npm run desktop:package:portable",
-        "desktop:publish": "npm run desktop:build:renderer && electron-builder --win nsis portable --x64 --publish always",
-        "desktop:artifacts": "node scripts/collect-desktop-artifacts.mjs",
-        "desktop:test:artifacts": "node scripts/test-artifact-collection.mjs",
-        "desktop:test:uninstaller": "node scripts/test-uninstaller-detection.mjs",
-        "desktop:test:installer": "powershell -ExecutionPolicy Bypass -File scripts/test-installer.ps1",
-        "desktop:release": "npm run desktop:build && npm run desktop:artifacts",
-        "tool:exe-builder:start": "npm run exe-builder:start",
-        "tool:exe-builder:smoke": "npm run exe-builder:smoke",
-        "exe-builder:start": "npm --prefix tools/exe-builder run start",
-        "exe-builder:smoke": "powershell -ExecutionPolicy Bypass -File tools/exe-builder/scripts/smoke-test.ps1"
-    },
-    "dependencies": {
-        "chokidar": "^5.0.0",
-        "electron-updater": "^6.6.2",
-        "obs-websocket-js": "^5.0.0",
-        "react": "18.3.1",
-        "react-dom": "^18.3.1",
-        "zod": "^4.3.6"
-    },
-    "devDependencies": {
-        "@testing-library/react": "^16.3.2",
-        "@types/node": "^22.13.10",
-        "@types/react": "18.3.18",
-        "@types/react-dom": "^18.3.6",
-        "@vitejs/plugin-react": "^5.1.4",
-        "electron": "^36.0.0",
-        "electron-builder": "^26.0.12",
-        "jsdom": "^28.1.0",
-        "ts-node": "^10.9.2",
-        "tsx": "^4.21.0",
-        "typescript": "5.8.2",
-        "vite": "^6.4.1",
-        "vitest": "3.0.8"
-    },
-    "ts-node": {
-        "project": "tsconfig.scripts.json",
-        "esm": true,
-        "transpileOnly": true
-    },
-    "build": {
-        "appId": "com.triggerhub.desktop",
-        "productName": "TriggerHub 2.0",
-        "directories": {
-            "output": "release",
-            "buildResources": "build"
-        },
-        "files": [
-            "dist/**/*",
-            "electron/**/*",
-            "package.json"
-        ],
-        "extraMetadata": {
-            "main": "electron/main.cjs"
-        },
-        "win": {
-            "target": [
-                {
-                    "target": "nsis",
-                    "arch": [
-                        "x64"
-                    ]
-                },
-                {
-                    "target": "portable",
-                    "arch": [
-                        "x64"
-                    ]
-                }
-            ],
-            "artifactName": "TriggerHubSetup.exe",
-            "executableName": "TriggerHub"
-        },
-        "nsis": {
-            "oneClick": false,
-            "perMachine": false,
-            "allowToChangeInstallationDirectory": true,
-            "createDesktopShortcut": true,
-            "createStartMenuShortcut": true,
-            "shortcutName": "TriggerHub 2.0",
-            "uninstallDisplayName": "TriggerHub 2.0",
-            "guid": "5af6a952-cdef-5bea-b9c3-9df13d23be11"
-        },
-        "portable": {
-            "artifactName": "TriggerHubPortable.exe"
-        },
-        "publish": {
-            "provider": "github",
-            "owner": "Alox040",
-            "repo": "Triggerhub"
-        }
-    }
+  "name": "triggerhub-company-website",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Schlanke Firmenwebsite für die geplante TriggerHub UG (haftungsbeschränkt) in Gründung.",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.9.0"
+  },
+  "packageManager": "pnpm@10.0.0"
 }
