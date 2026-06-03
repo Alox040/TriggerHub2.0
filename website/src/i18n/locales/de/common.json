@@ -15,7 +15,7 @@
   "header": {
     "logo": "TRIGGERHUB",
     "tagline": "Geschlossene Alpha-Desktop-Automatisierung für PC-Streamer",
-    "protectedAccess": "Auf GitHub folgen"
+    "protectedAccess": "Alpha-Zugang anfragen"
   },
   "nav": {
     "benefits": "Vorteile",
@@ -29,18 +29,18 @@
     "product": "Produkt",
     "links": "Links",
     "githubRepository": "GitHub-Repo (für Mitwirkende und technische Tester)",
-    "protectedAccess": "Auf GitHub folgen",
+    "protectedAccess": "Alpha-Zugang anfragen",
     "imprint": "Impressum",
     "privacy": "Datenschutz"
   },
   "hero": {
-    "badge": "Windows-Desktop - Early Access",
-    "requestAccess": "Auf GitHub folgen",
+    "badge": "Geschlossene Alpha - Windows-Desktop",
+    "requestAccess": "Alpha-Zugang anfragen",
     "seeCapabilities": "Sieh dir an, was gebaut ist"
   },
   "landing": {
     "hero": {
-      "title": "TriggerHub 2.0 Geschlossene Alpha: Automatisiere deinen Stream. Bleib live fokussiert.",
+      "title": "Automatisiere deinen Stream. Bleib live fokussiert.",
       "description": "TriggerHub 2.0 verbindet OBS, Spotify, Szenen und Overlays über Trigger und Makros, damit du den Stream-Start- bis Clip-Workflow automatisieren kannst. Automationen laufen lokal ohne Cloud-Relay.",
       "proofPoints": [
         "Desktop-Automatisierung für Windows-Streamer",
@@ -57,7 +57,7 @@
       "features": {
         "eyebrow": "Was vorhanden ist",
         "title": "Kern-Automatisierung für Live-Setups.",
-      "description": "Die Trigger-Engine (Stream-Zustände, Hotkeys und zeitgesteuerte Ereignisse) sowie das Makro-System sind verfügbar; OBS- und Spotify-Adapter werden gehärtet, während wir weitere lokale Automations-Flows wie Clip-Erfassung und reaktive Szenen ergänzen."
+        "description": "Die Trigger-Engine (Stream-Zustände, Hotkeys und zeitgesteuerte Ereignisse) sowie das Makro-System sind verfügbar; OBS- und Spotify-Adapter werden gehärtet, während wir weitere lokale Automations-Flows wie Clip-Erfassung und reaktive Szenen ergänzen."
       },
       "workflow": {
         "eyebrow": "Wie es funktioniert",
@@ -214,10 +214,10 @@
         }
       ]
     },
-  "cta": {
-    "title": "Frühen Zugang bekommen.",
-    "description": "TriggerHub ist in aktiver Entwicklung. Der Zugang ist limitiert. Folge dem Release, um benachrichtigt zu werden, wenn Builds verfügbar sind."
-  }
+    "cta": {
+      "title": "Frühen Zugang bekommen.",
+      "description": "TriggerHub ist in aktiver Entwicklung. Der Zugang ist limitiert. Folge dem Release, um benachrichtigt zu werden, wenn Builds verfügbar sind."
+    }
   },
   "desktopPreview": {
     "workflowOverview": "Workflow-Übersicht",

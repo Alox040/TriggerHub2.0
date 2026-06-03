@@ -15,7 +15,7 @@
   "header": {
     "logo": "TRIGGERHUB",
     "tagline": "Closed Alpha desktop automation for PC streamers",
-    "protectedAccess": "Follow on GitHub"
+    "protectedAccess": "Request Alpha Access"
   },
   "nav": {
     "benefits": "Benefits",
@@ -29,18 +29,18 @@
     "product": "Product",
     "links": "Links",
     "githubRepository": "GitHub repo (for contributors & technical testers)",
-    "protectedAccess": "Follow on GitHub",
+    "protectedAccess": "Request Alpha Access",
     "imprint": "Imprint",
     "privacy": "Privacy"
   },
   "hero": {
-    "badge": "Windows desktop - Early access",
-    "requestAccess": "Follow on GitHub",
+    "badge": "Closed Alpha - Windows desktop",
+    "requestAccess": "Request Alpha Access",
     "seeCapabilities": "See what's built"
   },
   "landing": {
     "hero": {
-      "title": "TriggerHub 2.0 Closed Alpha: Automate your stream. Stay focused live.",
+      "title": "Automate your stream. Stay focused live.",
       "description": "TriggerHub 2.0 wires OBS, Spotify, scenes, and overlays through triggers and macros so you can automate the stream start-to-clip workflow. Automations run locally with no cloud relay.",
       "proofPoints": [
         "Desktop automation tuned for Windows stream setups",
@@ -214,10 +214,10 @@
         }
       ]
     },
-  "cta": {
-    "title": "Get early access.",
-    "description": "TriggerHub is in active development. Access is limited. Follow the release to get notified when builds are available."
-  }
+    "cta": {
+      "title": "Get early access.",
+      "description": "TriggerHub is in active development. Access is limited. Follow the release to get notified when builds are available."
+    }
   },
   "desktopPreview": {
     "workflowOverview": "Workflow overview",

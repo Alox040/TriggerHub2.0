@@ -106,11 +106,11 @@ export function ProblemSection() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-12 text-center"
         >
-          <p className="text-lg text-gray-300 mb-6">
-            Join <span className="text-sky-400 font-semibold">3,000+ creators</span> who automated their streaming workflow
+          <p className="mx-auto mb-6 max-w-2xl text-lg text-gray-300">
+            TriggerHub is currently prepared for a controlled alpha. No public user numbers or social-proof claims are published.
           </p>
           <button className="px-8 py-4 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-600 hover:to-cyan-700 text-white font-semibold shadow-lg shadow-sky-500/20 hover:shadow-sky-500/40 transition-all hover:scale-105">
-            Start Automating Free
+            Request Alpha Access
           </button>
         </motion.div>
       </div>

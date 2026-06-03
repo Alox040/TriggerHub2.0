@@ -2,6 +2,8 @@
 
 This project is an isolated Vite frontend located in `website/`.
 
+**Vercel:** This directory must be set as **Root Directory** in the Vercel project. Do not deploy from the repo root (that builds the desktop app).
+
 ## Auth v1
 
 The website includes a minimal auth/access foundation with three access modes:

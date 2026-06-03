@@ -9,7 +9,7 @@ const recipes = [
     trigger: { icon: Radio, label: "Stream Started", color: "sky" },
     condition: { icon: Clapperboard, label: "Scene = Starting Soon", color: "cyan" },
     action: { icon: Music, label: "Play Spotify Intro", color: "blue" },
-    used: "2.3k creators",
+    status: "Alpha pattern",
   },
   {
     title: "Chat Command Clips",
@@ -18,7 +18,7 @@ const recipes = [
     trigger: { icon: MessageSquare, label: "!clip command", color: "sky" },
     condition: { icon: Clapperboard, label: "User is moderator", color: "cyan" },
     action: { icon: Video, label: "Create & Save Clip", color: "blue" },
-    used: "1.8k creators",
+    status: "Concept",
   },
   {
     title: "Scene Light Control",
@@ -27,7 +27,7 @@ const recipes = [
     trigger: { icon: Clapperboard, label: "Scene Changed", color: "sky" },
     condition: { icon: Clapperboard, label: "Scene = Gaming", color: "cyan" },
     action: { icon: Lightbulb, label: "Set Hue Lights Blue", color: "blue" },
-    used: "980 creators",
+    status: "Roadmap",
   },
   {
     title: "Follower Thank You",
@@ -36,7 +36,7 @@ const recipes = [
     trigger: { icon: Radio, label: "New Follower", color: "sky" },
     condition: { icon: Clapperboard, label: "First-time follower", color: "cyan" },
     action: { icon: MessageSquare, label: "Send Discord DM", color: "blue" },
-    used: "3.1k creators",
+    status: "Concept",
   },
   {
     title: "Auto Stream End",
@@ -45,7 +45,7 @@ const recipes = [
     trigger: { icon: Radio, label: "End Stream Button", color: "sky" },
     condition: { icon: Clapperboard, label: "Stream > 1 hour", color: "cyan" },
     action: { icon: Music, label: "Fade Music & Switch", color: "blue" },
-    used: "1.5k creators",
+    status: "Alpha pattern",
   },
   {
     title: "Raid Party Mode",
@@ -54,7 +54,7 @@ const recipes = [
     trigger: { icon: Radio, label: "Raid Started", color: "sky" },
     condition: { icon: Clapperboard, label: "Raiders > 50", color: "cyan" },
     action: { icon: Lightbulb, label: "Party Lights + Music", color: "blue" },
-    used: "720 creators",
+    status: "Roadmap",
   },
 ];
 
@@ -74,7 +74,7 @@ export function AutomationRecipes() {
             Ready-to-use workflow templates
           </h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Copy proven automations from thousands of creators. One click to install.
+            Review curated workflow patterns while TriggerHub remains in controlled alpha.
           </p>
         </motion.div>
 
@@ -126,7 +126,7 @@ export function AutomationRecipes() {
               {/* Footer */}
               <div className="flex items-center justify-between pt-4 border-t border-white/5">
                 <span className="text-xs text-gray-500">
-                  Used by <span className="text-sky-400 font-medium">{recipe.used}</span>
+                  <span className="text-sky-400 font-medium">{recipe.status}</span>
                 </span>
                 <div className="flex items-center gap-2">
                   <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/30 transition-all group/btn">

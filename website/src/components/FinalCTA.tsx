@@ -24,13 +24,12 @@ export function FinalCTA() {
           </div>
           
           <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Join thousands of creators who automated their streaming workflows. 
-            Start free, no credit card required.
+            TriggerHub is in controlled alpha. Request access to review the current desktop automation build.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             <button className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-600 hover:to-cyan-700 text-white font-semibold shadow-lg shadow-sky-500/20 hover:shadow-sky-500/40 transition-all hover:scale-105 flex items-center justify-center gap-2 group">
-              Start Automating Free
+              Request Alpha Access
               <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
             </button>
             <button className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/30 text-white font-semibold transition-all">
@@ -43,13 +42,13 @@ export function FinalCTA() {
               <svg className="size-5 text-sky-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              Free forever plan
+              Controlled alpha access
             </div>
             <div className="flex items-center gap-2">
               <svg className="size-5 text-sky-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              Setup in 5 minutes
+              Local desktop runtime
             </div>
           </div>
         </motion.div>

@@ -1,16 +1,23 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { motion } from 'motion/react'
 import {
   ArrowRight,
+  Boxes,
   CheckCircle2,
   ChevronRight,
+  FlaskConical,
   FolderGit2,
   GitBranch,
   Layers,
+  Lock,
   Menu,
   Monitor,
+  Package,
   Play,
+  RadioTower,
+  Server,
   ShieldCheck,
   Sparkles,
   Workflow,
@@ -18,6 +25,9 @@ import {
   Zap,
 } from 'lucide-react'
 import { LanguageSwitcher } from './LanguageSwitcher'
+import { StatusBadge } from './StatusBadge'
+import type { StatusBadgeStatus } from './StatusBadge'
+import { scrollViewport, useMotionConfig } from '../lib/motion'
 
 const GITHUB_REPO_URL = 'https://github.com/Alox040/TriggerHub'
 
@@ -67,18 +77,37 @@ export const useHashSectionSync = () => {
   }, [])
 }
 
-const sectionSpacing = 'px-6 py-16 md:py-20'
+const sectionSpacing = 'px-6 py-24 md:py-32'
 const containerClass = 'mx-auto max-w-7xl'
 const headingFont = "font-['Sora',sans-serif]"
-const sectionTitleClass = `${headingFont} text-3xl font-semibold tracking-tight md:text-5xl`
-const sectionDescriptionClass = 'mt-5 text-lg leading-7 text-slate-600'
+const sectionTitleClass = `${headingFont} text-3xl font-semibold tracking-tight md:text-[2.5rem] md:leading-[1.15]`
+const sectionDescriptionClass = 'mt-5 max-w-2xl text-base leading-7 text-slate-600 md:text-lg'
 const actionButtonBase =
-  'inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-300'
-const actionButtonPrimary = `${actionButtonBase} bg-white text-slate-950 hover:bg-sky-100`
+  'inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
+const actionButtonPrimary = `${actionButtonBase} bg-white text-slate-950 shadow-[0_16px_45px_rgba(14,165,233,0.18)] hover:bg-sky-100`
 const actionButtonSecondary = `${actionButtonBase} border border-white/14 text-white hover:bg-white/10`
-const cardBase = 'rounded-[1.75rem] border border-slate-200 bg-white p-7 shadow-[0_20px_60px_rgba(15,23,42,0.06)]'
-const lightCard = 'rounded-[1.5rem] border border-slate-200 bg-white p-6'
-const darkCard = 'rounded-[1.5rem] border border-white/10 bg-white/5 p-6'
+const lightElevatedCard =
+  'rounded-[1.5rem] border border-slate-900/8 bg-[#fffdf8] p-7 shadow-[0_20px_60px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(15,23,42,0.10)]'
+const darkGlassCard =
+  'rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-sky-300/25'
+const accentCard =
+  'rounded-[1.5rem] border border-sky-300/18 bg-sky-300/[0.07] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
+
+const resolveStatus = (item: { title: string; description: string; status?: StatusBadgeStatus }): StatusBadgeStatus => {
+  if (item.status) {
+    return item.status
+  }
+
+  const text = `${item.title} ${item.description}`.toLowerCase()
+  if (text.includes('planned') || text.includes('roadmap') || text.includes('geplant')) {
+    return 'planned'
+  }
+  if (text.includes('development') || text.includes('entwicklung') || text.includes('experimental')) {
+    return 'in-dev'
+  }
+
+  return 'live'
+}
 
 type MarketingShellProps = {
   children: ReactNode
@@ -225,20 +254,34 @@ type MarketingHeroProps = {
 
 export const MarketingHero = ({ title, description, proofPoints, onNavigate }: MarketingHeroProps) => {
   const { t } = useTranslation()
+  const motionConfig = useMotionConfig()
 
   return (
-    <section className={`${sectionSpacing} text-white md:pb-24`}>
+    <motion.section
+      className={`${sectionSpacing} text-white md:pb-28`}
+      initial="hidden"
+      animate="show"
+      variants={motionConfig.staggerContainer}
+    >
       <div className={`${containerClass} grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center`}>
-        <div>
-          <div className="inline-flex rounded-full border border-sky-300/20 bg-sky-300/10 px-4 py-2 text-xs uppercase tracking-[0.24em] text-sky-200">
+        <motion.div variants={motionConfig.staggerContainer}>
+          <motion.div
+            variants={motionConfig.heroEntry}
+            className="inline-flex rounded-full border border-sky-300/20 bg-sky-300/10 px-4 py-2 text-xs uppercase tracking-[0.24em] text-sky-200"
+          >
             {t('hero.badge')}
-          </div>
-          <h1 className="mt-6 max-w-4xl font-['Sora',sans-serif] text-4xl font-semibold tracking-tight text-white md:text-6xl md:leading-[1.08]">
+          </motion.div>
+          <motion.h1
+            variants={motionConfig.heroEntry}
+            className="mt-6 max-w-4xl font-['Sora',sans-serif] text-[2.5rem] font-semibold leading-[1.05] tracking-tight text-white md:text-[3.75rem] md:leading-[1.05]"
+          >
             {title}
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">{description}</p>
+          </motion.h1>
+          <motion.p variants={motionConfig.heroEntry} className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+            {description}
+          </motion.p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
+          <motion.div variants={motionConfig.heroEntry} className="mt-8 flex flex-wrap gap-3">
             <button className={actionButtonPrimary} onClick={openGithubRepo} type="button">
               {t('hero.requestAccess')}
               <ArrowRight className="size-4" />
@@ -250,25 +293,30 @@ export const MarketingHero = ({ title, description, proofPoints, onNavigate }: M
             >
               {t('hero.seeCapabilities')}
             </button>
-          </div>
+          </motion.div>
 
-          <div className="mt-10 grid gap-3 sm:grid-cols-3">
+          <motion.div variants={motionConfig.staggerContainer} className="mt-10 grid gap-3 sm:grid-cols-3">
             {proofPoints.map((item) => (
-              <div key={item} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm leading-6 text-slate-200">
+              <motion.div
+                key={item}
+                variants={motionConfig.staggerItem}
+                className={`${accentCard} px-4 py-4 text-sm leading-6 text-slate-200`}
+              >
                 {item}
-              </div>
+              </motion.div>
             ))}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         <DesktopPreview />
       </div>
-    </section>
+    </motion.section>
   )
 }
 
 const DesktopPreview = () => {
   const { t } = useTranslation()
+  const motionConfig = useMotionConfig()
   const workflowItems = [
     { label: t('desktopPreview.trigger'), text: t('desktopPreview.triggerDesc') },
     { label: t('desktopPreview.condition'), text: t('desktopPreview.conditionDesc') },
@@ -284,8 +332,8 @@ const DesktopPreview = () => {
   ]
 
   return (
-    <div className="relative">
-      <div className="absolute inset-x-12 top-10 h-40 rounded-full bg-sky-400/18 blur-3xl" />
+    <motion.div className="relative" variants={motionConfig.previewEntry}>
+      <div className="ambient-glow absolute inset-x-12 top-10 h-40 rounded-full bg-sky-400/18 blur-3xl" />
       <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#09111d]/92 shadow-[0_30px_90px_rgba(2,6,23,0.48)]">
         <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
           <div className="flex gap-2">
@@ -297,7 +345,7 @@ const DesktopPreview = () => {
         </div>
 
         <div className="grid gap-6 p-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-[1.5rem] border border-white/8 bg-white/5 p-5">
+          <div className={darkGlassCard}>
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs uppercase tracking-[0.22em] text-slate-500">{t('desktopPreview.automationFlow')}</div>
@@ -330,7 +378,7 @@ const DesktopPreview = () => {
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-[1.5rem] border border-white/8 bg-white/5 p-5">
+            <div className={darkGlassCard}>
               <div className="text-xs uppercase tracking-[0.22em] text-slate-500">{t('desktopPreview.connectedSurface')}</div>
               <div className="mt-4 space-y-3">
                 {connectedItems.map((item) => (
@@ -342,14 +390,14 @@ const DesktopPreview = () => {
               </div>
             </div>
 
-            <div className="rounded-[1.5rem] border border-sky-300/14 bg-sky-300/8 p-5">
+            <div className={accentCard}>
               <div className="text-xs uppercase tracking-[0.22em] text-sky-100/80">{t('desktopPreview.whyItMatters')}</div>
               <p className="mt-3 text-sm leading-7 text-slate-200">{t('desktopPreview.whyItMattersText')}</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -369,23 +417,31 @@ export const MarketingSection = ({
   description,
   tone = 'light',
   children,
-}: MarketingSectionProps) => (
-  <section
+}: MarketingSectionProps) => {
+  const motionConfig = useMotionConfig()
+
+  return (
+  <motion.section
     className={`${sectionSpacing} ${tone === 'dark' ? 'bg-[#0c1726] text-white' : 'text-slate-950'}`}
     id={id}
+    initial="hidden"
+    whileInView="show"
+    viewport={scrollViewport}
+    variants={motionConfig.staggerContainer}
   >
     <div className={containerClass}>
-      <div className="max-w-3xl">
+      <motion.div className="max-w-2xl" variants={motionConfig.slideUp}>
         <div className={`text-xs uppercase tracking-[0.24em] ${tone === 'dark' ? 'text-sky-200' : 'text-sky-700'}`}>{eyebrow}</div>
         <h2 className={`${sectionTitleClass} ${tone === 'dark' ? 'text-white' : 'text-slate-950'}`}>{title}</h2>
         {description ? (
           <p className={`${sectionDescriptionClass} ${tone === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{description}</p>
         ) : null}
-      </div>
-      <div className="mt-10">{children}</div>
+      </motion.div>
+      <motion.div className="mt-12" variants={motionConfig.fade}>{children}</motion.div>
     </div>
-  </section>
-)
+  </motion.section>
+  )
+}
 
 type BenefitGridProps = {
   items: Array<{ title: string; description: string }>
@@ -393,33 +449,47 @@ type BenefitGridProps = {
 
 const benefitIcons = [Zap, Monitor, Workflow]
 
-export const BenefitGrid = ({ items }: BenefitGridProps) => (
-  <div className="grid gap-6 md:grid-cols-3">
+export const BenefitGrid = ({ items }: BenefitGridProps) => {
+  const motionConfig = useMotionConfig()
+
+  return (
+  <motion.div className="grid gap-6 md:grid-cols-3" variants={motionConfig.staggerContainer}>
     {items.map((item, index) => {
       const Icon = benefitIcons[index % benefitIcons.length] ?? Sparkles
       return (
-        <article key={item.title} className={cardBase}>
-          <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-900">
-            <Icon className="size-5 text-sky-500" />
+        <motion.article key={item.title} className={lightElevatedCard} variants={motionConfig.staggerItem}>
+          <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-950 text-slate-50">
+            <Icon className="size-5 text-sky-300" />
           </div>
           <h3 className="mt-5 text-xl font-semibold text-slate-950">{item.title}</h3>
           <p className="mt-3 text-sm leading-7 text-slate-600">{item.description}</p>
-        </article>
+        </motion.article>
       )
     })}
-  </div>
-)
-
-type FeatureCardGridProps = {
-  items: Array<{ title: string; description: string; bullets?: string[] }>
+  </motion.div>
+  )
 }
 
-export const FeatureCardGrid = ({ items }: FeatureCardGridProps) => (
-  <div className="grid gap-6 lg:grid-cols-3">
-    {items.map((item) => (
-      <article key={item.title} className={darkCard}>
-        <div className="flex size-12 items-center justify-center rounded-2xl bg-sky-300/10 text-sky-200">
-          <Workflow className="size-5" />
+type FeatureCardGridProps = {
+  items: Array<{ title: string; description: string; bullets?: string[]; status?: StatusBadgeStatus }>
+}
+
+const featureIcons = [Zap, Workflow, RadioTower, Package, GitBranch, Boxes]
+
+export const FeatureCardGrid = ({ items }: FeatureCardGridProps) => {
+  const motionConfig = useMotionConfig()
+
+  return (
+  <motion.div className="grid gap-6 lg:grid-cols-3" variants={motionConfig.staggerContainer}>
+    {items.map((item, index) => {
+      const Icon = featureIcons[index % featureIcons.length] ?? Workflow
+      return (
+      <motion.article key={item.title} className={darkGlassCard} variants={motionConfig.staggerItem}>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex size-12 items-center justify-center rounded-2xl bg-sky-300/10 text-sky-200">
+            <Icon className="size-5" />
+          </div>
+          <StatusBadge status={resolveStatus(item)} />
         </div>
         <h3 className="mt-5 text-xl font-semibold text-white">{item.title}</h3>
         <p className="mt-3 text-sm leading-7 text-slate-300">{item.description}</p>
@@ -433,19 +503,24 @@ export const FeatureCardGrid = ({ items }: FeatureCardGridProps) => (
             ))}
           </ul>
         ) : null}
-      </article>
-    ))}
-  </div>
-)
+      </motion.article>
+      )
+    })}
+  </motion.div>
+  )
+}
 
 type WorkflowStepsProps = {
   steps: Array<{ title: string; description: string }>
 }
 
-export const WorkflowSteps = ({ steps }: WorkflowStepsProps) => (
-  <div className="grid gap-6 lg:grid-cols-3">
+export const WorkflowSteps = ({ steps }: WorkflowStepsProps) => {
+  const motionConfig = useMotionConfig()
+
+  return (
+  <motion.div className="grid gap-6 lg:grid-cols-3" variants={motionConfig.staggerContainer}>
     {steps.map((step, index) => (
-      <article key={step.title} className={cardBase}>
+      <motion.article key={step.title} className={lightElevatedCard} variants={motionConfig.staggerItem}>
         <div className="flex items-center gap-4">
           <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-950 text-sm font-semibold text-white">
             0{index + 1}
@@ -453,41 +528,56 @@ export const WorkflowSteps = ({ steps }: WorkflowStepsProps) => (
           <h3 className="text-xl font-semibold text-slate-950">{step.title}</h3>
         </div>
         <p className="mt-4 text-sm leading-7 text-slate-600">{step.description}</p>
-      </article>
+      </motion.article>
     ))}
-  </div>
-)
+  </motion.div>
+  )
+}
 
 type TrustGridProps = {
   items: Array<{ title: string; description: string }>
 }
 
-export const TrustGrid = ({ items }: TrustGridProps) => (
-  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-    {items.map((item) => (
-      <article key={item.title} className={`${lightCard} bg-[#fffdf8]`}>
-        <ShieldCheck className="size-5 text-sky-700" />
+export const TrustGrid = ({ items }: TrustGridProps) => {
+  const motionConfig = useMotionConfig()
+  const trustIcons = [Server, Package, Lock, FlaskConical]
+
+  return (
+  <motion.div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4" variants={motionConfig.staggerContainer}>
+    {items.map((item, index) => {
+      const Icon = trustIcons[index % trustIcons.length] ?? ShieldCheck
+      return (
+      <motion.article key={item.title} className={lightElevatedCard} variants={motionConfig.staggerItem}>
+        <div className="flex size-11 items-center justify-center rounded-2xl bg-slate-950 text-sky-300">
+          <Icon className="size-5" />
+        </div>
         <h3 className="mt-4 text-lg font-semibold text-slate-950">{item.title}</h3>
         <p className="mt-3 text-sm leading-7 text-slate-600">{item.description}</p>
-      </article>
-    ))}
-  </div>
-)
+      </motion.article>
+      )
+    })}
+  </motion.div>
+  )
+}
 
 type FaqSectionProps = {
   items: Array<{ question: string; answer: string }>
 }
 
-export const FaqSection = ({ items }: FaqSectionProps) => (
-  <div className="grid gap-4">
+export const FaqSection = ({ items }: FaqSectionProps) => {
+  const motionConfig = useMotionConfig()
+
+  return (
+  <motion.div className="grid gap-4" variants={motionConfig.staggerContainer}>
     {items.map((item) => (
-      <article key={item.question} className={`${lightCard} shadow-[0_20px_60px_rgba(15,23,42,0.05)]`}>
+      <motion.article key={item.question} className={lightElevatedCard} variants={motionConfig.staggerItem}>
         <h3 className="text-lg font-semibold text-slate-950">{item.question}</h3>
         <p className="mt-3 text-sm leading-7 text-slate-600">{item.answer}</p>
-      </article>
+      </motion.article>
     ))}
-  </div>
-)
+  </motion.div>
+  )
+}
 
 type MarketingCtaProps = {
   title: string

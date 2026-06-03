@@ -1,5 +1,11 @@
 # Vercel Deployment
 
+## Critical: Root Directory
+
+**This repo has multiple build targets.** For Vercel you must set **Root Directory** to **`website`**. If you leave it blank or use `/`, Vercel will build the **desktop app** (Dashboard/Triggers/Macros UI) and serve it on your domain instead of the marketing website. The root `package.json` includes a guard that **fails the build** on Vercel when the root directory is wrong; fix it in Project Settings → General → Root Directory.
+
+---
+
 ## Ergebnis der Projektanalyse
 
 Der deploybare Web-Teil dieses Repos ist `website/`.
@@ -26,6 +32,17 @@ Relevante Dateien:
 - `website/scripts/verify-prelaunch-security.mjs`
 
 ## Deploy Anleitung
+
+### Exact Vercel settings (copy-paste reference)
+
+| Setting | Value |
+|--------|--------|
+| **Root Directory** | `website` |
+| **Framework Preset** | Vite |
+| **Build Command** | `npm run build` |
+| **Output Directory** | `dist` |
+
+**Required environment variables (Production):** `VITE_ACCESS_MODE=public_product`, `VITE_SESSION_TTL_MS` (positive integer, e.g. `3600000`).
 
 ### 1. Vercel-Projekt anlegen
 
@@ -123,6 +140,18 @@ Deploy-relevant:
 - `build` erzeugt `website/dist`
 - zusaetzliche Aenderungen an den Build-Scripts waren dafuer nicht noetig
 
+## Deployment checklist (correct project only)
+
+Before and after production deploys, confirm:
+
+- **Build:** Root Directory = `website`; Framework = Vite; Build Command = `npm run build`; Output Directory = `dist`.
+- **Env:** `VITE_ACCESS_MODE=public_product` and `VITE_SESSION_TTL_MS` set; no sensitive `VITE_*` auth vars.
+- **Domains:** `triggerhub.de` and `www.triggerhub.de` assigned only to the project with Root Directory `website`; `triggerhub.de` is primary.
+- **Live check:** Open `https://triggerhub.de` in incognito: marketing site (hero, Features, Pricing, Login), **not** sidebar with Dashboard/Triggers/Macros/Settings. `GET /api/auth/me` returns 200, not 404.
+- **Build logs:** No Electron/electron-builder; build runs in `website` context; prebuild security script runs and succeeds.
+
+See also: `docs/deployment/website-smoke-test.md`, `docs/deployment/vercel-safeguards.md`.
+
 ## Domain Setup
 
 Fuer dieses Projekt ist die Domain `triggerhub.de` vorgesehen.
@@ -133,6 +162,19 @@ Vorgehen in Vercel:
 2. danach die `www`-Subdomain `www.triggerhub.de` hinzufuegen
 3. Domain-Verifikation mit den von Vercel angezeigten DNS-Werten abschliessen
 4. Root-Domain als primaere Domain festlegen
+
+### Fixing domain assignment (wrong project)
+
+If the domain currently shows the **desktop dashboard** (sidebar: Dashboard, Triggers, Macros, Plugins, Settings), the domains are attached to the wrong Vercel project. Fix:
+
+1. **Remove domain from wrong project**  
+   In the project that currently has the dashboard live: **Settings → Domains**. For each of `triggerhub.de` and `www.triggerhub.de`, use the menu (⋮) next to the domain → **Remove** and confirm.
+
+2. **Assign domain to correct project**  
+   Open the **website** project (Root Directory = `website`). **Settings → Domains → Add**. Add `triggerhub.de`, then add `www.triggerhub.de`. Complete DNS/verification as shown by Vercel.
+
+3. **Set primary domain**  
+   In the website project’s **Settings → Domains**, use the menu (⋮) for `triggerhub.de` → **Set as Primary**. Confirm so `www.triggerhub.de` can redirect to `triggerhub.de`.
 
 ## DNS Records
 

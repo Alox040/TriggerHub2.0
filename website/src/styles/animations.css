@@ -1,0 +1,22 @@
+@keyframes ambient-glow {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    opacity: 0.32;
+    transform: translate3d(0, -10px, 0) scale(1.03);
+  }
+}
+
+.ambient-glow {
+  animation: ambient-glow 12s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-glow {
+    animation: none;
+  }
+}

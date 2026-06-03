@@ -8,6 +8,10 @@ Dieses Repository enthaelt drei getrennte Arbeitsbereiche:
 
 Die Trennung ist bewusst ueber Doku und Skripte sichtbar gemacht. Physische Verschiebungen der Teilprojekte wurden nicht vorgenommen, damit Build-, Release- und Deploymentpfade stabil bleiben.
 
+## Deployment (Vercel)
+
+Nur das Website-Projekt darf auf triggerhub.de deployt werden: in Vercel **Root Directory** auf `website` setzen. Siehe [`docs/deployment/vercel-deployment.md`](./docs/deployment/vercel-deployment.md).
+
 ## Einstieg
 
 - Desktop entwickeln: `npm run desktop:dev`
