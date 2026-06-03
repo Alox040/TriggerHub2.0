@@ -236,14 +236,10 @@ button:focus-visible {
   /* Inter: tighten slightly at small sizes for crisper look */
 }
 
-/* section-kicker: sticky only on large screens for context while reading */
-@media (min-width: 1024px) {
-  .section-kicker {
-    position: sticky;
-    top: 84px; /* header height + 16px */
-    align-self: start;
-  }
-}
+/* section-kicker: static — sticky removed.
+   Reason: CTA sections (~220px) are too short for sticky to be useful;
+   the kicker would barely travel before release, causing subtle visual jitter.
+   Visual hierarchy is already clear via uppercase, letter-spacing, and color. */
 
 h1,
 h2,
@@ -474,6 +470,7 @@ h3 {
 
 .section-dark .section-kicker {
   color: var(--surface-deep-muted);
+  border-left-color: var(--surface-deep-border);
 }
 
 .section-dark h2 {
@@ -676,6 +673,11 @@ h3 {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding-top: 6px;
+  /* Subtle left anchor line: replaces sticky as visual orientation aid */
+  border-left: 2px solid var(--border);
+  padding-left: 12px;
+  /* align-self: start so it doesn't stretch full column height */
+  align-self: start;
 }
 
 .content-stack {
