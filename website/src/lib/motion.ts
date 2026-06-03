@@ -13,6 +13,7 @@ type MotionSet = {
   slideUp: Variants
   staggerContainer: Variants
   staggerItem: Variants
+  badgeEntry: Variants
   heroEntry: Variants
   previewEntry: Variants
 }
@@ -20,7 +21,6 @@ type MotionSet = {
 export function useMotionConfig(): MotionSet {
   const reduceMotion = useReducedMotion()
   const offset = reduceMotion ? 0 : 18
-  const previewOffset = reduceMotion ? 0 : 28
   const duration = reduceMotion ? 0.18 : 0.55
 
   return {
@@ -36,8 +36,8 @@ export function useMotionConfig(): MotionSet {
       hidden: {},
       show: {
         transition: {
-          staggerChildren: reduceMotion ? 0 : 0.08,
-          delayChildren: reduceMotion ? 0 : 0.04,
+          staggerChildren: reduceMotion ? 0 : 0.09,
+          delayChildren: reduceMotion ? 0 : 0.05,
         },
       },
     },
@@ -45,17 +45,43 @@ export function useMotionConfig(): MotionSet {
       hidden: { opacity: 0, y: offset },
       show: { opacity: 1, y: 0, transition: { duration, ease: smoothEase } },
     },
+    // Badge: fast pop-in from slight scale, appears first
+    badgeEntry: {
+      hidden: { opacity: 0, scale: reduceMotion ? 1 : 0.92 },
+      show: {
+        opacity: 1,
+        scale: 1,
+        transition: {
+          duration: reduceMotion ? 0.15 : 0.4,
+          ease: smoothEase,
+        },
+      },
+    },
+    // Hero text elements: slide up, each staggered by container
     heroEntry: {
       hidden: { opacity: 0, y: offset },
-      show: { opacity: 1, y: 0, transition: { duration: reduceMotion ? 0.18 : 0.65, ease: smoothEase } },
+      show: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: reduceMotion ? 0.18 : 0.6, ease: smoothEase },
+      },
     },
+    // Preview panel enters after text, from slight y + scale
     previewEntry: {
-      hidden: { opacity: 0, y: previewOffset, scale: reduceMotion ? 1 : 0.98 },
+      hidden: {
+        opacity: 0,
+        y: reduceMotion ? 0 : 24,
+        scale: reduceMotion ? 1 : 0.97,
+      },
       show: {
         opacity: 1,
         y: 0,
         scale: 1,
-        transition: { duration: reduceMotion ? 0.18 : 0.7, ease: smoothEase },
+        transition: {
+          duration: reduceMotion ? 0.18 : 0.75,
+          delay: reduceMotion ? 0 : 0.35,
+          ease: smoothEase,
+        },
       },
     },
   }

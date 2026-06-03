@@ -32,7 +32,7 @@ export const WebsiteLandingPage = () => {
 
   useHashSectionSync()
 
-  const heroProofPoints = t('landing.hero.proofPoints', { returnObjects: true }) as string[]
+  const heroTrustPills = t('landing.hero.trustPills', { returnObjects: true }) as string[]
   const benefits = t('landing.benefits.items', { returnObjects: true }) as TextCard[]
   const featureCards = t('landing.featureCards.items', { returnObjects: true }) as BulletCard[]
   const workflowSteps = t('landing.workflowSteps.items', { returnObjects: true }) as TextCard[]
@@ -46,7 +46,7 @@ export const WebsiteLandingPage = () => {
         <MarketingHero
           title={t('landing.hero.title')}
           description={t('landing.hero.description')}
-          proofPoints={heroProofPoints}
+          trustPills={heroTrustPills}
           onNavigate={navigateTo}
         />
 

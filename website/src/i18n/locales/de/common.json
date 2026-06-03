@@ -34,18 +34,18 @@
     "privacy": "Datenschutz"
   },
   "hero": {
-    "badge": "Geschlossene Alpha - Windows-Desktop",
+    "badge": "Closed Alpha · Windows Desktop",
     "requestAccess": "Alpha-Zugang anfragen",
-    "seeCapabilities": "Sieh dir an, was gebaut ist"
+    "seeCapabilities": "Aktuellen Stand ansehen"
   },
   "landing": {
     "hero": {
-      "title": "Automatisiere deinen Stream. Bleib live fokussiert.",
-      "description": "TriggerHub 2.0 verbindet OBS, Spotify, Szenen und Overlays über Trigger und Makros, damit du den Stream-Start- bis Clip-Workflow automatisieren kannst. Automationen laufen lokal ohne Cloud-Relay.",
-      "proofPoints": [
-        "Desktop-Automatisierung für Windows-Streamer",
-        "Lokale Runtime hält OBS, Musik und Clips synchron",
-        "Begrenzte Plätze verfügbar"
+      "title": "Automationen steuern, ohne die Kontrolle zu verlieren.",
+      "description": "TriggerHub verbindet OBS, Spotify und deine Stream-Tools in einer lokalen Automationsebene. Trigger definieren, Makros bauen, alles vom eigenen Rechner steuern — kein Cloud-Relay, kein manuelles Umschalten.",
+      "trustPills": [
+        "Läuft lokal — keine Cloud",
+        "Keine Daten verlassen deinen Rechner",
+        "Closed Alpha · limitierter Zugang"
       ]
     },
     "sections": {

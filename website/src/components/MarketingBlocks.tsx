@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
@@ -6,7 +6,9 @@ import {
   ArrowRight,
   Boxes,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
+  Cpu,
   FlaskConical,
   FolderGit2,
   GitBranch,
@@ -27,6 +29,7 @@ import {
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { StatusBadge } from './StatusBadge'
 import type { StatusBadgeStatus } from './StatusBadge'
+import * as Accordion from '@radix-ui/react-accordion'
 import { scrollViewport, useMotionConfig } from '../lib/motion'
 
 const GITHUB_REPO_URL = 'https://github.com/Alox040/TriggerHub'
@@ -89,9 +92,11 @@ const actionButtonSecondary = `${actionButtonBase} border border-white/14 text-w
 const lightElevatedCard =
   'rounded-[1.5rem] border border-slate-900/8 bg-[#fffdf8] p-7 shadow-[0_20px_60px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(15,23,42,0.10)]'
 const darkGlassCard =
-  'rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-sky-300/25'
+  'rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition duration-300 hover:-translate-y-1 hover:border-sky-300/25'
 const accentCard =
   'rounded-[1.5rem] border border-sky-300/18 bg-sky-300/[0.07] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
+
+const trustPillIcons = [Cpu, Lock, FlaskConical] as const
 
 const resolveStatus = (item: { title: string; description: string; status?: StatusBadgeStatus }): StatusBadgeStatus => {
   if (item.status) {
@@ -145,7 +150,7 @@ export const MarketingShell = ({ children, onNavigate }: MarketingShellProps) =>
             {sectionLinks.map((item) => (
               <button
                 key={item.id}
-                className="text-sm text-slate-300 transition hover:text-white"
+                className="text-sm text-slate-300 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#08111f] rounded"
                 onClick={() => openSection(item.id, onNavigate)}
                 type="button"
               >
@@ -176,16 +181,15 @@ export const MarketingShell = ({ children, onNavigate }: MarketingShellProps) =>
           </div>
         </div>
         {isMobileMenuOpen ? (
-          <div
+          <nav
             id="mobile-nav-menu"
-            role="menu"
             className="md:hidden border-t border-white/10 bg-[rgba(8,17,31,0.92)] px-6 py-4"
           >
             <div className="flex flex-col gap-3">
               {sectionLinks.map((item) => (
                 <button
                   key={`mobile-${item.id}`}
-                  className="text-left text-sm text-slate-200 transition hover:text-white"
+                  className="rounded text-left text-sm text-slate-200 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                   onClick={() => handleMobileNav(item.id)}
                   type="button"
                 >
@@ -193,7 +197,7 @@ export const MarketingShell = ({ children, onNavigate }: MarketingShellProps) =>
                 </button>
               ))}
             </div>
-          </div>
+          </nav>
         ) : null}
       </header>
 
@@ -212,7 +216,7 @@ export const MarketingShell = ({ children, onNavigate }: MarketingShellProps) =>
               {sectionLinks.map((item) => (
                 <button
                   key={item.id}
-                  className="block transition hover:text-slate-900"
+                  className="block rounded transition hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-1"
                   onClick={() => openSection(item.id, onNavigate)}
                   type="button"
                 >
@@ -225,16 +229,16 @@ export const MarketingShell = ({ children, onNavigate }: MarketingShellProps) =>
           <div>
             <h3 className="text-sm font-semibold text-slate-900">{t('footer.links')}</h3>
             <div className="mt-4 space-y-3 text-sm text-slate-600">
-              <a className="block transition hover:text-slate-900" href={GITHUB_REPO_URL} rel="noreferrer" target="_blank">
+              <a className="block rounded transition hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-1" href={GITHUB_REPO_URL} rel="noreferrer" target="_blank">
                 {t('footer.githubRepository')}
               </a>
-              <button className="block transition hover:text-slate-900" onClick={openGithubRepo} type="button">
+              <button className="block rounded transition hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-1" onClick={openGithubRepo} type="button">
                 {t('footer.protectedAccess')}
               </button>
-              <button className="block transition hover:text-slate-900" onClick={() => onNavigate('/imprint')} type="button">
+              <button className="block rounded transition hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-1" onClick={() => onNavigate('/imprint')} type="button">
                 {t('footer.imprint')}
               </button>
-              <button className="block transition hover:text-slate-900" onClick={() => onNavigate('/privacy')} type="button">
+              <button className="block rounded transition hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-1" onClick={() => onNavigate('/privacy')} type="button">
                 {t('footer.privacy')}
               </button>
             </div>
@@ -248,11 +252,11 @@ export const MarketingShell = ({ children, onNavigate }: MarketingShellProps) =>
 type MarketingHeroProps = {
   title: string
   description: string
-  proofPoints: string[]
+  trustPills: string[]
   onNavigate: (path: string) => void
 }
 
-export const MarketingHero = ({ title, description, proofPoints, onNavigate }: MarketingHeroProps) => {
+export const MarketingHero = ({ title, description, trustPills, onNavigate }: MarketingHeroProps) => {
   const { t } = useTranslation()
   const motionConfig = useMotionConfig()
 
@@ -264,25 +268,42 @@ export const MarketingHero = ({ title, description, proofPoints, onNavigate }: M
       variants={motionConfig.staggerContainer}
     >
       <div className={`${containerClass} grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center`}>
-        <motion.div variants={motionConfig.staggerContainer}>
+        <motion.div className="flex flex-col" variants={motionConfig.staggerContainer}>
+
+          {/* Badge — pops in first via badgeEntry (scale + fade) */}
           <motion.div
-            variants={motionConfig.heroEntry}
-            className="inline-flex rounded-full border border-sky-300/20 bg-sky-300/10 px-4 py-2 text-xs uppercase tracking-[0.24em] text-sky-200"
+            variants={motionConfig.badgeEntry}
+            className="inline-flex w-fit items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/[0.08] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.26em] text-sky-200"
           >
             {t('hero.badge')}
           </motion.div>
+
+          {/* Headline */}
           <motion.h1
             variants={motionConfig.heroEntry}
-            className="mt-6 max-w-4xl font-['Sora',sans-serif] text-[2.5rem] font-semibold leading-[1.05] tracking-tight text-white md:text-[3.75rem] md:leading-[1.05]"
+            className="mt-6 max-w-[20ch] font-['Sora',sans-serif] text-[2.6rem] font-semibold leading-[1.08] tracking-tight text-white sm:text-[3.25rem] md:text-[3.75rem]"
           >
             {title}
           </motion.h1>
-          <motion.p variants={motionConfig.heroEntry} className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+
+          {/* Description */}
+          <motion.p
+            variants={motionConfig.heroEntry}
+            className="mt-5 max-w-[52ch] text-base leading-[1.8] text-slate-300 md:text-lg"
+          >
             {description}
           </motion.p>
 
-          <motion.div variants={motionConfig.heroEntry} className="mt-8 flex flex-wrap gap-3">
-            <button className={actionButtonPrimary} onClick={openGithubRepo} type="button">
+          {/* CTA group — stacks on narrow mobile, row from sm up */}
+          <motion.div
+            variants={motionConfig.heroEntry}
+            className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+          >
+            <button
+              className={`${actionButtonPrimary} cta-pulse`}
+              onClick={openGithubRepo}
+              type="button"
+            >
               {t('hero.requestAccess')}
               <ArrowRight className="size-4" />
             </button>
@@ -295,20 +316,31 @@ export const MarketingHero = ({ title, description, proofPoints, onNavigate }: M
             </button>
           </motion.div>
 
-          <motion.div variants={motionConfig.staggerContainer} className="mt-10 grid gap-3 sm:grid-cols-3">
-            {proofPoints.map((item) => (
-              <motion.div
-                key={item}
-                variants={motionConfig.staggerItem}
-                className={`${accentCard} px-4 py-4 text-sm leading-6 text-slate-200`}
-              >
-                {item}
-              </motion.div>
-            ))}
+          {/* Trust-Pills — icon + label, staggered */}
+          <motion.div
+            variants={motionConfig.staggerContainer}
+            className="mt-8 flex flex-wrap gap-2"
+          >
+            {trustPills.map((pill, index) => {
+              const PillIcon = trustPillIcons[index % trustPillIcons.length]
+              return (
+                <motion.div
+                  key={pill}
+                  variants={motionConfig.staggerItem}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs text-slate-300"
+                >
+                  <PillIcon className="size-3 shrink-0 text-sky-300" />
+                  {pill}
+                </motion.div>
+              )
+            })}
           </motion.div>
         </motion.div>
 
-        <DesktopPreview />
+        {/* Preview panel: hidden on phones, visible from md up */}
+        <div className="hidden md:block">
+          <DesktopPreview />
+        </div>
       </div>
     </motion.section>
   )
@@ -317,13 +349,14 @@ export const MarketingHero = ({ title, description, proofPoints, onNavigate }: M
 const DesktopPreview = () => {
   const { t } = useTranslation()
   const motionConfig = useMotionConfig()
+
   const workflowItems = [
-    { label: t('desktopPreview.trigger'), text: t('desktopPreview.triggerDesc') },
-    { label: t('desktopPreview.condition'), text: t('desktopPreview.conditionDesc') },
-    { label: t('desktopPreview.macro'), text: t('desktopPreview.macroDesc') },
-    { label: t('desktopPreview.action'), text: t('desktopPreview.actionDesc') },
+    { label: t('desktopPreview.trigger'),   text: t('desktopPreview.triggerDesc'),   Icon: Zap       },
+    { label: t('desktopPreview.condition'), text: t('desktopPreview.conditionDesc'), Icon: GitBranch },
+    { label: t('desktopPreview.macro'),     text: t('desktopPreview.macroDesc'),     Icon: Layers    },
+    { label: t('desktopPreview.action'),    text: t('desktopPreview.actionDesc'),    Icon: Play      },
   ]
-  const stepIcons = [Zap, GitBranch, Layers, Play]
+
   const connectedItems = [
     t('desktopPreview.obsControl'),
     t('desktopPreview.spotifyActions'),
@@ -333,66 +366,95 @@ const DesktopPreview = () => {
 
   return (
     <motion.div className="relative" variants={motionConfig.previewEntry}>
-      <div className="ambient-glow absolute inset-x-12 top-10 h-40 rounded-full bg-sky-400/18 blur-3xl" />
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#09111d]/92 shadow-[0_30px_90px_rgba(2,6,23,0.48)]">
-        <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
-          <div className="flex gap-2">
-            <span className="size-3 rounded-full bg-rose-400/80" />
-            <span className="size-3 rounded-full bg-amber-300/80" />
-            <span className="size-3 rounded-full bg-emerald-400/80" />
+      {/* Ambient glow — opacity handled by CSS keyframe in animations.css */}
+      <div className="ambient-glow pointer-events-none absolute inset-x-8 top-6 h-48 rounded-full bg-sky-400 blur-3xl" />
+
+      {/* App window chrome */}
+      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/[0.09] bg-[#09111d] shadow-[0_32px_80px_rgba(2,6,23,0.62),0_0_0_1px_rgba(255,255,255,0.04)]">
+
+        {/* Title bar */}
+        <div className="flex items-center justify-between border-b border-white/[0.07] bg-white/[0.02] px-5 py-3.5">
+          <div className="flex items-center gap-1.5">
+            <span className="size-2.5 rounded-full bg-rose-400/70" />
+            <span className="size-2.5 rounded-full bg-amber-300/70" />
+            <span className="size-2.5 rounded-full bg-emerald-400/70" />
           </div>
-          <div className="text-xs uppercase tracking-[0.22em] text-slate-500">{t('desktopPreview.workflowOverview')}</div>
+          <div className="text-[10px] font-medium uppercase tracking-[0.24em] text-slate-500">
+            {t('desktopPreview.workflowOverview')}
+          </div>
+          <div className="w-[52px]" aria-hidden="true" />
         </div>
 
-        <div className="grid gap-6 p-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className={darkGlassCard}>
-            <div className="flex items-center justify-between">
+        {/* Content grid */}
+        <div className="grid gap-4 p-4 lg:grid-cols-[1.25fr_0.75fr]">
+
+          {/* Left panel — automation flow */}
+          <div className="overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4">
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="text-xs uppercase tracking-[0.22em] text-slate-500">{t('desktopPreview.automationFlow')}</div>
-                <div className="mt-2 text-lg font-semibold text-white">{t('desktopPreview.liveStreamStartup')}</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+                  {t('desktopPreview.automationFlow')}
+                </div>
+                <div className="mt-1.5 text-base font-semibold text-white">
+                  {t('desktopPreview.liveStreamStartup')}
+                </div>
               </div>
-              <div className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-200">
+              <span className="shrink-0 rounded-full border border-emerald-400/25 bg-emerald-400/[0.08] px-2.5 py-1 text-[10px] font-semibold text-emerald-300">
                 {t('desktopPreview.localRuntime')}
-              </div>
+              </span>
             </div>
 
-            <div className="mt-6 space-y-4">
-              {workflowItems.map((item, index) => {
-                const Icon = stepIcons[index] ?? Sparkles
-                return (
-                  <div
-                    key={item.label}
-                    className="flex items-center gap-4 rounded-2xl border border-white/8 bg-slate-900/50 px-4 py-4"
-                  >
-                    <div className="flex size-10 items-center justify-center rounded-2xl bg-slate-900/60 text-slate-100">
-                      <Icon className="size-5 text-sky-200" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-white">{item.label}</div>
-                      <div className="mt-1 text-sm text-slate-400">{item.text}</div>
-                    </div>
+            {/* Workflow steps */}
+            <div className="mt-4 space-y-2">
+              {workflowItems.map(({ label, text, Icon }, index) => (
+                <div
+                  key={label}
+                  className="flex items-center gap-3 rounded-xl border-l-2 border-sky-300/25 bg-slate-900/60 py-2.5 pl-3 pr-3"
+                >
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-800/80">
+                    <Icon className="size-4 text-sky-300" />
                   </div>
-                )
-              })}
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-semibold text-slate-500">0{index + 1}</span>
+                      <span className="text-sm font-semibold text-white">{label}</span>
+                    </div>
+                    <div className="mt-0.5 truncate text-xs text-slate-400">{text}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className={darkGlassCard}>
-              <div className="text-xs uppercase tracking-[0.22em] text-slate-500">{t('desktopPreview.connectedSurface')}</div>
-              <div className="mt-4 space-y-3">
+          {/* Right column */}
+          <div className="flex flex-col gap-3">
+
+            {/* Connected surface */}
+            <div className="overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+                {t('desktopPreview.connectedSurface')}
+              </div>
+              <div className="mt-3 space-y-1.5">
                 {connectedItems.map((item) => (
-                  <div key={item} className="flex items-center gap-3 rounded-2xl bg-black/14 px-4 py-3 text-sm text-slate-200">
-                    <CheckCircle2 className="size-4 text-sky-300" />
-                    <span>{item}</span>
+                  <div
+                    key={item}
+                    className="flex items-center gap-2.5 rounded-lg bg-black/20 px-3 py-2 text-xs text-slate-300"
+                  >
+                    <CheckCircle2 className="size-3.5 shrink-0 text-sky-300" />
+                    <span className="truncate">{item}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className={accentCard}>
-              <div className="text-xs uppercase tracking-[0.22em] text-sky-100/80">{t('desktopPreview.whyItMatters')}</div>
-              <p className="mt-3 text-sm leading-7 text-slate-200">{t('desktopPreview.whyItMattersText')}</p>
+            {/* Why it matters */}
+            <div className="overflow-hidden rounded-2xl border border-sky-300/[0.12] bg-sky-300/[0.05] p-4">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-sky-200/70">
+                {t('desktopPreview.whyItMatters')}
+              </div>
+              <p className="mt-2 text-xs leading-[1.7] text-slate-300">
+                {t('desktopPreview.whyItMattersText')}
+              </p>
             </div>
           </div>
         </div>
@@ -497,7 +559,7 @@ export const FeatureCardGrid = ({ items }: FeatureCardGridProps) => {
           <ul className="mt-5 space-y-3 text-sm text-slate-200">
             {item.bullets.map((bullet) => (
               <li key={bullet} className="flex gap-3">
-                <ChevronRight className="mt-1 size-4 flex-none text-sky-300" />
+                <ChevronRight aria-hidden="true" className="mt-1 size-4 flex-none text-sky-300" />
                 <span>{bullet}</span>
               </li>
             ))}
@@ -518,17 +580,24 @@ export const WorkflowSteps = ({ steps }: WorkflowStepsProps) => {
   const motionConfig = useMotionConfig()
 
   return (
-  <motion.div className="grid gap-6 lg:grid-cols-3" variants={motionConfig.staggerContainer}>
+  <motion.div className="flex flex-col lg:flex-row lg:items-stretch" variants={motionConfig.staggerContainer}>
     {steps.map((step, index) => (
-      <motion.article key={step.title} className={lightElevatedCard} variants={motionConfig.staggerItem}>
-        <div className="flex items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-950 text-sm font-semibold text-white">
-            0{index + 1}
+      <Fragment key={step.title}>
+        {index > 0 && (
+          <div aria-hidden="true" className="flex flex-none items-center justify-center py-2 lg:self-center lg:px-2 lg:py-0">
+            <div className="h-8 w-0 border-l-2 border-dashed border-slate-200 lg:h-0 lg:w-8 lg:border-l-0 lg:border-t-2" />
           </div>
-          <h3 className="text-xl font-semibold text-slate-950">{step.title}</h3>
-        </div>
-        <p className="mt-4 text-sm leading-7 text-slate-600">{step.description}</p>
-      </motion.article>
+        )}
+        <motion.article className={`${lightElevatedCard} lg:flex-1`} variants={motionConfig.staggerItem}>
+          <div className="flex items-center gap-4">
+            <div className="flex size-12 flex-none items-center justify-center rounded-2xl bg-slate-950 text-sm font-semibold text-white ring-2 ring-sky-500/25">
+              0{index + 1}
+            </div>
+            <h3 className="text-xl font-semibold text-slate-950">{step.title}</h3>
+          </div>
+          <p className="mt-4 text-sm leading-7 text-slate-600">{step.description}</p>
+        </motion.article>
+      </Fragment>
     ))}
   </motion.div>
   )
@@ -570,10 +639,19 @@ export const FaqSection = ({ items }: FaqSectionProps) => {
   return (
   <motion.div className="grid gap-4" variants={motionConfig.staggerContainer}>
     {items.map((item) => (
-      <motion.article key={item.question} className={lightElevatedCard} variants={motionConfig.staggerItem}>
-        <h3 className="text-lg font-semibold text-slate-950">{item.question}</h3>
-        <p className="mt-3 text-sm leading-7 text-slate-600">{item.answer}</p>
-      </motion.article>
+      <motion.div key={item.question} variants={motionConfig.staggerItem}>
+        <Accordion.Root type="single" collapsible className={lightElevatedCard}>
+          <Accordion.Item value={item.question}>
+            <Accordion.Trigger className="group flex w-full cursor-pointer items-center justify-between gap-4 rounded bg-transparent text-left [appearance:none] [border:none] [padding:0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2">
+              <h3 className="text-lg font-semibold text-slate-950">{item.question}</h3>
+              <ChevronDown className="size-5 flex-none text-slate-400 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            </Accordion.Trigger>
+            <Accordion.Content className="overflow-hidden">
+              <p className="mt-3 text-sm leading-7 text-slate-600">{item.answer}</p>
+            </Accordion.Content>
+          </Accordion.Item>
+        </Accordion.Root>
+      </motion.div>
     ))}
   </motion.div>
   )
