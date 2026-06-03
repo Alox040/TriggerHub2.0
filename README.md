@@ -1,27 +1,52 @@
-# TriggerHub 2.0
+# TriggerHub Firmenwebsite
 
-Dieses Repository enthaelt drei getrennte Arbeitsbereiche:
+Dieses Repository enthält die schlanke Firmenwebsite für die geplante
+TriggerHub UG (haftungsbeschränkt) in Gründung.
 
-- Produktcode: Desktop-App im Root (`src/`, `electron/`) und die aktive Website in [`website/`](./website)
-- Design- und Prototyping-Referenzen: [`design/`](./design)
-- Hilfstools: [`tools/`](./tools), aktuell vor allem [`tools/exe-builder/`](./tools/exe-builder)
+ResQBrain bleibt eine separate Produktmarke und wird auf `resqbrain.de`
+weitergeführt. Dieses Repository enthält keine ResQBrain-App-Logik, keine
+Mobile-App, keine API und keine Lookup-Daten.
 
-Die Trennung ist bewusst ueber Doku und Skripte sichtbar gemacht. Physische Verschiebungen der Teilprojekte wurden nicht vorgenommen, damit Build-, Release- und Deploymentpfade stabil bleiben.
+## Struktur
 
-## Einstieg
+- `app/` - Next.js App Router Seiten
+- `app/page.tsx` - Startseite mit Firmenprofil und Projektabschnitt ResQBrain
+- `app/kontakt/page.tsx` - Kontaktseite
+- `app/impressum/page.tsx` - Impressum-Platzhalter
+- `app/datenschutz/page.tsx` - Datenschutz-Platzhalter
+- `vercel.json` - Vercel-Konfiguration für den Root-Build
 
-- Desktop entwickeln: `npm run desktop:dev`
-- Desktop bauen: `npm run desktop:build`
-- Website entwickeln: `npm run website:dev`
-- Website bauen: `npm run website:build`
-- Design-Prototyp starten: `npm run design:dev`
-- EXE-Builder starten: `npm run tool:exe-builder:start`
+## Rechtlicher Status
 
-## Repo-Struktur
+Bis zur Handelsregistereintragung wird die Firmierung als
+`TriggerHub UG (haftungsbeschränkt) in Gründung` geführt.
 
-Eine kompakte Rollenbeschreibung der Hauptbereiche steht in [`docs/REPO_STRUCTURE.md`](./docs/REPO_STRUCTURE.md).
+Nicht eingetragen und daher nicht im Repository ergänzt:
 
-## Offene Entscheidungen
+- Handelsregisternummer
+- Registergericht
+- Steuernummer
+- USt-ID
+- nicht bestätigte Partner oder Referenzen
 
-- `marketing/`, `project-meta/`, `project-context/` und weitere Root-Hilfsordner bleiben vorerst unveraendert, weil ihre produktive Rolle im Build- oder Releasepfad nicht eindeutig genug dokumentiert ist.
-- Eine spaetere Monorepo-Konsolidierung mit Workspaces sollte nur separat und mit expliziten CI-, Build- und Deploymentanpassungen erfolgen.
+Diese Angaben werden erst nach tatsächlicher Eintragung und fachlicher Prüfung
+ergänzt.
+
+## Entwicklung
+
+```bash
+pnpm install
+pnpm typecheck
+pnpm build
+```
+
+Optional lokal starten:
+
+```bash
+pnpm dev
+```
+
+## Deployment
+
+Die Website ist für Vercel vorbereitet. Vor einer Domain-Verknüpfung sollte
+zuerst ein Preview-Deployment geprüft werden.

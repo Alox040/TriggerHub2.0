@@ -1,14 +1,14 @@
 node_modules/
-design/node_modules/
-website/node_modules/
+.next/
+out/
 dist/
-release/
-releases/*.zip
-*.log
-*.zip
-.DS_Store
+build/
+tsconfig.tsbuildinfo
+
+.env
 .env.local
 .env*.local
 
-.vercel
-.aider*
+.vercel/
+*.log
+.DS_Store
