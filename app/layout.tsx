@@ -13,11 +13,13 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://triggerhub.de")
 };
 
+// Primäre Navigation — nur Firmen- und Produkt-Inhalte.
+// Impressum und Datenschutz bleiben im Footer (rechtlich erreichbar,
+// aber nicht als gleichwertige Navigation inszeniert).
 const navigation = [
+  { href: "/#unternehmen", label: "Unternehmen" },
   { href: "/resqbrain", label: "ResQBrain" },
   { href: "/kontakt", label: "Kontakt" },
-  { href: "/impressum", label: "Impressum" },
-  { href: "/datenschutz", label: "Datenschutz" }
 ];
 
 export default function RootLayout({

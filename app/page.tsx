@@ -1,216 +1,225 @@
 import Link from "next/link";
 
-const workingPrinciples = [
-  {
-    title: "Struktur vor Umfang",
-    text: "Inhalte und Funktionen werden bewusst reduziert, klar gegliedert und nachvollziehbar aufgebaut."
-  },
-  {
-    title: "Klare fachliche Grenzen",
-    text: "Produkte werden sachlich als Wissens-, Lern- oder Nachschlageangebote positioniert — ohne Scope-Überdehnung."
-  },
-  {
-    title: "Saubere Grundlage",
-    text: "Rechtliche Angaben, Datenschutz und stabile technische Basis haben Vorrang vor optischem Ausbau."
-  }
-];
-
-const services = [
-  "Digitale Produktentwicklung",
-  "Wissens- und Referenzsysteme",
-  "Automatisierung und interne Tools",
-  "UI/UX und Produktstruktur",
-  "MVP-Validierung"
-];
-
-const processSteps = [
-  { num: "01", title: "Verstehen", text: "Nutzungssituation, Kontext und tatsächlicher Bedarf vor dem ersten Commit." },
-  { num: "02", title: "Strukturieren", text: "Produktgrenzen, Architektur und Grundlage klären und dokumentieren." },
-  { num: "03", title: "Prototypisieren", text: "Lauffähiger Prototyp ohne Over-Engineering, mit definiertem Scope." },
-  { num: "04", title: "Validieren", text: "Testen mit realen Nutzern oder Pilotpartnern. Feedback direkt zurück." },
-  { num: "05", title: "Iterieren", text: "Gezielt verbessern auf Basis belastbarer Erkenntnisse." }
-];
+/* ─────────────────────────────────────────────────────────────
+   Section 1 — HERO
+   ──────────────────────────────────────────────────────────── */
 
 export default function Home() {
   return (
     <>
-      {/* Hero */}
+      {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="hero" aria-labelledby="hero-title">
         <div>
-          <p className="eyebrow">Softwarefirma in Gründung</p>
+          <p className="eyebrow">Software-Studio · in Gründung</p>
           <h1 id="hero-title">
-            TriggerHub entwickelt Software für strukturiertes Wissen.
+            Digitale Werkzeuge,<br aria-hidden="true" />
+            die im Arbeitsalltag halten.
           </h1>
           <p className="lead">
-            TriggerHub UG (haftungsbeschränkt) in Gründung ist die geplante
-            Dachmarke für digitale Wissens- und Lernprodukte. Die Website wird
-            rechtlich vorsichtig vorbereitet und bildet die Firmenstruktur klar
-            getrennt von der Produktmarke ResQBrain ab.
+            TriggerHub entwickelt fokussierte Softwareprodukte für Fachleute —
+            präzise im Scope, klar in der Funktion, ehrlich im Stand.
           </p>
           <div className="hero-actions">
-            <Link className="button button-primary" href="/kontakt">
-              Kontakt aufnehmen
+            <Link className="button button-primary" href="/resqbrain">
+              ResQBrain ansehen →
             </Link>
-            <Link className="button button-secondary" href="/resqbrain">
-              ResQBrain ansehen
+            <Link className="button button-secondary" href="/kontakt">
+              Kontakt aufnehmen
             </Link>
           </div>
         </div>
-        <aside className="signal-panel" aria-label="Unternehmensfokus">
-          <div className="signal-panel-title">Fokus</div>
-          <div className="signal-grid">
-            {["digitale Wissensprodukte", "sachliche Nutzerführung", "klare Produktabgrenzung"].map((item) => (
-              <div className="signal-item" key={item}>
-                <span className="signal-dot" aria-hidden="true" />
-                <span>{item}</span>
+
+        {/* Status-Panel statt generischer Bullets */}
+        <aside aria-label="Aktueller Entwicklungsstand">
+          <div className="status-panel">
+            <div className="status-panel-title">Aktueller Stand</div>
+            <div className="status-rows">
+              <div className="status-row">
+                <span className="dot dot-active" aria-hidden="true" />
+                <span className="status-row-label">ResQBrain</span>
+                <span className="status-row-value">In Entwicklung</span>
               </div>
-            ))}
+              <div className="status-row">
+                <span className="dot dot-partial" aria-hidden="true" />
+                <span className="status-row-label">TriggerHub UG</span>
+                <span className="status-row-value">In Gründung</span>
+              </div>
+              <div className="status-row">
+                <span className="dot dot-open" aria-hidden="true" />
+                <span className="status-row-label">Weitere Projekte</span>
+                <span className="status-row-value">Konzeptphase</span>
+              </div>
+            </div>
+            <hr className="status-divider" aria-hidden="true" />
+            <p className="status-footnote">
+              Kein Investor-Druck · Kein Launch-Datum
+            </p>
           </div>
         </aside>
       </section>
 
-      {/* Unternehmen */}
-      <section className="section" aria-labelledby="company-title">
+      {/* ── Unternehmen (dark) ───────────────────────────────── */}
+      <section
+        className="section section-dark"
+        id="unternehmen"
+        aria-labelledby="company-title"
+      >
         <div className="section-grid">
-          <div className="section-kicker">Unternehmen</div>
-          <div className="content-stack">
+          <div className="section-kicker">Das Unternehmen</div>
+          <div>
             <h2 id="company-title">
-              Schlanke Softwareentwicklung mit klarer Verantwortung.
+              TriggerHub ist das Fundament — nicht das Produkt.
             </h2>
             <p>
-              TriggerHub bündelt Entwicklung, Betrieb und strategische
-              Weiterentwicklung eigener Softwareprodukte. Im Mittelpunkt stehen
-              klare Informationsarchitekturen, verlässliche Inhalte und eine
-              verantwortungsvolle Abgrenzung der jeweiligen Produktfunktion.
+              Hinter jedem nachhaltigen Produkt steht eine Einheit, die
+              Entwicklung, Betrieb und Verantwortung langfristig trägt.
+              TriggerHub übernimmt diese Rolle — zunächst für ResQBrain,
+              später für weitere digitale Produkte.
             </p>
-            <p className="muted">
-              Bis zur Handelsregistereintragung wird die Firmierung ausdrücklich
-              als TriggerHub UG (haftungsbeschränkt) in Gründung geführt. Keine
-              Handelsregisternummer oder USt-ID vor abgeschlossener Eintragung.
+            <div className="principle-grid">
+              <div className="principle-card">
+                <div className="principle-num">01</div>
+                <h3>Fokus</h3>
+                <p>
+                  Ein fokussiertes Produkt mit echtem Nutzen ist wertvoller
+                  als zehn halbfertige Features.
+                </p>
+              </div>
+              <div className="principle-card">
+                <div className="principle-num">02</div>
+                <h3>Klarheit</h3>
+                <p>
+                  Jedes Produkt hat einen definierten Scope. Was es nicht
+                  ist, steht ebenso klar drin.
+                </p>
+              </div>
+              <div className="principle-card">
+                <div className="principle-num">03</div>
+                <h3>Transparenz</h3>
+                <p>
+                  Wir kommunizieren den echten Stand — nicht den, der
+                  gut klingt.
+                </p>
+              </div>
+            </div>
+            <p
+              style={{
+                marginTop: "28px",
+                fontSize: "0.84rem",
+                color: "var(--surface-deep-muted)",
+                borderTop: "1px solid var(--surface-deep-border)",
+                paddingTop: "18px",
+              }}
+            >
+              TriggerHub UG (haftungsbeschränkt) befindet sich in Gründung.
+              Bis zur Handelsregistereintragung handelt Alexander Posdziech
+              als Privatperson. Kein HRB, keine USt-ID, kein Gründungsdatum.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Aktuelles Projekt — ResQBrain */}
-      <section className="section" aria-labelledby="project-title">
+      {/* ── ResQBrain ────────────────────────────────────────── */}
+      <section className="section" aria-labelledby="product-title">
         <div className="section-grid">
-          <div className="section-kicker">Aktuelles Projekt</div>
+          <div className="section-kicker">Aktuelles Produkt</div>
           <div>
-            <div className="project-box">
-              <h2 id="project-title">ResQBrain</h2>
-              <p>
-                ResQBrain ist das erste Hauptprojekt von TriggerHub. Es ist eine
-                Knowledge-only Nachschlage- und Lernhilfe für den Rettungsdienst.
+            <div className="product-card">
+              <div className="product-tags">
+                <span className="tag tag-product">Knowledge-only</span>
+                <span className="tag tag-status">In Entwicklung</span>
+              </div>
+              <h3 id="product-title">ResQBrain</h3>
+              <p className="product-tagline">
+                Nachschlage- und Lernhilfe für den Rettungsdienst
               </p>
-              <p>
-                Das Produkt unterstützt dabei, rettungsdienstliches Fachwissen
-                strukturiert zu wiederholen, einzuordnen und nachzuschlagen.
+              <p className="product-desc">
+                ResQBrain ist das erste Produkt unter dem Dach von TriggerHub.
+                Es unterstützt Rettungsdienstpersonal, Auszubildende und
+                Ausbilder dabei, Fachwissen strukturiert zu wiederholen,
+                einzuordnen und nachzuschlagen — für Ausbildung und
+                Vorbereitung, nicht für Entscheidungen im Einsatz.
               </p>
-              <div className="disclaimer-box">
+              <div className="product-disclaimer" role="note">
+                <span className="product-disclaimer-icon" aria-hidden="true">
+                  ⓘ
+                </span>
                 <p>
-                  <strong>Knowledge-only:</strong> ResQBrain ist keine
-                  Entscheidungsunterstützung, kein Medizinprodukt und kein
-                  Ersatz für Ausbildung, ärztliche Beratung, lokale SOPs oder
+                  <strong>Knowledge-only:</strong> ResQBrain ist kein
+                  Medizinprodukt, keine Entscheidungsunterstützung und kein
+                  Ersatz für lokale SOPs, Leitlinien, ärztliche Beratung oder
                   eigenverantwortliche fachliche Beurteilung.
                 </p>
               </div>
-              <div style={{ marginTop: "20px" }}>
-                <Link className="button button-secondary" href="/resqbrain">
-                  Mehr zu ResQBrain
-                </Link>
+              <Link className="product-link" href="/resqbrain">
+                Mehr zu ResQBrain →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Wie wir arbeiten ─────────────────────────────────── */}
+      <section className="section" aria-labelledby="how-title">
+        <div className="section-grid">
+          <div className="section-kicker">Arbeitsweise</div>
+          <div>
+            <h2 id="how-title">Strukturiert. Klar begrenzt. Robust.</h2>
+            <p className="muted" style={{ marginBottom: "24px" }}>
+              Produktentwicklung ohne Wasserfall-Theater und ohne
+              Feature-Creep. Jeder Schritt hat ein nachvollziehbares Ergebnis.
+            </p>
+            <div className="how-grid">
+              <div className="how-card">
+                <h3>Verstehen vor Bauen</h3>
+                <p>
+                  Nutzungskontext und tatsächlicher Bedarf werden analysiert,
+                  bevor Code geschrieben wird.
+                </p>
+              </div>
+              <div className="how-card">
+                <h3>Scope bewusst begrenzen</h3>
+                <p>
+                  Ein klarer Scope schützt vor Überdehnung — und schützt
+                  Nutzer vor falschen Erwartungen.
+                </p>
+              </div>
+              <div className="how-card">
+                <h3>Iterieren auf Basis echter Erkenntnisse</h3>
+                <p>
+                  Kein Feature ohne Begründung. Verbesserungen folgen aus
+                  Feedback, nicht aus Wunschlisten.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Arbeitsweise */}
-      <section className="section" aria-labelledby="work-title">
-        <div className="section-grid">
-          <div className="section-kicker">Arbeitsweise</div>
-          <div>
-            <h2 id="work-title">Sachlich, reduziert und nachvollziehbar.</h2>
-            <ul className="work-list">
-              {workingPrinciples.map((item) => (
-                <li key={item.title}>
-                  <h3>{item.title}</h3>
-                  <p className="muted">{item.text}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* Leistungen */}
-      <section className="section" aria-labelledby="services-title">
-        <div className="section-grid">
-          <div className="section-kicker">Leistungen</div>
-          <div>
-            <h2 id="services-title">Was wir entwickeln.</h2>
-            <p className="muted" style={{ marginBottom: "24px" }}>
-              Fokussierter Scope. Keine Full-Service-Versprechen ohne Grundlage.
-            </p>
-            <ul className="services-list">
-              {services.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* Prozess */}
-      <section className="section" aria-labelledby="process-title">
-        <div className="section-grid">
-          <div className="section-kicker">Prozess</div>
-          <div>
-            <h2 id="process-title">Wie ein Projekt entsteht.</h2>
-            <p className="muted" style={{ marginBottom: "24px" }}>
-              Kein Wasserfall, kein Sprint-Theater. Strukturierte Iteration mit
-              echten Zwischenergebnissen.
-            </p>
-            <ol className="process-list">
-              {processSteps.map((step) => (
-                <li className="process-step" key={step.num}>
-                  <span className="process-step-num">{step.num}</span>
-                  <h3>{step.title}</h3>
-                  <p className="muted" style={{ margin: 0, fontSize: "0.88rem" }}>
-                    {step.text}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </section>
-
-      {/* Kontakt-CTA */}
+      {/* ── Kontakt-CTA ──────────────────────────────────────── */}
       <section className="section" aria-labelledby="cta-title">
         <div className="section-grid">
           <div className="section-kicker">Kontakt</div>
           <div className="cta-box">
-            <h2 id="cta-title" style={{ color: "#ffffff" }}>
-              Projektidee, Pilotphase oder Austausch?
+            <h2 id="cta-title" style={{ color: "#ffffff", marginBottom: "12px" }}>
+              Interesse an ResQBrain, Zusammenarbeit oder Austausch?
             </h2>
-            <p className="muted">
-              Kein Formular, kein Sales-Funnel. Eine direkte E-Mail an eine
-              echte Person.
+            <p className="muted" style={{ marginBottom: "24px", lineHeight: "1.7" }}>
+              Kein Formular, kein Autoresponder. Eine direkte Nachricht
+              an eine echte Person — für Pilotinteresse bei ResQBrain,
+              Kooperationsanfragen und allgemeine Fragen.
             </p>
-            <div style={{ marginTop: "24px" }}>
-              <a
-                className="button"
-                href="mailto:Triggerhub@outlook.com"
-                style={{
-                  background: "#ffffff",
-                  borderColor: "#ffffff",
-                  color: "var(--accent-strong)"
-                }}
-              >
-                Triggerhub@outlook.com
-              </a>
-            </div>
+            <a
+              className="button"
+              href="mailto:Triggerhub@outlook.com"
+              style={{
+                background: "#ffffff",
+                borderColor: "#ffffff",
+                color: "var(--accent-strong)",
+              }}
+            >
+              Triggerhub@outlook.com schreiben
+            </a>
           </div>
         </div>
       </section>
