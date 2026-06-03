@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { NavLinks } from "./_components/NavLinks";
 
 // Inter: recommended by UI/UX Pro Max for "Trust & Authority / Precision Studio"
 // weights 400 (body), 500 (labels), 600 (headings), 700 (display)
@@ -22,14 +23,6 @@ export const metadata: Metadata = {
     "Softwareentwicklung für digitale Wissens- und Referenzprodukte. TriggerHub UG (haftungsbeschränkt) in Gründung.",
   metadataBase: new URL("https://triggerhub.de"),
 };
-
-// Primäre Navigation — nur Firmen- und Produkt-Inhalte.
-// Impressum und Datenschutz bleiben im Footer.
-const navigation = [
-  { href: "/#unternehmen", label: "Unternehmen" },
-  { href: "/resqbrain", label: "ResQBrain" },
-  { href: "/kontakt", label: "Kontakt" },
-];
 
 export default function RootLayout({
   children,
@@ -52,13 +45,8 @@ export default function RootLayout({
                   UG (haftungsbeschränkt) in Gründung
                 </span>
               </Link>
-              <nav className="nav" aria-label="Hauptnavigation">
-                {navigation.map((item) => (
-                  <Link key={item.href} href={item.href}>
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
+              {/* NavLinks is "use client" — only this nav reads usePathname() */}
+              <NavLinks />
             </div>
           </header>
           <main className="main-content" id="main-content" tabIndex={-1}>

@@ -189,6 +189,27 @@ button:focus-visible {
   color: var(--resqbrain-strong);
 }
 
+/* ── Active nav state ────────────────────────────────────────
+   Three clearly distinguishable states:
+   1. Default  : muted text, no border
+   2. Hover    : text color + teal border  (transient, :hover)
+   3. Active   : text color + text border  (persistent, .nav-active)
+   ──────────────────────────────────────────────────────────── */
+
+.nav a.nav-active {
+  color: var(--text);
+  border-bottom-color: var(--text);
+  /* Slightly heavier weight — no layout shift with Inter variable font */
+  font-weight: 500;
+}
+
+/* ResQBrain active: use product-color border instead of text-color */
+.nav a[href="/resqbrain"].nav-active {
+  color: var(--resqbrain-strong);
+  border-bottom-color: var(--resqbrain);
+  font-weight: 600; /* already set, kept for specificity */
+}
+
 /* ─── Main content ───────────────────────────────────────────── */
 
 .main-content {
