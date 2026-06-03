@@ -1,15 +1,12 @@
 import Link from "next/link";
 
-/* ─────────────────────────────────────────────────────────────
-   Section 1 — HERO
-   ──────────────────────────────────────────────────────────── */
-
 export default function Home() {
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="hero" aria-labelledby="hero-title">
-        <div>
+        {/* hero-text gets entrance animation */}
+        <div className="hero-text">
           <p className="eyebrow">Software-Studio · in Gründung</p>
           <h1 id="hero-title">
             Digitale Werkzeuge,<br aria-hidden="true" />
@@ -29,8 +26,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Status-Panel statt generischer Bullets */}
-        <aside aria-label="Aktueller Entwicklungsstand">
+        {/* hero-aside gets staggered entrance animation */}
+        <aside className="hero-aside" aria-label="Aktueller Entwicklungsstand">
           <div className="status-panel">
             <div className="status-panel-title">Aktueller Stand</div>
             <div className="status-rows">
@@ -102,15 +99,8 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <p
-              style={{
-                marginTop: "28px",
-                fontSize: "0.84rem",
-                color: "var(--surface-deep-muted)",
-                borderTop: "1px solid var(--surface-deep-border)",
-                paddingTop: "18px",
-              }}
-            >
+            {/* Legal note — CSS class, no inline styles */}
+            <p className="company-legal-note">
               TriggerHub UG (haftungsbeschränkt) befindet sich in Gründung.
               Bis zur Handelsregistereintragung handelt Alexander Posdziech
               als Privatperson. Kein HRB, keine USt-ID, kein Gründungsdatum.
@@ -165,7 +155,7 @@ export default function Home() {
           <div className="section-kicker">Arbeitsweise</div>
           <div>
             <h2 id="how-title">Strukturiert. Klar begrenzt. Robust.</h2>
-            <p className="muted" style={{ marginBottom: "24px" }}>
+            <p className="muted how-lead">
               Produktentwicklung ohne Wasserfall-Theater und ohne
               Feature-Creep. Jeder Schritt hat ein nachvollziehbares Ergebnis.
             </p>
@@ -201,22 +191,17 @@ export default function Home() {
         <div className="section-grid">
           <div className="section-kicker">Kontakt</div>
           <div className="cta-box">
-            <h2 id="cta-title" style={{ color: "#ffffff", marginBottom: "12px" }}>
+            <h2 id="cta-title">
               Interesse an ResQBrain, Zusammenarbeit oder Austausch?
             </h2>
-            <p className="muted" style={{ marginBottom: "24px", lineHeight: "1.7" }}>
+            <p className="cta-text">
               Kein Formular, kein Autoresponder. Eine direkte Nachricht
               an eine echte Person — für Pilotinteresse bei ResQBrain,
               Kooperationsanfragen und allgemeine Fragen.
             </p>
             <a
-              className="button"
+              className="cta-email-button"
               href="mailto:Triggerhub@outlook.com"
-              style={{
-                background: "#ffffff",
-                borderColor: "#ffffff",
-                color: "var(--accent-strong)",
-              }}
             >
               Triggerhub@outlook.com schreiben
             </a>
