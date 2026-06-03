@@ -22,11 +22,12 @@ export default function DatenschutzPage() {
         <p>
           TriggerHub UG (haftungsbeschränkt) in Gründung
           <br />
-          [Vorname Nachname]
+          Alexander Posdziech
           <br />
-          [Adresse]
+          Voßort 14, 21037 Hamburg, Deutschland
           <br />
-          E-Mail: <a href="mailto:Triggerhub@outlook.com">Triggerhub@outlook.com</a>
+          E-Mail:{" "}
+          <a href="mailto:Triggerhub@outlook.com">Triggerhub@outlook.com</a>
         </p>
       </div>
 
