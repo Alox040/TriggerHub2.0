@@ -26,7 +26,7 @@ export default function DatenschutzPage() {
           <br />
           [Adresse]
           <br />
-          E-Mail: <a href="mailto:kontakt@triggerhub.de">kontakt@triggerhub.de</a>
+          E-Mail: <a href="mailto:Triggerhub@outlook.com">Triggerhub@outlook.com</a>
         </p>
       </div>
 
@@ -52,8 +52,10 @@ export default function DatenschutzPage() {
       <div className="legal-block">
         <h2>Hosting</h2>
         <p>
-          Diese Website wird bei [Hosting-Anbieter] betrieben. Dabei können
-          technisch notwendige Server-Logdaten verarbeitet werden.
+          Diese Website wird bei Vercel Inc. (440 N Barranca Ave #4133, Covina,
+          CA 91723, USA) gehostet. Dabei können technisch notwendige
+          Server-Logdaten verarbeitet werden. Details entnehmen Sie der
+          Datenschutzerklärung von Vercel.
         </p>
       </div>
 

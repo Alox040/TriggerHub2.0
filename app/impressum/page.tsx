@@ -15,11 +15,11 @@ export default function ImpressumPage() {
         <p>
           TriggerHub UG (haftungsbeschränkt) in Gründung
           <br />
-          [Vorname Nachname]
+          Alexander Posdziech
           <br />
-          [Straße Hausnummer]
+          Voßort 14
           <br />
-          [PLZ Ort]
+          21037 Hamburg
           <br />
           Deutschland
         </p>
@@ -28,16 +28,27 @@ export default function ImpressumPage() {
       <div className="legal-block">
         <h2>Kontakt</h2>
         <p>
-          E-Mail: <a href="mailto:kontakt@triggerhub.de">kontakt@triggerhub.de</a>
+          E-Mail:{" "}
+          <a href="mailto:Triggerhub@outlook.com">Triggerhub@outlook.com</a>
         </p>
       </div>
 
       <div className="legal-block">
         <h2>Status der Gesellschaft</h2>
         <p className="muted">
-          Die Handelsregistereintragung ist noch nicht abgeschlossen. Angaben zu
-          Registergericht und Handelsregisternummer werden erst nach Eintragung
-          ergänzt.
+          Die Handelsregistereintragung ist noch nicht abgeschlossen. Angaben
+          zu Registergericht und Handelsregisternummer werden erst nach
+          erfolgter Eintragung ergänzt. Bis dahin handelt Alexander Posdziech
+          als Privatperson.
+        </p>
+      </div>
+
+      <div className="legal-block">
+        <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+        <p>
+          Alexander Posdziech
+          <br />
+          Voßort 14, 21037 Hamburg
         </p>
       </div>
     </section>

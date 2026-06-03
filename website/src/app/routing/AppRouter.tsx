@@ -11,6 +11,10 @@ import { SettingsPage } from '../../pages/SettingsPage'
 import { ForbiddenPage } from '../../pages/ForbiddenPage'
 import { WebsiteLandingPage } from '../../pages/WebsiteLandingPage'
 import { SignupPage } from '../../pages/SignupPage'
+import { CompanyLandingPage } from '../../pages/CompanyLandingPage'
+import { ResQBrainPage } from '../../pages/ResQBrainPage'
+import { ContactPage } from '../../pages/ContactPage'
+import { LegalPage } from '../../pages/LegalPage'
 
 const usePathname = (): string => {
   const [pathname, setPathname] = useState(window.location.pathname)
@@ -51,6 +55,12 @@ const readNextPath = (): string => {
 export const normalizeRoutePath = (path: string): RoutePath =>
   (path in {
     '/': true,
+    '/resqbrain': true,
+    '/kontakt': true,
+    '/impressum': true,
+    '/datenschutz': true,
+    '/imprint': true,
+    '/privacy': true,
     '/features': true,
     '/pricing': true,
     '/about': true,
@@ -109,10 +119,20 @@ export const AppRouter = () => {
   }
 
   const rendererMap: Record<RoutePath, () => ReactElement | null> = {
-    '/': () => <WebsiteLandingPage onNavigate={navigateTo} />,
-    '/features': () => <WebsiteLandingPage onNavigate={navigateTo} />,
-    '/pricing': () => <WebsiteLandingPage onNavigate={navigateTo} />,
-    '/about': () => <WebsiteLandingPage onNavigate={navigateTo} />,
+    // Company website — primary routes
+    '/': () => <CompanyLandingPage onNavigate={navigateTo} />,
+    '/resqbrain': () => <ResQBrainPage onNavigate={navigateTo} />,
+    '/kontakt': () => <ContactPage onNavigate={navigateTo} />,
+    '/impressum': () => <LegalPage variant="impressum" onNavigate={navigateTo} />,
+    '/datenschutz': () => <LegalPage variant="datenschutz" onNavigate={navigateTo} />,
+    // EN aliases — redirect to DE equivalents
+    '/imprint': () => { navigateTo('/impressum'); return null },
+    '/privacy': () => { navigateTo('/datenschutz'); return null },
+    // Legacy marketing routes — redirect to company home
+    '/features': () => { navigateTo('/'); return null },
+    '/pricing': () => { navigateTo('/'); return null },
+    '/about': () => { navigateTo('/'); return null },
+    // Auth + product
     '/login': () => <LoginPage onNavigate={navigateTo} nextPath={readNextPath()} />,
     '/signup': () => <SignupPage onNavigate={navigateTo} />,
     '/app': () => <AppPage onNavigate={navigateTo} />,

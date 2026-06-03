@@ -5,6 +5,14 @@ export type RoutePath =
   | '/features'
   | '/pricing'
   | '/about'
+  // Company website routes
+  | '/resqbrain'
+  | '/kontakt'
+  | '/impressum'
+  | '/datenschutz'
+  | '/imprint'
+  | '/privacy'
+  // Auth + product
   | '/login'
   | '/signup'
   | '/app'
@@ -32,6 +40,42 @@ const ROUTE_MANIFEST: Record<RoutePath, RouteDefinition> = {
     modeOverrides: {
       private_prelaunch: { visibility: 'protected', ownerOnly: true },
     },
+  },
+  '/resqbrain': {
+    path: '/resqbrain',
+    group: 'public_marketing',
+    basePolicy: { visibility: 'public' },
+    modeOverrides: {
+      private_prelaunch: { visibility: 'protected', ownerOnly: true },
+    },
+  },
+  '/kontakt': {
+    path: '/kontakt',
+    group: 'public_marketing',
+    basePolicy: { visibility: 'public' },
+    modeOverrides: {
+      private_prelaunch: { visibility: 'protected', ownerOnly: true },
+    },
+  },
+  '/impressum': {
+    path: '/impressum',
+    group: 'public_marketing',
+    basePolicy: { visibility: 'public' },
+  },
+  '/datenschutz': {
+    path: '/datenschutz',
+    group: 'public_marketing',
+    basePolicy: { visibility: 'public' },
+  },
+  '/imprint': {
+    path: '/imprint',
+    group: 'public_marketing',
+    basePolicy: { visibility: 'public' },
+  },
+  '/privacy': {
+    path: '/privacy',
+    group: 'public_marketing',
+    basePolicy: { visibility: 'public' },
   },
   '/features': {
     path: '/features',

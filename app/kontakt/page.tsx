@@ -18,7 +18,7 @@ export default function KontaktPage() {
       <div className="legal-block">
         <h2>E-Mail</h2>
         <p>
-          <a href="mailto:kontakt@triggerhub.de">kontakt@triggerhub.de</a>
+          <a href="mailto:Triggerhub@outlook.com">Triggerhub@outlook.com</a>
         </p>
       </div>
 

@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     template: "%s | TriggerHub"
   },
   description:
-    "Schlanke Firmenwebsite der geplanten TriggerHub UG (haftungsbeschränkt) in Gründung.",
+    "Softwareentwicklung für digitale Wissens- und Referenzprodukte. TriggerHub UG (haftungsbeschränkt) in Gründung.",
   metadataBase: new URL("https://triggerhub.de")
 };
 
 const navigation = [
-  { href: "/", label: "Start" },
+  { href: "/resqbrain", label: "ResQBrain" },
   { href: "/kontakt", label: "Kontakt" },
   { href: "/impressum", label: "Impressum" },
   { href: "/datenschutz", label: "Datenschutz" }
@@ -33,7 +33,9 @@ export default function RootLayout({
             <div className="header-inner">
               <Link className="brand" href="/">
                 <span className="brand-name">TriggerHub</span>
-                <span className="brand-status">UG (haftungsbeschränkt) in Gründung</span>
+                <span className="brand-status">
+                  UG (haftungsbeschränkt) in Gründung
+                </span>
               </Link>
               <nav className="nav" aria-label="Hauptnavigation">
                 {navigation.map((item) => (
@@ -47,11 +49,13 @@ export default function RootLayout({
           <main className="main-content">{children}</main>
           <footer className="site-footer">
             <div className="footer-inner">
-              <span>
-                © 2026 TriggerHub UG (haftungsbeschränkt) in Gründung. ResQBrain ist
-                ein Produktprojekt von TriggerHub.
+              <span className="footer-copy">
+                © {new Date().getFullYear()} Alexander Posdziech —
+                TriggerHub UG (haftungsbeschränkt) in Gründung.
+                Keine Handelsregisternummer vor Abschluss der Eintragung.
               </span>
               <div className="footer-links">
+                <Link href="/resqbrain">ResQBrain</Link>
                 <Link href="/impressum">Impressum</Link>
                 <Link href="/datenschutz">Datenschutz</Link>
                 <Link href="/kontakt">Kontakt</Link>
