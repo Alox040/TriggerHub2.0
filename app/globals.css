@@ -330,7 +330,37 @@ h3 {
     padding: 48px 0 42px;
   }
 
+  h1 {
+    font-size: 1.75rem;
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+  }
+
+  .lead {
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+
   .section {
     padding: 42px 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .header-inner,
+  .main-content,
+  .footer-inner {
+    margin-left: 16px;
+    margin-right: auto;
+    width: min(358px, calc(100% - 32px));
   }
 }
