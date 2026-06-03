@@ -1,0 +1,69 @@
+/**
+ * TriggerHub Brand Color System
+ * Derived from logo analysis
+ */
+
+:root {
+  /* Primary Brand Colors - From Logo */
+  --color-primary: #0EA5E9;
+  --color-primary-light: #38BDF8;
+  --color-primary-dark: #0284C7;
+  
+  /* Secondary Brand Colors */
+  --color-secondary: #0891B2;
+  --color-secondary-light: #06B6D4;
+  --color-secondary-dark: #0E7490;
+  
+  /* Accent Colors - Cyan from "Hub" text */
+  --color-accent: #22D3EE;
+  --color-accent-light: #67E8F9;
+  --color-accent-dark: #06B6D4;
+  
+  /* Dark Backgrounds - From logo navy */
+  --color-bg-primary: #0A0E1A;
+  --color-bg-secondary: #0F1419;
+  --color-bg-tertiary: #111827;
+  
+  /* Surface Colors */
+  --color-surface: #1A1F2E;
+  --color-surface-hover: #242B3D;
+  --color-surface-active: #2D3548;
+  
+  /* Interactive States */
+  --color-hover: #0891B2;
+  --color-active: #06B6D4;
+  --color-focus: #22D3EE;
+  
+  /* Border Colors */
+  --color-border: #1E3A5F;
+  --color-border-light: #2D4A6F;
+  --color-border-hover: #0EA5E9;
+  
+  /* Text Colors */
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #D1D5DB;
+  --color-text-muted: #9CA3AF;
+  --color-text-disabled: #6B7280;
+  
+  /* Status Colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #0EA5E9;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%);
+  --gradient-accent: linear-gradient(135deg, #22D3EE 0%, #0EA5E9 100%);
+  --gradient-surface: linear-gradient(135deg, #1A1F2E 0%, #111827 100%);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(14, 165, 233, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(14, 165, 233, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(14, 165, 233, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(14, 165, 233, 0.3);
+  
+  /* Glow Effects */
+  --glow-primary: 0 0 20px rgba(14, 165, 233, 0.3);
+  --glow-accent: 0 0 20px rgba(34, 211, 238, 0.4);
+  --glow-strong: 0 0 40px rgba(14, 165, 233, 0.5);
+}
