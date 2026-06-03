@@ -1,21 +1,30 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import "./globals.css";
 
+// Inter: recommended by UI/UX Pro Max for "Trust & Authority / Precision Studio"
+// weights 400 (body), 500 (labels), 600 (headings), 700 (display)
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: {
     default: "TriggerHub UG (haftungsbeschränkt) in Gründung",
-    template: "%s | TriggerHub"
+    template: "%s | TriggerHub",
   },
   description:
     "Softwareentwicklung für digitale Wissens- und Referenzprodukte. TriggerHub UG (haftungsbeschränkt) in Gründung.",
-  metadataBase: new URL("https://triggerhub.de")
+  metadataBase: new URL("https://triggerhub.de"),
 };
 
 // Primäre Navigation — nur Firmen- und Produkt-Inhalte.
-// Impressum und Datenschutz bleiben im Footer (rechtlich erreichbar,
-// aber nicht als gleichwertige Navigation inszeniert).
+// Impressum und Datenschutz bleiben im Footer.
 const navigation = [
   { href: "/#unternehmen", label: "Unternehmen" },
   { href: "/resqbrain", label: "ResQBrain" },
@@ -23,14 +32,18 @@ const navigation = [
 ];
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: ReactNode;
 }>) {
   return (
-    <html lang="de">
+    <html lang="de" className={inter.variable}>
       <body>
         <div className="site-shell">
+          {/* Skip-to-content: visible only on keyboard focus (a11y) */}
+          <a className="skip-link" href="#main-content">
+            Zum Inhalt springen
+          </a>
           <header className="site-header">
             <div className="header-inner">
               <Link className="brand" href="/">
@@ -48,7 +61,9 @@ export default function RootLayout({
               </nav>
             </div>
           </header>
-          <main className="main-content">{children}</main>
+          <main className="main-content" id="main-content" tabIndex={-1}>
+            {children}
+          </main>
           <footer className="site-footer">
             <div className="footer-inner">
               <span className="footer-copy">
